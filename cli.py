@@ -1,3 +1,4 @@
+'''CLI'''
 import sys
 from datetime import datetime
 from argparse import ArgumentParser
