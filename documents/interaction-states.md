@@ -32,7 +32,7 @@ In this state the user is passively engaged in the work, i.e. he is thinking abo
 | ---- | ----- | ----- |
 | 💻   | ✔     | ❌    |
 
-In this state the user is communicating using his voice through an app (i.e. Zoom) on his device.
+In this state the user is communicating with their voice through an app (i.e. Zoom) on their device.
 
 ### Distraction
 
