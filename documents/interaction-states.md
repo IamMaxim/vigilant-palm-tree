@@ -1,6 +1,6 @@
 # Interaction state machine
 
-During his work, a user can perform different actions, such as moving the mouse, leaving the seat, or typing on the keyboard. Due to the fact that those actions are immediate, it is possible to instantly transition from any state to any other.
+During their work, a user can perform different actions, such as moving the mouse, leaving the seat, or typing on the keyboard. Due to the fact that those actions are immediate, it is possible to instantly transition from any state to any other.
 
 Each of the following states is defined in terms of those 3 parameters:
 
