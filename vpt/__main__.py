@@ -1,7 +1,7 @@
 '''Main entry point for the package'''
 from vpt.cli import parse_args
 from vpt.sources import print_audio_inputs, print_video_inputs, get_default_audio_input_name
-from vpt.check import record_audio, record_mouse
+from vpt.check import record_audio, record_mouse, record_keyboard
 
 args = parse_args(audio_default=get_default_audio_input_name())
 
@@ -16,4 +16,6 @@ elif args['cmd'] == 'check':
     record_audio(device=args['audio'], duration=args['duration'])
     print('* Recording mouse...')
     record_mouse(duration=args['duration'])
+    print('* Recording keyboard...')
+    record_keyboard(duration=args['duration'])
     print('Done')

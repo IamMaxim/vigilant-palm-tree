@@ -15,4 +15,4 @@ On Windows/macOS, they are automatically installed.
 Run `python -m vpt <subcommand>`. For detailed usage information, run `python vpt -h`.
 _Note: depending on your platform, you might need to use `python3` instead of `python`._
 
-If you are using Linux, you might need to run some commands as root (or with `sudo`) as [mouse recording requires it](https://github.com/boppreh/mouse#:~:text=requires%20sudo).
+If you are using Linux, you might need to run some commands as root (or with `sudo`) as [mouse recording](https://github.com/boppreh/mouse#:~:text=requires%20sudo) and [keyboard recording](https://github.com/boppreh/keyboard#:~:text=requires%20sudo) require it.

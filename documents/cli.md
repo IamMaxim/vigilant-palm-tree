@@ -16,7 +16,7 @@ This will record the data for 5 seconds and then create 4 files in your current 
 
 * `vpt-video.mp4`: a sample of video recorded through your video source
 
-* `vpt-keyboard.txt`: a list of recorded keyboard actions
+* `vpt-keyboard.json`: a list of recorded keyboard actions
 
 * `vpt-mouse.json`: a list of mouse movements
 
