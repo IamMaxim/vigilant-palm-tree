@@ -15,7 +15,7 @@ Each of the following states is defined in terms of those 2 parameters:
 | ---- | ----- |
 | 💻   | ❌    |
 
-In this state the user is actively engaged in their work through visual focus on the workspace (that is, the monitor or the table in front of them).
+In this state the user is actively engaged in their work through visual focus on the workspace (that is, the monitor in front of them).
 
 ### Conferencing
 
@@ -23,13 +23,21 @@ In this state the user is actively engaged in their work through visual focus on
 | ---- | ----- |
 | 💻   | ✔     |
 
-In this state the user is communicating with their voice through an app (i.e. Zoom) on their device.
+In this state the user is communicating with their voice through an app (i.e. Zoom) on their device. It can also account for some collaborative work (i.e. pair programming).
+
+### Idling
+
+| Gaze | Voice |
+| ---- | ----- |
+| 🌲   | ❌    |
+
+In this state the user is no longer actively focusing on their workspace, while still physically being on their seat and not communicating verbally.
 
 ### Distraction
 
 | Gaze | Voice |
 | ---- | ----- |
-| 🌲   | ❔    |
+| 🌲   | ✔     |
 
 In this state the user is being distracted from their work by looking outside of the workspace. For example, they are talking to a person nearby.
 
