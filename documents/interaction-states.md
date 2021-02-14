@@ -13,17 +13,9 @@ Each of the following states is defined in terms of those 2 parameters:
 
 | Gaze | Voice |
 | ---- | ----- |
-| 💻   | ❔    |
+| 💻   | ❌    |
 
-In this state the user is actively engaged in their work through visual focus on the workspace (that is, the monitor or the table in front of them) and active input from the mouse and/or keyboard.
-
-### Idling
-
-| Gaze | Voice |
-| ---- | ----- |
-| 💻   | ❔    |
-
-In this state the user is passively engaged in the work, i.e. they are thinking about the problem or sketching on paper. Due to the lack of the input, no traceable progress can be recognized.
+In this state the user is actively engaged in their work through visual focus on the workspace (that is, the monitor or the table in front of them).
 
 ### Conferencing
 
