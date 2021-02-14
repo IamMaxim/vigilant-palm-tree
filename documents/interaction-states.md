@@ -24,7 +24,7 @@ In this state the user is actively engaged in their work through visual focus on
 | ---- | ----- | ----- |
 | 💻   | ❔    | ❌    |
 
-In this state the user is passively engaged in the work, i.e. he is thinking about the problem or sketching on a paper. Due to the lack of the input, no traceable progress can be recognized.
+In this state the user is passively engaged in the work, i.e. they are thinking about the problem or sketching on paper. Due to the lack of the input, no traceable progress can be recognized.
 
 ### Conferencing
 
