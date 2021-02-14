@@ -48,4 +48,4 @@ In this state the user is being distracted from his work by looking outside of t
 | ---- | ----- | ----- |
 | ❌   | ❔    | ❔    |
 
-In this state the user has left his workplace. No work is being done.
+In this state the user has left their workplace. No work is being done.
