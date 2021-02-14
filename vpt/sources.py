@@ -4,6 +4,10 @@ from textwrap import shorten
 
 import sounddevice as sd
 
+def get_default_audio_input_name() -> str:
+    '''Gets the name of the default audio input device.'''
+    return sd.query_devices(kind='input')['name']
+
 def list_audio_inputs() -> List[dict]:
     '''Returns a list of all audio input devices.'''
     devices = sd.query_devices()

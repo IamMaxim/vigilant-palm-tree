@@ -4,7 +4,7 @@ from datetime import datetime
 from argparse import ArgumentParser
 
 
-def create_parser():
+def create_parser(audio_default=None):
     '''Creates and returns a parser for command line arguments.'''
     # pylint: disable=unused-variable; They are created for consistency and clarity
     parser = ArgumentParser(prog='vpt', description="A research tool that allows collecting "
@@ -16,8 +16,8 @@ def create_parser():
             'correctly functioning and recognized by the program')
 
     record_parser = subparsers.add_parser('record', description='Start recording the data')
-    record_parser.add_argument('--audio', help='The name of the audio source, as reported by the '
-            '"sources audio" subcommand')
+    record_parser.add_argument('--audio', default=audio_default, help='The name of the audio '
+            'source, as reported by the "sources audio" subcommand')
     record_parser.add_argument('--video', help='The name of the audio source, as reported by the '
             '"sources video" subcommand')
 
