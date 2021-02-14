@@ -18,7 +18,7 @@ This will record the data for 5 seconds and then create 4 files in your current 
 
 * `vpt-keyboard.txt`: a list of recorded keyboard actions
 
-* `vpt-mouse.txt`: a list of mouse movements
+* `vpt-mouse.json`: a list of mouse movements
 
 Feel free to use your keyboard and mouse during the 5 seconds of the check to ensure that the data from them is correctly recorded.
 
