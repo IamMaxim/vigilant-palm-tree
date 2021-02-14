@@ -11,8 +11,9 @@ if args['cmd'] == 'sources':
     elif args['source'] == 'video':
         print_video_inputs()
 elif args['cmd'] == 'check':
+    print(f'Recording duration: {args["duration"]} s')
     print('* Recording audio...')
-    record_audio(device=args['audio'])
+    record_audio(device=args['audio'], duration=args['duration'])
     print('* Recording mouse...')
-    record_mouse()
+    record_mouse(duration=args['duration'])
     print('Done')
