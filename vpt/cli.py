@@ -14,6 +14,10 @@ def create_parser(audio_default=None):
 
     check_parser = subparsers.add_parser('check', description='Make sure your hardware is '
             'correctly functioning and recognized by the program')
+    check_parser.add_argument('--audio', default=audio_default, help='The name of the audio '
+            'source, as reported by the "sources audio" subcommand')
+    check_parser.add_argument('--video', help='The name of the audio source, as reported by the '
+            '"sources video" subcommand')
 
     record_parser = subparsers.add_parser('record', description='Start recording the data')
     record_parser.add_argument('--audio', default=audio_default, help='The name of the audio '
