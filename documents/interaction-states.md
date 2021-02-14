@@ -40,7 +40,7 @@ In this state the user is communicating using his voice through an app (i.e. Zoo
 | ---- | ----- | ----- |
 | 🌲   | ❔    | ❔    |
 
-In this state the user is being distracted from his work by looking outside of the workspace. For example, he is talking to a person nearby.
+In this state the user is being distracted from their work by looking outside of the workspace. For example, they are talking to a person nearby.
 
 ### Absense
 
