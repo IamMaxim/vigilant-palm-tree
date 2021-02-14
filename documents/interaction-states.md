@@ -16,7 +16,7 @@ Each of the following states is defined in terms of those 3 parameters:
 | ---- | ----- | ----- |
 | 💻   | ❔    | ✔     |
 
-In this state the user is actively engaged in his work through visual focus on the workspace (that is, the monitor or the table in front of him) and active input from mouse and/or keyboard.
+In this state the user is actively engaged in their work through visual focus on the workspace (that is, the monitor or the table in front of them) and active input from the mouse and/or keyboard.
 
 ### Idling
 
