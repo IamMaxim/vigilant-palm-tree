@@ -34,3 +34,12 @@ def print_audio_inputs():
               f'| {device["default_samplerate"]:^12} |')
     print(f'└{"-" * 52}┴{"-" * 12}┴{"-" * 14}┘')
     print('* = default')
+
+
+def list_video_inputs():
+    '''Returns a list of all video input devices (a.k.a. cameras)'''
+
+def print_video_inputs():
+    '''Prints the list of available cameras neatly.'''
+    # https://stackoverflow.com/questions/8044539/listing-available-devices-in-python-opencv
+    print('Sorry! this functionality is not yet supported. The default device will be used.')
