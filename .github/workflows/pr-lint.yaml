@@ -1,0 +1,27 @@
+name: Lint Pull Requests
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    name: Run Pylint
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v2
+      
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: 🔧 Install requirements
+        run: |
+          python -m pip install --upgrade pip
+          pip install pylint
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: 🗃️ Lint with Pylint
+        run: pylint vpt
