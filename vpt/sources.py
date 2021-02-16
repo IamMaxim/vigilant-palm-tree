@@ -2,6 +2,7 @@
 from typing import List
 from textwrap import shorten
 
+import cv2
 import sounddevice as sd
 
 
@@ -40,10 +41,20 @@ def print_audio_inputs():
 
 
 def list_video_inputs():
-    '''Returns a list of all video input devices (a.k.a. cameras)'''
+    """Returns a list of all video input devices (a.k.a. cameras)"""
+    index = 0
+    arr = []
+    while True:
+        cap = cv2.VideoCapture(index)
+        if not cap.read()[0]:
+            break
+        else:
+            arr.append(index)
+        cap.release()
+        index += 1
+    return arr
 
 
 def print_video_inputs():
-    '''Prints the list of available cameras neatly.'''
-    # https://stackoverflow.com/questions/8044539/listing-available-devices-in-python-opencv
-    print('Sorry! this functionality is not yet supported. The default device will be used.')
+    """Prints the list of available cameras neatly."""
+    print(list_video_inputs())
