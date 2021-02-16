@@ -8,6 +8,7 @@ import soundfile as sf
 import keyboard
 import mouse
 
+
 def record_audio(device=None, duration=5, filename='vpt-audio.wav'):
     '''Records audio from the given device and saves it to disk.
        Note that it currently blocks the main thread for the given duration.'''
@@ -27,10 +28,12 @@ def record_audio(device=None, duration=5, filename='vpt-audio.wav'):
     with sf.SoundFile(filename, mode='w', samplerate=samplerate, channels=channels) as file:
         file.write(data)
 
+
 def record_mouse(duration=5, filename='vpt-mouse.json'):
     '''Records all mouse events and saves them to a JSON file.
        Note that it currently blocks the main thread for the given duration.'''
     events = []
+
     def callback(event):
         if isinstance(event, mouse.ButtonEvent):
             events.append({
@@ -61,10 +64,12 @@ def record_mouse(duration=5, filename='vpt-mouse.json'):
     with open(filename, 'w') as file:
         json.dump(events, file, indent=4)
 
+
 def record_keyboard(duration=5, filename='vpt-keyboard.json'):
     '''Record all keyboard events and save them to a json file
        Note that it currently blocks the main thread for the given duration.'''
     events = []
+
     def callback(event: keyboard.KeyboardEvent):
         events.append({
             'character': event.name,

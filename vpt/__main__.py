@@ -1,4 +1,4 @@
-'''Main entry point for the package'''
+"""Main entry point for the package"""
 from vpt.cli import parse_args
 from vpt.sources import print_audio_inputs, print_video_inputs, get_default_audio_input_name
 from vpt.check import record_audio, record_mouse, record_keyboard

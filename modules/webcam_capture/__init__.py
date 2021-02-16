@@ -12,6 +12,7 @@ class WebcamCaptureModule(ModuleBase[VideoFrame]):
     need_to_run: bool
     __subject: Subject
     video_capture: cv2.VideoCapture
+    device = 0
 
     def start(self):
         self.need_to_run = True
@@ -22,13 +23,14 @@ class WebcamCaptureModule(ModuleBase[VideoFrame]):
         self.need_to_run = False
 
     def capture_loop(self):
-        video_capture = cv2.VideoCapture(0)
+        video_capture = cv2.VideoCapture(self.device)
         while self.need_to_run:
             ret, frame = video_capture.read()
             self.__subject.on_next(VideoFrame(frame))
 
-    def __init__(self):
+    def __init__(self, device_id: int = 0):
         self.__subject = Subject()
+        self.device = device_id
 
     def get_data_stream(self) -> Observable:
         return self.__subject

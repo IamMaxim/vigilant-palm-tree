@@ -8,6 +8,7 @@ from modules.keyboard_capture import KeyboardCaptureModule
 from modules.mouse_capture import MouseCaptureModule
 from modules.sound_capture import SoundCaptureModule
 from modules.video_output_window import VideoOutputWindowModule
+from modules.video_to_file_output import VideoToFileOutputModule
 from modules.webcam_capture import WebcamCaptureModule
 
 if __name__ == "__main__":
@@ -34,6 +35,8 @@ if __name__ == "__main__":
     mouse_source.get_data_stream().subscribe(mouse_callback)
 
     video_output = VideoOutputWindowModule(video_frame_source)
+
+    video_to_file = VideoToFileOutputModule(video_frame_source)
 
     video_frame_source.start()
     sound_source.start()
