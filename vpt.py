@@ -6,7 +6,9 @@ import mouse
 
 from modules.audio_to_file_output import AudioToFileOutputModule
 from modules.keyboard_capture import KeyboardCaptureModule
+from modules.keyboard_to_file_output import KeyboardToFileOutputModule
 from modules.mouse_capture import MouseCaptureModule
+from modules.mouse_to_file_output import MouseToFileOutputModule
 from modules.sound_capture import SoundCaptureModule
 from modules.video_output_window import VideoOutputWindowModule
 from modules.video_to_file_output import VideoToFileOutputModule
@@ -21,7 +23,6 @@ if __name__ == "__main__":
 
     # def sound_callback(rec):
     #     print(rec)
-
 
     def keyboard_callback(event: keyboard.KeyboardEvent):
         # print('%s pressed' % event.name)
@@ -41,6 +42,8 @@ if __name__ == "__main__":
 
     video_to_file = VideoToFileOutputModule(video_frame_source)
     audio_to_file = AudioToFileOutputModule(sound_source)
+    keyboard_to_file = KeyboardToFileOutputModule(keyboard_source)
+    mouse_to_file = MouseToFileOutputModule(mouse_source)
 
     video_frame_source.start()
     sound_source.start()
