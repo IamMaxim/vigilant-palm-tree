@@ -2,7 +2,7 @@ import keyboard
 from rx import Observable
 from rx.subject import Subject
 
-from nodes import SourceBase
+from vpt.sources.base import SourceBase
 
 
 class KeyboardSource(SourceBase[keyboard.KeyboardEvent]):

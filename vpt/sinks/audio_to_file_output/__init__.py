@@ -2,12 +2,12 @@ import os
 
 import soundfile as sf
 
-from nodes import SinkBase, ProcessorBase
+from vpt.sources.base import SourceBase
+from vpt.sinks.base import SinkBase
 
 
 class AudioToFileOutputProcessor(SinkBase):
-
-    def __init__(self, rec_source: ProcessorBase):
+    def __init__(self, rec_source: SourceBase):
         rec_source.get_data_stream().subscribe(self.process_audio_rec)
         try:
             os.remove('audio.wav')

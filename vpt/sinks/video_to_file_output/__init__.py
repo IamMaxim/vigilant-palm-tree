@@ -1,20 +1,18 @@
-from os import mkdir
+from os import makedirs
 
 import cv2
 
 from data_structures import VideoFrame
-from nodes import ProcessorBase, SinkBase
+from vpt.sources.base import SourceBase
+from vpt.sinks.base import SinkBase
 
 
 class VideoToFileOutputProcessor(SinkBase):
     dir = 'video_output'
     counter = 0
 
-    def __init__(self, frame_provider: ProcessorBase[VideoFrame]):
-        try:
-            mkdir(self.dir)
-        except FileExistsError:
-            pass  # dir already exists
+    def __init__(self, frame_provider: SourceBase[VideoFrame]):
+        makedirs(self.dir, exist_ok=True)
 
         frame_provider.get_data_stream().subscribe(self.process_frame)
 
@@ -22,4 +20,3 @@ class VideoToFileOutputProcessor(SinkBase):
         path = self.dir + '/' + str(self.counter) + '.png'
         cv2.imwrite(path, frame.frame)
         self.counter += 1
-

@@ -1,9 +1,10 @@
-from nodes import ProcessorBase, SinkBase
+from vpt.sources.base import SourceBase
+from vpt.sinks.base import SinkBase
 
 
 class KeyboardToFileOutputProcessor(SinkBase):
 
-    def __init__(self, keyboard_source: ProcessorBase):
+    def __init__(self, keyboard_source: SourceBase):
         keyboard_source.get_data_stream().subscribe(self.process_event)
         self.file = open('keyboard_output.txt', 'w+')
 
