@@ -8,11 +8,7 @@ import soundfile as sf
 import keyboard
 import mouse
 
-from vpt.sinks.audio_to_file_output import AudioToFileOutputProcessor
-from vpt.sinks.keyboard_to_file_output import KeyboardToFileOutputProcessor
-from vpt.sinks.mouse_to_file_output import MouseToFileOutputProcessor
-from vpt.sinks.video_display import VideoDisplay
-from vpt.sinks.video_to_file_output import VideoToFileOutputProcessor
+from vpt.sinks import VideoDisplay, FileStore
 from vpt.sources import DeviceVideoSource, KeyboardSource, MouseSource, DeviceAudioSource
 
 
@@ -104,10 +100,7 @@ def check():
     video_display = VideoDisplay(video_source, duration=5)
 
     # Create file output nodes
-    video_to_file = VideoToFileOutputProcessor(video_source)
-    audio_to_file = AudioToFileOutputProcessor(audio_source)
-    keyboard_to_file = KeyboardToFileOutputProcessor(keyboard_source)
-    mouse_to_file = MouseToFileOutputProcessor(mouse_source)
+    FileStore('.', mouse_source, keyboard_source, audio_source)
 
     # Start capture on all types of sources
     video_source.start()
