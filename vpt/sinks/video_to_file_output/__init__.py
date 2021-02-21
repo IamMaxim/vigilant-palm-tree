@@ -22,4 +22,3 @@ class VideoToFileOutputProcessor(SinkBase):
         path = self.dir + '/' + str(self.counter) + '.png'
         cv2.imwrite(path, frame.frame)
         self.counter += 1
-
