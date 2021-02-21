@@ -16,7 +16,7 @@ from sinks.video_to_file_output import VideoToFileOutputProcessor
 from sources.device_video_source import DeviceVideoSource
 from sources.keyboard_source import KeyboardSource
 from sources.mouse_source import MouseSource
-from sources.sound_source import SoundSource
+from sources.device_audio_source import DeviceAudioSource
 
 
 def record_audio(device=None, duration=5, filename='vpt-audio.wav'):
@@ -99,7 +99,7 @@ def check():
 
     # Create capture nodes
     video_source = DeviceVideoSource()
-    sound_source = SoundSource()
+    audio_source = DeviceAudioSource()
     keyboard_source = KeyboardSource()
     mouse_source = MouseSource()
 
@@ -108,13 +108,13 @@ def check():
 
     # Create file output nodes
     video_to_file = VideoToFileOutputProcessor(video_source)
-    audio_to_file = AudioToFileOutputProcessor(sound_source)
+    audio_to_file = AudioToFileOutputProcessor(audio_source)
     keyboard_to_file = KeyboardToFileOutputProcessor(keyboard_source)
     mouse_to_file = MouseToFileOutputProcessor(mouse_source)
 
     # Start capture on all types of sources
     video_source.start()
-    sound_source.start()
+    audio_source.start()
     keyboard_source.start()
     mouse_source.start()
 
@@ -123,7 +123,7 @@ def check():
 
     # Stop capture on all types of sources
     video_source.stop()
-    sound_source.stop()
+    audio_source.stop()
     keyboard_source.stop()
     mouse_source.stop()
 

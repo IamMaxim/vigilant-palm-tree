@@ -7,7 +7,7 @@ from rx.subject import Subject
 from nodes import SourceBase
 
 
-class SoundSource(SourceBase):
+class DeviceAudioSource(SourceBase):
     stopped = False
     sample_duration = 1
     sample_rate = 44100

@@ -1,4 +1,3 @@
-import abc
 from typing import TypeVar, Generic
 
 from rx import Observable
