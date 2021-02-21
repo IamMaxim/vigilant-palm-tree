@@ -7,7 +7,7 @@ from rx.subject import Subject
 from processorbase import SourceBase
 
 
-class SoundCaptureProcessor(SourceBase):
+class SoundSource(SourceBase):
     stopped = False
     sample_duration = 1
     sample_rate = 44100

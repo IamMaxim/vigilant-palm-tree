@@ -6,7 +6,7 @@ from data_structures import VideoFrame
 from processorbase import ProcessorBase, SinkBase
 
 
-class VideoOutputWindowProcessor(SinkBase):
+class VideoDisplay(SinkBase):
     frame: VideoFrame = None
     stopped: bool
 

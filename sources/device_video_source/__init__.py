@@ -8,7 +8,7 @@ from data_structures import VideoFrame
 from processorbase import SourceBase
 
 
-class WebcamCaptureProcessor(SourceBase[VideoFrame]):
+class DeviceVideoSource(SourceBase[VideoFrame]):
     need_to_run: bool
     __subject: Subject
     video_capture: cv2.VideoCapture

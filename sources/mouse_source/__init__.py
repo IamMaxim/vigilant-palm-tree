@@ -5,7 +5,7 @@ from rx.subject import Subject
 from processorbase import SourceBase
 
 
-class MouseCaptureProcessor(SourceBase):
+class MouseSource(SourceBase):
     subj = Subject()
 
     def get_data_stream(self) -> Observable:

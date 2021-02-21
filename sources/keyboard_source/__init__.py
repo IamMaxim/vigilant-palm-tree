@@ -5,7 +5,7 @@ from rx.subject import Subject
 from processorbase import SourceBase
 
 
-class KeyboardCaptureProcessor(SourceBase[keyboard.KeyboardEvent]):
+class KeyboardSource(SourceBase[keyboard.KeyboardEvent]):
     subj = Subject()
 
     def start(self):
