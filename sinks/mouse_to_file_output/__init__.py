@@ -1,6 +1,6 @@
 import mouse
 
-from processorbase import ProcessorBase, SinkBase
+from nodes import ProcessorBase, SinkBase
 
 
 class MouseToFileOutputProcessor(SinkBase):

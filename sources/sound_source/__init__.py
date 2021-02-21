@@ -4,7 +4,7 @@ import sounddevice as sd
 from rx import Observable
 from rx.subject import Subject
 
-from processorbase import SourceBase
+from nodes import SourceBase
 
 
 class SoundSource(SourceBase):

@@ -3,7 +3,7 @@ from os import mkdir
 import cv2
 
 from data_structures import VideoFrame
-from processorbase import ProcessorBase, SinkBase
+from nodes import ProcessorBase, SinkBase
 
 
 class VideoToFileOutputProcessor(SinkBase):

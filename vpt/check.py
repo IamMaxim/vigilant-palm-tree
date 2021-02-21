@@ -8,6 +8,16 @@ import soundfile as sf
 import keyboard
 import mouse
 
+from sinks.audio_to_file_output import AudioToFileOutputProcessor
+from sinks.keyboard_to_file_output import KeyboardToFileOutputProcessor
+from sinks.mouse_to_file_output import MouseToFileOutputProcessor
+from sinks.video_display import VideoDisplay
+from sinks.video_to_file_output import VideoToFileOutputProcessor
+from sources.device_video_source import DeviceVideoSource
+from sources.keyboard_source import KeyboardSource
+from sources.mouse_source import MouseSource
+from sources.sound_source import SoundSource
+
 
 def record_audio(device=None, duration=5, filename='vpt-audio.wav'):
     '''Records audio from the given device and saves it to disk.
@@ -82,3 +92,39 @@ def record_keyboard(duration=5, filename='vpt-keyboard.json'):
     keyboard.unhook(callback)
     with open(filename, 'w') as file:
         json.dump(events, file, indent=4)
+
+
+def check():
+    print('Checking the devices for 5s...')
+
+    # Create capture nodes
+    video_source = DeviceVideoSource()
+    sound_source = SoundSource()
+    keyboard_source = KeyboardSource()
+    mouse_source = MouseSource()
+
+    # Create GUI nodes
+    video_display = VideoDisplay(video_source, duration=5)
+
+    # Create file output nodes
+    video_to_file = VideoToFileOutputProcessor(video_source)
+    audio_to_file = AudioToFileOutputProcessor(sound_source)
+    keyboard_to_file = KeyboardToFileOutputProcessor(keyboard_source)
+    mouse_to_file = MouseToFileOutputProcessor(mouse_source)
+
+    # Start capture on all types of sources
+    video_source.start()
+    sound_source.start()
+    keyboard_source.start()
+    mouse_source.start()
+
+    # Run UI on the MainThread (this is a blocking call)
+    video_display.run()
+
+    # Stop capture on all types of sources
+    video_source.stop()
+    sound_source.stop()
+    keyboard_source.stop()
+    mouse_source.stop()
+
+    print('Done')

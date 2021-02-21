@@ -1,4 +1,4 @@
-from processorbase import ProcessorBase, SinkBase
+from nodes import ProcessorBase, SinkBase
 
 
 class KeyboardToFileOutputProcessor(SinkBase):

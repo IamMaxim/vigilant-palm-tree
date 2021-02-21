@@ -2,7 +2,7 @@ import os
 
 import soundfile as sf
 
-from processorbase import SinkBase, ProcessorBase
+from nodes import SinkBase, ProcessorBase
 
 
 class AudioToFileOutputProcessor(SinkBase):

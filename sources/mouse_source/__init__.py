@@ -1,8 +1,9 @@
 import mouse
+
 from rx import Observable
 from rx.subject import Subject
 
-from processorbase import SourceBase
+from nodes import SourceBase
 
 
 class MouseSource(SourceBase):
@@ -11,7 +12,7 @@ class MouseSource(SourceBase):
     def get_data_stream(self) -> Observable:
         return self.subj
 
-    def callback(self, event: mouse.MoveEvent):
+    def callback(self, event):
         self.subj.on_next(event)
 
     def start(self):
