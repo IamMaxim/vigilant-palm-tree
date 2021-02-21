@@ -2,10 +2,10 @@ import mouse
 from rx import Observable
 from rx.subject import Subject
 
-from modulebase import ModuleBase
+from processorbase import SourceBase
 
 
-class MouseCaptureModule(ModuleBase):
+class MouseCaptureProcessor(SourceBase):
     subj = Subject()
 
     def get_data_stream(self) -> Observable:

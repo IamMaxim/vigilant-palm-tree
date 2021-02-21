@@ -1,29 +1,23 @@
 from time import sleep
 
 import cv2
-from rx import Observable
-from rx.subject import Subject
 
 from data_structures import VideoFrame
-from modulebase import ModuleBase
+from processorbase import ProcessorBase, SinkBase
 
 
-class VideoOutputWindowModule(ModuleBase):
+class VideoOutputWindowProcessor(SinkBase):
     frame: VideoFrame = None
     stopped: bool
 
-    def __init__(self, video_frame_source: ModuleBase[VideoFrame]):
+    def __init__(self, video_frame_source: ProcessorBase[VideoFrame]):
         self.stopped = False
         video_frame_source.get_data_stream().subscribe(self.process_frame)
 
     def process_frame(self, frame: VideoFrame):
         self.frame = frame
 
-    def start(self):
-        # threading.Thread(target=self.show).start()
-        raise NotImplementedError('VideoOutputWindowModule does not support start() method, as it requires main thread.'
-                                  ' Use !blocking! run() instead')
-
+    # Note: this is a blocking method. It returns as soon as user presses the ESC key
     def run(self):
         print('run')
 
@@ -47,6 +41,3 @@ class VideoOutputWindowModule(ModuleBase):
         cv2.destroyWindow('Video')
         self.stopped = True
         cv2.waitKey(1)
-
-    def get_data_stream(self) -> Observable:
-        return Subject()

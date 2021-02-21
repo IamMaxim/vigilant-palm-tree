@@ -3,3 +3,5 @@ __pycache__
 .idea
 video_output
 audio.wav
+/keyboard_output.txt
+/mouse_output.txt

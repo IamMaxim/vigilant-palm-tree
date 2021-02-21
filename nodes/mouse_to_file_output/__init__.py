@@ -1,12 +1,10 @@
 import mouse
-from rx import Observable
-from rx.subject import Subject
 
-from modulebase import ModuleBase
+from processorbase import ProcessorBase, SinkBase
 
 
-class MouseToFileOutputModule(ModuleBase):
-    def __init__(self, mouse_source: ModuleBase):
+class MouseToFileOutputProcessor(SinkBase):
+    def __init__(self, mouse_source: ProcessorBase):
         self.file = open('mouse_output.txt', 'w+')
         mouse_source.get_data_stream().subscribe(self.process_mouse)
 
@@ -19,11 +17,3 @@ class MouseToFileOutputModule(ModuleBase):
             self.file.write('move %s %s %s\n' % (event.x, event.y, event.time))
         self.file.flush()
 
-    def get_data_stream(self) -> Observable:
-        return Subject()
-
-    def start(self):
-        pass
-
-    def stop(self):
-        pass

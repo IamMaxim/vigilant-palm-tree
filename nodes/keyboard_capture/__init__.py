@@ -2,10 +2,10 @@ import keyboard
 from rx import Observable
 from rx.subject import Subject
 
-from modulebase import ModuleBase
+from processorbase import SourceBase
 
 
-class KeyboardCaptureModule(ModuleBase[keyboard.KeyboardEvent]):
+class KeyboardCaptureProcessor(SourceBase[keyboard.KeyboardEvent]):
     subj = Subject()
 
     def start(self):

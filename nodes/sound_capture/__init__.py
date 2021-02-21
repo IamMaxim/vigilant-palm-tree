@@ -4,10 +4,10 @@ import sounddevice as sd
 from rx import Observable
 from rx.subject import Subject
 
-from modulebase import ModuleBase
+from processorbase import SourceBase
 
 
-class SoundCaptureModule(ModuleBase):
+class SoundCaptureProcessor(SourceBase):
     stopped = False
     sample_duration = 1
     sample_rate = 44100

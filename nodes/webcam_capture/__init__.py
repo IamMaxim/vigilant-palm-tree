@@ -5,10 +5,10 @@ from rx import Observable
 from rx.subject import Subject
 
 from data_structures import VideoFrame
-from modulebase import ModuleBase
+from processorbase import SourceBase
 
 
-class WebcamCaptureModule(ModuleBase[VideoFrame]):
+class WebcamCaptureProcessor(SourceBase[VideoFrame]):
     need_to_run: bool
     __subject: Subject
     video_capture: cv2.VideoCapture

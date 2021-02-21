@@ -1,17 +1,13 @@
 import os
 
-import sounddevice
-from rx import Observable
-from rx.subject import Subject
-
 import soundfile as sf
 
-from modulebase import ModuleBase
+from processorbase import SinkBase, ProcessorBase
 
 
-class AudioToFileOutputModule(ModuleBase):
+class AudioToFileOutputProcessor(SinkBase):
 
-    def __init__(self, rec_source: ModuleBase):
+    def __init__(self, rec_source: ProcessorBase):
         rec_source.get_data_stream().subscribe(self.process_audio_rec)
         try:
             os.remove('audio.wav')
@@ -22,12 +18,3 @@ class AudioToFileOutputModule(ModuleBase):
 
     def process_audio_rec(self, rec):
         self.file.write(rec)
-
-    def get_data_stream(self) -> Observable:
-        return Subject()
-
-    def start(self):
-        pass
-
-    def stop(self):
-        pass
