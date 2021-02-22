@@ -5,7 +5,8 @@ from typing import Union
 import keyboard
 import mouse
 
-from nodes import SinkBase
+from vpt.sinks.base import SinkBase
+from vpt.sources.base import SourceBase
 
 
 class SQLiteStore(SinkBase):
@@ -13,7 +14,8 @@ class SQLiteStore(SinkBase):
        in an SQLite database.'''
     connection: sqlite3.Connection
 
-    def __init__(self, db_path: str):
+    def __init__(self, db_path: str, mouse_source: SourceBase,
+                 keyboard_source: SourceBase, engagement_source: SourceBase):
         '''Create a database or open an existing one.'''
         self.connection = sqlite3.connect(db_path)
         c = self.connection.cursor()
@@ -42,6 +44,10 @@ class SQLiteStore(SinkBase):
         ''')
         self.connection.commit()
         c.close()
+
+        mouse_source.get_data_stream().subscribe(self.store_mouse_event)
+        keyboard_source.get_data_stream().subscribe(self.store_key_event)
+        engagement_source.get_data_stream().subscribe(self.store_engagement)
 
     def __del__(self):
         '''Clean up resources.'''
