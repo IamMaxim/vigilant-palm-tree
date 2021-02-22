@@ -18,10 +18,10 @@ class FileStore(SinkBase):
         super().__init__()
         self.dir = Path(dir_name)
 
-        self.mouse_file = open(self.dir / 'mouse_output.txt', 'w+')
+        self.mouse_file = open(self.dir / 'mouse_output.txt', 'w+', buffering=1)
         mouse_source.get_data_stream().subscribe(self._process_mouse)
 
-        self.keyboard_file = open(self.dir / 'keyboard_output.txt', 'w+')
+        self.keyboard_file = open(self.dir / 'keyboard_output.txt', 'w+', buffering=1)
         keyboard_source.get_data_stream().subscribe(self._process_key)
 
         with contextlib.suppress(FileNotFoundError):
@@ -35,7 +35,6 @@ class FileStore(SinkBase):
 
     def _process_key(self, event: keyboard.KeyboardEvent):
         self.keyboard_file.write(f'{event.event_type} {event.name} {event.scan_code} {event.time}\n')
-        self.keyboard_file.flush()
 
     def _process_mouse(self, event: Union[mouse.ButtonEvent, mouse.MoveEvent, mouse.WheelEvent]):
         if isinstance(event, mouse.ButtonEvent):
@@ -44,4 +43,3 @@ class FileStore(SinkBase):
             self.mouse_file.write(f'wheel {event.delta} {event.time}\n')
         elif isinstance(event, mouse.MoveEvent):
             self.mouse_file.write(f'move {event.x} {event.y} {event.time}\n')
-        self.mouse_file.flush()
