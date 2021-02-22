@@ -5,7 +5,7 @@ from rx import Observable
 from rx.subject import Subject
 
 from data_structures import VideoFrame
-from nodes import SourceBase
+from vpt.sources.base import SourceBase
 
 
 class DeviceVideoSource(SourceBase[VideoFrame]):
