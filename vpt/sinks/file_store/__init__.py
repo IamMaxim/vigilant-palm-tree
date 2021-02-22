@@ -34,7 +34,7 @@ class FileStore(SinkBase):
         self.audio_file.write(frame)
 
     def _process_key(self, event: keyboard.KeyboardEvent):
-        self.keyboard_file.write(f'{event.name} {event.scan_code} {event.time}\n')
+        self.keyboard_file.write(f'{event.event_type} {event.name} {event.scan_code} {event.time}\n')
         self.keyboard_file.flush()
 
     def _process_mouse(self, event: Union[mouse.ButtonEvent, mouse.MoveEvent, mouse.WheelEvent]):
