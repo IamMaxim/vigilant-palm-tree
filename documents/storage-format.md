@@ -22,6 +22,7 @@ timestamp: integer NOT NULL;
 SQLite
 
 ```sql
+type text NOT NULL;
 scancode: text NOT NULL;
 modifiers: text NOT NULL;
 timestamp: integer NOT NULL;
