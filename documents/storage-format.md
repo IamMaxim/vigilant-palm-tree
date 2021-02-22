@@ -13,7 +13,7 @@ Interaction states are described in details in [_interaction-states_ document](i
 | engagement | conferencing | idling | distraction | absense |
 
 ```SQL
-time: TEXT ("YYYY-MM-DD HH:MM:SS.SSS");
+time: INTEGER;
 engagement_level: INTEGER (0-4);
 ```
 
@@ -22,7 +22,7 @@ engagement_level: INTEGER (0-4);
 ### Key press
 
 ```SQL
-time: TEXT ("YYYY-MM-DD HH:MM:SS.SSS");
+time: INTEGER;
 key_code: TEXT;
 ```
 
@@ -37,21 +37,21 @@ As of optimization techniques, for continious input channels like _mouse positio
 | left click | right click | middle click |
 
 ```SQL
-time: TEXT ("YYYY-MM-DD HH:MM:SS.SSS");
-key_code: INTEGER;
+time: INTEGER;
+button: TEXT;
 ```
 
 ### Cursor position change
 
 ```SQL
-time: TEXT ("YYYY-MM-DD HH:MM:SS.SSS");
-cursor_position_x: INTEGER;
-cursor_position_y: INTEGER;
+time: INTEGER;
+x: INTEGER;
+y: INTEGER;
 ```
 
 ### Wheel scroll
 
 ```SQL
-time: TEXT ("YYYY-MM-DD HH:MM:SS.SSS");
-scroll_delta: REAL;
+time: INTEGER;
+delta: INTEGER;
 ```
