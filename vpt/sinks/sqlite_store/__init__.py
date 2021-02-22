@@ -27,6 +27,7 @@ class SQLiteStore(SinkBase):
         ''')
         c.execute('''
             CREATE TABLE IF NOT EXISTS keystrokes (
+                type text NOT NULL,
                 scancode integer NOT NULL,
                 modifiers text NOT NULL,
                 timestamp integer NOT NULL
@@ -67,8 +68,8 @@ class SQLiteStore(SinkBase):
         '''Store a keypress with all of its modifiers.'''
         c = self.connection.cursor()
         c.execute('''
-            INSERT INTO keystrokes VALUES (?, ?, ?)
-        ''', (event.scan_code, ','.join(modifiers), int(event.time)))
+            INSERT INTO keystrokes VALUES (?, ?, ?, ?)
+        ''', (event.event_type, event.scan_code, ','.join(modifiers), int(event.time)))
         self.connection.commit()
         c.close()
 
