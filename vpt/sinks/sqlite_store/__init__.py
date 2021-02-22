@@ -27,7 +27,7 @@ class SQLiteStore(SinkBase):
         ''')
         c.execute('''
             CREATE TABLE IF NOT EXISTS keystrokes (
-                keycode integer NOT NULL,
+                scancode integer NOT NULL,
                 modifiers text NOT NULL,
                 timestamp integer NOT NULL
             )
@@ -35,9 +35,9 @@ class SQLiteStore(SinkBase):
         c.execute('''
             CREATE TABLE IF NOT EXISTS mouse_events (
                 type text NOT NULL,
-                x real,
-                y real,
-                delta integer,
+                x integer,
+                y integer,
+                wheel_delta integer,
                 button text,
                 timestamp integer NOT NULL
             )
