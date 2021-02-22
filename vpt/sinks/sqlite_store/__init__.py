@@ -87,6 +87,6 @@ class SQLiteStore(SinkBase):
         else:
             c.execute('''
                 INSERT INTO mouse_events VALUES (?, NULL, NULL, NULL, ?, ?)
-            ''', ('button', f'{event.button}:{event.event_type}'))
+            ''', ('button', f'{event.button}:{event.event_type}', int(event.time)))
         self.connection.commit()
         c.close()
