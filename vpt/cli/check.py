@@ -8,6 +8,7 @@ import mouse
 import sounddevice as sd
 import soundfile as sf
 
+from vpt.processors.gaze_detection import GazeDetection
 from vpt.sinks.audio_to_file_output import AudioToFileOutputProcessor
 from vpt.sinks.keyboard_to_file_output import KeyboardToFileOutputProcessor
 from vpt.sinks.mouse_to_file_output import MouseToFileOutputProcessor
@@ -116,6 +117,9 @@ def check():
     audio_source.start()
     keyboard_source.start()
     mouse_source.start()
+
+    # gaze_detection = GazeDetection(video_source)
+    # gaze_detection.get_data_stream().subscribe(lambda v: print(v))
 
     # Run UI on the MainThread (this is a blocking call)
     video_display.run()

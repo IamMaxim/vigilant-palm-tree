@@ -2,11 +2,14 @@
 import cv2
 import numpy as np
 import tensorflow as tf
+from rx import Observable
+from rx.subject import Subject
 from tensorflow import keras
 import math
-# import debug
 
-data = np.empty(shape=(0, 3))
+# import debug
+from data_structures import VideoFrame
+from nodes import ProcessorBase, SourceBase
 
 
 class FaceDetector:
@@ -145,9 +148,6 @@ class MarkDetector:
 
 
 mark_detector = MarkDetector()
-cap = cv2.VideoCapture(0)
-ret, img = cap.read()
-size = img.shape
 font = cv2.FONT_HERSHEY_SIMPLEX
 # 3D model points.
 model_points = np.array([
@@ -159,22 +159,29 @@ model_points = np.array([
     (150.0, -150.0, -125.0)  # Right mouth corner
 ])
 
-# Camera internals
-focal_length = size[1]
-center = (size[1] / 2, size[0] / 2)
-camera_matrix = np.array(
-    [[focal_length, 0, center[0]],
-     [0, focal_length, center[1]],
-     [0, 0, 1]], dtype="double"
-)
-while True:
-    ret, img = cap.read()
-    if ret == True:
-        faceboxes = mark_detector.extract_cnn_facebox(img)
+
+class GazeDetection(ProcessorBase[np.ndarray]):
+    subj = Subject()
+
+    def __init__(self, video_source: ProcessorBase[VideoFrame]):
+        video_source.get_data_stream().subscribe(self.process_frame)
+
+    def process_frame(self, frame: VideoFrame):
+        size = frame.frame.shape
+        # Camera internals
+        focal_length = size[1]
+        center = (size[1] / 2, size[0] / 2)
+        camera_matrix = np.array(
+            [[focal_length, 0, center[0]],
+             [0, focal_length, center[1]],
+             [0, 0, 1]], dtype="double"
+        )
+
+        faceboxes = mark_detector.extract_cnn_facebox(frame.frame)
 
         # For each facebox found in the picture, extract 128x128 region and pass it to PnP solve method
         for facebox in faceboxes:
-            face_img = img[facebox[1]: facebox[3],
+            face_img = frame.frame[facebox[1]: facebox[3],
                        facebox[0]: facebox[2]]
             face_img = cv2.resize(face_img, (128, 128))
             face_img = cv2.cvtColor(face_img, cv2.COLOR_BGR2RGB)
@@ -205,17 +212,15 @@ while True:
                 rotation_vector[0] += math.pi + math.pi
             rotation_vector[0] -= math.pi
 
-            # Append the current rotation vector to the data
             rot_arr = np.array(rotation_vector).reshape(1, 3)
-            data = np.concatenate((data, rot_arr), axis=0)
 
+            # Append the current rotation vector to the data
+            # data = np.empty(shape=(0, 3))
+
+            # data = np.concatenate((data, rot_arr), axis=0)
             # debug.draw_rotation_values()
 
-        cv2.imshow('img', img)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-    else:
-        break
+            self.subj.on_next(rot_arr)
 
-cv2.destroyAllWindows()
-cap.release()
+    def get_data_stream(self) -> Observable:
+        return self.subj
