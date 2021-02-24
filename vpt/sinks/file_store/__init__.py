@@ -38,7 +38,8 @@ class FileStore(SinkBase):
 
     def store_key_event(self, event: keyboard.KeyboardEvent):
         '''Write the keyboard event to its file'''
-        self.keyboard_file.write(f'{event.event_type} {event.name} {event.scan_code} {event.time}\n')
+        self.keyboard_file.write(
+            f'{event.event_type} {event.name} {event.scan_code} {event.time}\n')
 
     def store_mouse_event(self, event: Union[mouse.ButtonEvent, mouse.MoveEvent, mouse.WheelEvent]):
         '''Write the mouse event to its file'''

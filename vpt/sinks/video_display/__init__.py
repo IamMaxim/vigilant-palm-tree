@@ -19,8 +19,8 @@ class VideoDisplay(SinkBase):
     def __init__(self, video_frame_source: SourceBase[VideoFrame], duration=-1):
         """
         :param video_frame_source: the source of video frames. May be a processor or source node.
-        :param duration: max duration after which the display will automatically close. -1 means the window will never
-        close. Given in seconds.
+        :param duration: max duration after which the display will automatically close.
+            -1 means the window will never close. Given in seconds.
         """
         self.stopped = False
         self.duration = duration

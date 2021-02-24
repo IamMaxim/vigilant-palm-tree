@@ -21,7 +21,9 @@ class DeviceAudioSource(SourceBase):
     def run(self):
         '''Records the audio into a stream.'''
         while not self.stopped:
-            rec = sd.rec(int(self.sample_duration * self.sample_rate), samplerate=self.sample_rate, channels=1)
+            rec = sd.rec(int(self.sample_duration * self.sample_rate),
+                         samplerate=self.sample_rate,
+                         channels=1)
             sd.wait()
             self.subj.on_next(rec)
 

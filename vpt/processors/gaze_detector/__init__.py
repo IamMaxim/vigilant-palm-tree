@@ -92,7 +92,7 @@ class MarkDetector:
 
         if diff == 0:  # Already a square.
             return box
-        elif diff > 0:  # Height > width, a slim box.
+        if diff > 0:   # Height > width, a slim box.
             left_x -= delta
             right_x += delta
             if diff % 2 == 1:
@@ -119,7 +119,7 @@ class MarkDetector:
         """Extract face area from image."""
         _, raw_boxes = self.face_detector.get_faceboxes(
             image=image, threshold=0.5)
-        a = []
+        res = []
         for box in raw_boxes:
             # Move box down.
             # diff_height_width = (box[3] - box[1]) - (box[2] - box[0])
@@ -130,9 +130,9 @@ class MarkDetector:
             facebox = self.get_square_box(box_moved)
 
             if self.box_in_image(facebox, image):
-                a.append(facebox)
+                res.append(facebox)
 
-        return a
+        return res
 
     def detect_marks(self, image_np):
         """Detect marks from image"""
@@ -182,7 +182,8 @@ class GazeDetector(ProcessorBase[np.ndarray]):
 
         faceboxes = mark_detector.extract_cnn_facebox(frame.frame)
 
-        # For each facebox found in the picture, extract 128x128 region and pass it to PnP solve method
+        # For each facebox found in the picture, extract 128x128 region
+        #   and pass it to PnP solve method
         for facebox in faceboxes:
             face_img = frame.frame[facebox[1]: facebox[3],
                        facebox[0]: facebox[2]]
@@ -207,8 +208,9 @@ class GazeDetector(ProcessorBase[np.ndarray]):
 
             # Solve PnP
             dist_coeffs = np.zeros((4, 1))  # Assuming no lens distortion
-            (success, rotation_vector, translation_vector) = cv2.solvePnP(model_points, image_points, camera_matrix,
-                                                                          dist_coeffs, flags=cv2.SOLVEPNP_UPNP)
+            (_success, rotation_vector, _translation_vector) = cv2.solvePnP(
+                    model_points, image_points, camera_matrix,
+                    dist_coeffs, flags=cv2.SOLVEPNP_UPNP)
 
             # Normalize x axis values
             if rotation_vector[0] < 0:

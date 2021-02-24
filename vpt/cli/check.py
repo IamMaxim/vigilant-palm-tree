@@ -111,7 +111,7 @@ def check():
     mouse_source.start()
 
     gaze_detector = GazeDetector(video_source)
-    gaze_detector.get_data_stream().subscribe(lambda v: print(v))
+    gaze_detector.get_data_stream().subscribe(print)
 
     # Run UI on the MainThread (this is a blocking call)
     video_display.run()

@@ -30,7 +30,7 @@ class DeviceVideoSource(SourceBase[VideoFrame]):
         '''Captures frames from the video and sends them to the stream.'''
         video_capture = cv2.VideoCapture(self.device)
         while self.need_to_run:
-            ret, frame = video_capture.read()
+            _ret, frame = video_capture.read()
             self.__subject.on_next(VideoFrame(frame))
 
     def __init__(self, device_id: int = 0):
