@@ -5,7 +5,7 @@ from nodes import ProcessorBase, SinkBase
 
 class MouseToFileOutputProcessor(SinkBase):
     def __init__(self, mouse_source: ProcessorBase):
-        self.file = open('mouse_output.txt', 'w+')
+        self.file = open('vpt-mouse.txt', 'w+')
         mouse_source.get_data_stream().subscribe(self.process_mouse)
 
     def process_mouse(self, event):
@@ -16,4 +16,3 @@ class MouseToFileOutputProcessor(SinkBase):
         elif isinstance(event, mouse.MoveEvent):
             self.file.write('move %s %s %s\n' % (event.x, event.y, event.time))
         self.file.flush()
-

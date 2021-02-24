@@ -1,22 +1,22 @@
 '''A group of functions to make sure the hardware is correctly functioning
     and recognized by the program.'''
-import time
 import json
+import time
 
-import sounddevice as sd
-import soundfile as sf
 import keyboard
 import mouse
+import sounddevice as sd
+import soundfile as sf
 
+from vpt.processors.gaze_detection import GazeDetection
 from vpt.sinks.audio_to_file_output import AudioToFileOutputProcessor
 from vpt.sinks.keyboard_to_file_output import KeyboardToFileOutputProcessor
 from vpt.sinks.mouse_to_file_output import MouseToFileOutputProcessor
 from vpt.sinks.video_display import VideoDisplay
-from vpt.sinks.video_to_file_output import VideoToFileOutputProcessor
+from vpt.sources.device_audio_source import DeviceAudioSource
 from vpt.sources.device_video_source import DeviceVideoSource
 from vpt.sources.keyboard_source import KeyboardSource
 from vpt.sources.mouse_source import MouseSource
-from vpt.sources.device_audio_source import DeviceAudioSource
 
 
 def record_audio(device=None, duration=5, filename='vpt-audio.wav'):
@@ -107,7 +107,7 @@ def check():
     video_display = VideoDisplay(video_source, duration=5)
 
     # Create file output nodes
-    video_to_file = VideoToFileOutputProcessor(video_source)
+    # video_to_file = VideoToFileOutputProcessor(video_source)
     audio_to_file = AudioToFileOutputProcessor(audio_source)
     keyboard_to_file = KeyboardToFileOutputProcessor(keyboard_source)
     mouse_to_file = MouseToFileOutputProcessor(mouse_source)
@@ -117,6 +117,9 @@ def check():
     audio_source.start()
     keyboard_source.start()
     mouse_source.start()
+
+    # gaze_detection = GazeDetection(video_source)
+    # gaze_detection.get_data_stream().subscribe(lambda v: print(v))
 
     # Run UI on the MainThread (this is a blocking call)
     video_display.run()

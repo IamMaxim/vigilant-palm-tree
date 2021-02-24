@@ -1,6 +1,6 @@
 '''Manages obtaining the available input/output sources.'''
-from typing import List
 from textwrap import shorten
+from typing import List
 
 import cv2
 import sounddevice as sd

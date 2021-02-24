@@ -1,7 +1,7 @@
 '''CLI'''
-from typing import Sequence
-from datetime import datetime
 from argparse import ArgumentParser
+from datetime import datetime
+from typing import Sequence
 
 
 def create_parser(audio_default=None):

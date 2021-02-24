@@ -5,3 +5,6 @@ video_output
 audio.wav
 /keyboard_output.txt
 /mouse_output.txt
+/vpt-audio.wav
+/vpt-keyboard.txt
+/vpt-mouse.txt
