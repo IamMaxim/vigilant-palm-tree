@@ -1,3 +1,4 @@
+'''Transforms the gaze estimation to engagement estimation.'''
 import numpy as np
 from rx import Observable
 from rx.subject import Subject
@@ -6,6 +7,7 @@ from vpt.processors.base import ProcessorBase
 
 
 class GazeEngagementEstimator(ProcessorBase[np.ndarray]):
+    '''Transforms the gaze estimation to engagement estimation.'''
     subj = Subject()
 
     def __init__(self, rotation_vector_source: ProcessorBase[np.ndarray]):

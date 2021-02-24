@@ -162,12 +162,14 @@ model_points = np.array([
 
 
 class GazeDetector(ProcessorBase[np.ndarray]):
+    '''Detects if the user is looking at the screen or not'''
     subj = Subject()
 
     def __init__(self, video_source: SourceBase[VideoFrame]):
         video_source.get_data_stream().subscribe(self.process_frame)
 
     def process_frame(self, frame: VideoFrame):
+        '''Processes each incoming frame to detect gaze'''
         size = frame.frame.shape
         # Camera internals
         focal_length = size[1]

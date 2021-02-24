@@ -1,3 +1,4 @@
+'''The SQLite store is responsible for writing streams to an SQLite database.'''
 import sqlite3
 import time
 from typing import Union

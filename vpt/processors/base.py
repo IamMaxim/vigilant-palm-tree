@@ -1,3 +1,4 @@
+'''The base interfaces for the processor nodes.'''
 from typing import TypeVar
 from abc import abstractmethod, ABC
 

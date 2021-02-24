@@ -89,6 +89,7 @@ def record_keyboard(duration=5, filename='vpt-keyboard.json'):
 
 
 def check():
+    '''Runs all of the recorders to check that everything works correctly.'''
     print('Checking the devices for 5s...')
 
     # Create capture nodes

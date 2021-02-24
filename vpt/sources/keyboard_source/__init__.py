@@ -1,3 +1,4 @@
+'''Registers keyboard events to a data stream.'''
 import keyboard
 from rx import Observable
 from rx.subject import Subject
@@ -6,6 +7,7 @@ from vpt.sources.base import SourceBase
 
 
 class KeyboardSource(SourceBase[keyboard.KeyboardEvent]):
+    '''A source node for keyboard events.'''
     subj = Subject()
 
     def start(self):
@@ -15,6 +17,7 @@ class KeyboardSource(SourceBase[keyboard.KeyboardEvent]):
         keyboard.unhook_all()
 
     def callback(self, event: keyboard.KeyboardEvent):
+        '''Sends the event to the stream.'''
         self.subj.on_next(event)
 
     def get_data_stream(self) -> Observable:
