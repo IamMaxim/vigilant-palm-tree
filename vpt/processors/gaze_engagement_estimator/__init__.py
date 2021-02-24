@@ -1,8 +1,8 @@
+import numpy as np
 from rx import Observable
 from rx.subject import Subject
 
-from nodes import ProcessorBase
-import numpy as np
+from vpt.processors.base import ProcessorBase
 
 
 class GazeEngagementEstimator(ProcessorBase[np.ndarray]):

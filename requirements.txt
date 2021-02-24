@@ -7,4 +7,4 @@ SoundFile~=0.10.3.post1
 numpy~=1.19.5
 ffmpeg~=1.4
 tensorflow~=2.3.2
-tensorflow-gpu~=2.3.2
+#tensorflow-gpu~=2.3.2
