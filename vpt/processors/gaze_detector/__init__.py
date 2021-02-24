@@ -10,6 +10,7 @@ from tensorflow import keras
 
 from data_structures import VideoFrame
 from vpt.processors.base import ProcessorBase
+from vpt.sources.base import SourceBase
 
 
 class FaceDetector:
@@ -163,7 +164,7 @@ model_points = np.array([
 class GazeDetector(ProcessorBase[np.ndarray]):
     subj = Subject()
 
-    def __init__(self, video_source: ProcessorBase[VideoFrame]):
+    def __init__(self, video_source: SourceBase[VideoFrame]):
         video_source.get_data_stream().subscribe(self.process_frame)
 
     def process_frame(self, frame: VideoFrame):
