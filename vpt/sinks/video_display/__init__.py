@@ -4,7 +4,8 @@ from time import sleep
 import cv2
 
 from data_structures import VideoFrame
-from nodes import ProcessorBase, SinkBase
+from vpt.sources.base import SourceBase
+from vpt.sinks.base import SinkBase
 
 
 class VideoDisplay(SinkBase):
@@ -13,7 +14,7 @@ class VideoDisplay(SinkBase):
     start_time: float
     duration: float
 
-    def __init__(self, video_frame_source: ProcessorBase[VideoFrame], duration=-1):
+    def __init__(self, video_frame_source: SourceBase[VideoFrame], duration=-1):
         """
         :param video_frame_source: the source of video frames. May be a processor or source node.
         :param duration: max duration after which the display will automatically close. -1 means the window will never

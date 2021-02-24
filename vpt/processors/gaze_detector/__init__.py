@@ -1,15 +1,15 @@
 """Human facial landmark detector based on Convolutional Neural Network."""
+import math
+
 import cv2
 import numpy as np
 import tensorflow as tf
 from rx import Observable
 from rx.subject import Subject
 from tensorflow import keras
-import math
 
-# import debug
 from data_structures import VideoFrame
-from nodes import ProcessorBase, SourceBase
+from vpt.processors.base import ProcessorBase
 
 
 class FaceDetector:
@@ -154,13 +154,13 @@ model_points = np.array([
     (0.0, 0.0, 0.0),  # Nose tip
     (0.0, -330.0, -65.0),  # Chin
     (-225.0, 170.0, -135.0),  # Left eye left corner
-    (225.0, 170.0, -135.0),  # Right eye right corne
+    (225.0, 170.0, -135.0),  # Right eye right corner
     (-150.0, -150.0, -125.0),  # Left Mouth corner
     (150.0, -150.0, -125.0)  # Right mouth corner
 ])
 
 
-class GazeDetection(ProcessorBase[np.ndarray]):
+class GazeDetector(ProcessorBase[np.ndarray]):
     subj = Subject()
 
     def __init__(self, video_source: ProcessorBase[VideoFrame]):
@@ -224,3 +224,9 @@ class GazeDetection(ProcessorBase[np.ndarray]):
 
     def get_data_stream(self) -> Observable:
         return self.subj
+
+    def start(self):
+        raise NotImplementedError("Processor nodes do not support start()")
+
+    def stop(self):
+        raise NotImplementedError("Processor nodes do not support stop()")
