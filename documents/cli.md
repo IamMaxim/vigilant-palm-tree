@@ -10,19 +10,20 @@ To make sure your hardware is correctly functioning and recognized by the progra
 $ vpt check
 ```
 
-This will record the data for 5 seconds and then create 4 files in your current working directory:
+This will record the data for 5 seconds and then create 3 files in your current working directory:
 
 * `vpt-audio.wav`: a sample of audio recorded through your audio source
 
-* `vpt-video.mp4`: a sample of video recorded through your video source
+* `vpt-keyboard.txt`: a list of recorded keyboard actions
 
-* `vpt-keyboard.json`: a list of recorded keyboard actions
+* `vpt-mouse.txt`: a list of mouse actions (moves & clicks)
 
-* `vpt-mouse.json`: a list of mouse movements
+Feel free to use your keyboard and mouse during the 5 seconds of the check to ensure that the data from them is
+correctly recorded.
 
-Feel free to use your keyboard and mouse during the 5 seconds of the check to ensure that the data from them is correctly recorded.
-
-You may pass the `--audio` and `--video` parameters to pick specific devices to be used for recordings. The system defaults will be used if omitted. Additionally, you may use the `--duration` option to customize the recording duration (in seconds).
+You may pass the `--audio` and `--video` parameters to pick specific devices to be used for recordings. The system
+defaults will be used if omitted. Additionally, you may use the `--duration` option to customize the recording
+duration (in seconds).
 
 ## Data collection
 
@@ -54,7 +55,8 @@ Video source 1
 Video source 2
 ```
 
-To select an audio source for recording, use `--audio <NAME>` for specifying the audio source and `--video <NAME>` for specifying the video source:
+To select an audio source for recording, use `--audio <NAME>` for specifying the audio source and `--video <NAME>` for
+specifying the video source:
 
 ```
 $ vpt record --audio AudioSource2 --video "Video source 2"
@@ -68,17 +70,19 @@ Once you have collected some data, you may generate a PDF report with the `repor
 $ vpt report
 ```
 
-If you wish to only analyze a part of the data, you can specify the `--start <TIME>` and `--end <TIME>` with a time point in the format `YYYY.MM.DD HH:MM:SS`:
+If you wish to only analyze a part of the data, you can specify the `--start <TIME>` and `--end <TIME>` with a time
+point in the format `YYYY.MM.DD HH:MM:SS`:
 
 ```
 $ vpt report --start "2021-01-01 00:00:00" --end "2021-01-07 23:59:59"
 ```
 
-Omitting the `--start` will select the all the data up to `--end` and vice versa. 
+Omitting the `--start` will select the all the data up to `--end` and vice versa.
 
 ## Obtaining raw data for analysis
 
-If you wish to get a dataset of keyboard/mouse activity along with the predicted work state engagement levels from audio/video, use the `dump` option:
+If you wish to get a dataset of keyboard/mouse activity along with the predicted work state engagement levels from
+audio/video, use the `dump` option:
 
 ```
 $ vpt dump
@@ -104,7 +108,8 @@ Are you sure (y/N)?
 
 Type `y` and hit `Enter` to confirm deletion.
 
-If you only wish to delete a part of the data, you may constrain the range of deletion with `--start <TIME>` and `--end <TIME>` options with a time point in the format `YYYY.MM.DD HH:MM:SS`:
+If you only wish to delete a part of the data, you may constrain the range of deletion with `--start <TIME>`
+and `--end <TIME>` options with a time point in the format `YYYY.MM.DD HH:MM:SS`:
 
 ```
 $ vpt clear --start "2021-01-01 13:37:00" --end "2021-01-02 13:37:00"

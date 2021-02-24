@@ -1,5 +1,4 @@
 import mouse
-
 from rx import Observable
 from rx.subject import Subject
 

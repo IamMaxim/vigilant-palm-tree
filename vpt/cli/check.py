@@ -1,13 +1,14 @@
 '''A group of functions to make sure the hardware is correctly functioning
     and recognized by the program.'''
-import time
 import json
+import time
 
-import sounddevice as sd
-import soundfile as sf
 import keyboard
 import mouse
+import sounddevice as sd
+import soundfile as sf
 
+from vpt.processors.gaze_detector import GazeDetector
 from vpt.sinks import VideoDisplay, FileStore
 from vpt.sources import DeviceVideoSource, KeyboardSource, MouseSource, DeviceAudioSource
 
@@ -107,6 +108,9 @@ def check():
     audio_source.start()
     keyboard_source.start()
     mouse_source.start()
+
+    gaze_detector = GazeDetector(video_source)
+    gaze_detector.get_data_stream().subscribe(lambda v: print(v))
 
     # Run UI on the MainThread (this is a blocking call)
     video_display.run()
