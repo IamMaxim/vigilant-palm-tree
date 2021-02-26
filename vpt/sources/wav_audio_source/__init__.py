@@ -13,7 +13,8 @@ from scipy.fft import fft
 from vpt.sources.base import SourceBase
 
 
-def freq_decompose(signal, sample_rate):
+def freq_decompose(signal):
+    '''Decompose a signal into frequencies using the FFT.'''
     signal -= np.average(signal)
     fft_norm = fft(signal)
     return abs(fft_norm[:len(fft_norm) // 2]).astype(np.float64)
@@ -54,6 +55,7 @@ class WavAudioSource(SourceBase[np.ndarray]):
                 plt.show()
 
     def plot_chunk(self, chunk):
+        '''Plot a chunk of audio as a waveform and as a spectrum.'''
         mono = chunk.mean(axis=1)
         time = np.arange(len(mono)) / float(self.sample_rate)
 
@@ -63,12 +65,12 @@ class WavAudioSource(SourceBase[np.ndarray]):
         plt.xlabel('Time (s)')
         plt.ylabel('Amplitude')
 
-        amplitudes = freq_decompose(mono, self.sample_rate)
+        amplitudes = freq_decompose(mono)
 
         plt.subplot(2, 1, 2)
         plt.plot(np.arange(len(amplitudes)), amplitudes, 'b')
         plt.xlabel('Freq (Hz)')
-        plt.ylabel(f'Amplitude')
+        plt.ylabel('Amplitude')
         plt.tight_layout()
 
     def stop(self):
