@@ -70,7 +70,9 @@ class SpeechDetector(ProcessorBase[bool]):
 
         return abs(fft_normal[:len(frame) // 2])
 
-    def normalize_frequencies(self, frequencies):
+    @staticmethod
+    def normalize_frequencies(frequencies):
+        '''Normalize an array of frequency amplitudes, scaling them from 0 to 1.'''
         frequencies *= 1 / frequencies.max(axis=0)
         return frequencies
 
