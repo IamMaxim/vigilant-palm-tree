@@ -1,6 +1,7 @@
 '''Gets the audio from the device.'''
 import threading
 
+import numpy as np
 import sounddevice as sd
 from rx import Observable
 from rx.subject import Subject
@@ -8,7 +9,7 @@ from rx.subject import Subject
 from vpt.sources.base import SourceBase
 
 
-class DeviceAudioSource(SourceBase):
+class DeviceAudioSource(SourceBase[np.ndarray]):
     '''A data source for the audio stream from the device.'''
     stopped = False
     sample_duration = 1

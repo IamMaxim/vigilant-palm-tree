@@ -8,3 +8,4 @@ numpy~=1.17.3
 ffmpeg~=1.4
 tensorflow~=2.3.2
 matplotlib~=3.3.4
+scipy~=1.6.1
