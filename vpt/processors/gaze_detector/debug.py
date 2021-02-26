@@ -1,10 +1,11 @@
+'''A visualization for the gaze detector used for debugging.'''
 import matplotlib.pyplot as plt
 import numpy as np
 
 
-# Draw the entire cached rotation data as a plot.
-# Call this from the PnP solve to get real-time data.
 def draw_rotation_values(data: np.ndarray):
+    '''Draw the entire cached rotation data as a plot.
+       Call this from the PnP solve to get real-time data.'''
     # Clear the figure
     plt.clf()
 

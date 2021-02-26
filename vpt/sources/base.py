@@ -1,3 +1,4 @@
+'''The base interfaces for the source nodes.'''
 from typing import TypeVar, Generic
 from abc import ABC, abstractmethod
 
@@ -6,16 +7,17 @@ from rx import Observable
 T = TypeVar('T')
 
 
-# Should be used for capturers
 class SourceBase(Generic[T], ABC):
+    '''Base class for data sources.
+       Should be used for capturers.'''
     @abstractmethod
     def get_data_stream(self) -> Observable:
-        pass
+        '''Returns the stream of data that can be listened to.'''
 
     @abstractmethod
     def start(self):
-        pass
+        '''Starts the data stream.'''
 
     @abstractmethod
     def stop(self):
-        pass
+        '''Stops the data stream.'''

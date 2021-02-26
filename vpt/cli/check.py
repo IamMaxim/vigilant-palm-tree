@@ -89,6 +89,7 @@ def record_keyboard(duration=5, filename='vpt-keyboard.json'):
 
 
 def check():
+    '''Runs all of the recorders to check that everything works correctly.'''
     print('Checking the devices for 5s...')
 
     # Create capture nodes
@@ -110,7 +111,7 @@ def check():
     mouse_source.start()
 
     gaze_detector = GazeDetector(video_source)
-    gaze_detector.get_data_stream().subscribe(lambda v: print(v))
+    gaze_detector.get_data_stream().subscribe(print)
 
     # Run UI on the MainThread (this is a blocking call)
     video_display.run()
