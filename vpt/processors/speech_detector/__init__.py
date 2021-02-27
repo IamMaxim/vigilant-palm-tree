@@ -9,25 +9,34 @@ from vpt.processors.base import ProcessorBase
 
 # The frequency range of human voice in Hz.
 VOICE_RANGE = range(80, 1100 + 1)
-# The threshold which the amplitude needs to overcome to be considered present (in undefined units).
-NOISE_THRESHOLD = .5
-SILENCE_THRESHOLD = .3
 
 
 class SpeechDetector(ProcessorBase[bool]):
     '''Detects speech in an audio stream and outputs a signal stream for that.'''
-    subj = Subject()
+    _subj: Subject
     mean_loudness: np.float64
+    '''The threshold which the amplitude needs to overcome
+       to be considered present (in undefined units).'''
+    noise_threshold: float
+    '''The fraction of the current mean loudness that
+       the signal needs to overcome to not be disregarded as silence.'''
+    silence_threshold: float
     _samples: int
 
-    def __init__(self, audio_source: SourceBase[np.ndarray]):
+    def __init__(self,
+                 audio_source: SourceBase[np.ndarray],
+                 noise_threshold: float = .5,
+                 silence_threshold: float = .3):
         '''Wire up the detector to an arbitrary audio source.'''
         audio_source.get_data_stream().subscribe(self.detect_speech)
         self.mean_loudness = None
         self._samples = 0
+        self._subj = Subject()
+        self.noise_threshold = noise_threshold
+        self.silence_threshold = silence_threshold
 
     def get_data_stream(self):
-        return self.subj
+        return self._subj
 
     def detect_speech(self, frame: np.ndarray):
         '''Detect sound in speech frequencies in a given audio frame.'''
@@ -38,10 +47,10 @@ class SpeechDetector(ProcessorBase[bool]):
         this_loudness = freqs.max(axis=0)
 
         if self.is_silence(this_loudness):
-            self.subj.on_next(False)
+            self._subj.on_next(False)
         else:
             freqs_norm = self.normalize_frequencies(freqs)
-            self.subj.on_next(np.any(freqs_norm[VOICE_RANGE] >= NOISE_THRESHOLD))
+            self._subj.on_next(np.any(freqs_norm[VOICE_RANGE] >= self.noise_threshold))
         self.update_mean(this_loudness)
 
     def update_mean(self, new_loudness):
@@ -58,7 +67,7 @@ class SpeechDetector(ProcessorBase[bool]):
         if self.mean_loudness is None:
             return False
         try:
-            return new_loudness / self.mean_loudness < SILENCE_THRESHOLD
+            return new_loudness / self.mean_loudness < self.silence_threshold
         except ZeroDivisionError:
             return True
 
@@ -73,8 +82,8 @@ class SpeechDetector(ProcessorBase[bool]):
     @staticmethod
     def normalize_frequencies(frequencies):
         '''Normalize an array of frequency amplitudes, scaling them from 0 to 1.'''
-        frequencies *= 1 / frequencies.max(axis=0)
-        return frequencies
+        # Multiplication is used instead of division for performance
+        return frequencies * (1 / frequencies.max(axis=0))
 
     def start(self):
         pass

@@ -12,7 +12,7 @@ from vpt.sources.base import SourceBase
 class DeviceVideoSource(SourceBase[VideoFrame]):
     '''A data source for the video stream from the device.'''
     need_to_run: bool
-    __subject: Subject
+    _subj: Subject
     video_capture: cv2.VideoCapture
     device = 0
 
@@ -31,11 +31,11 @@ class DeviceVideoSource(SourceBase[VideoFrame]):
         video_capture = cv2.VideoCapture(self.device)
         while self.need_to_run:
             _ret, frame = video_capture.read()
-            self.__subject.on_next(VideoFrame(frame))
+            self._subj.on_next(VideoFrame(frame))
 
     def __init__(self, device_id: int = 0):
-        self.__subject = Subject()
+        self._subj = Subject()
         self.device = device_id
 
     def get_data_stream(self) -> Observable:
-        return self.__subject
+        return self._subj

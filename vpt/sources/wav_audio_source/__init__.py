@@ -22,18 +22,19 @@ def freq_decompose(signal):
 
 class WavAudioSource(SourceBase[np.ndarray]):
     '''A data source for the audio stream from the device.'''
-    subj = Subject()
+    _subj: Subject
     filename: str
     sample_rate: int
     debug: bool
 
     def __init__(self, filename, debug=False):
         '''Select the WAV file to read from.'''
+        self._subj = Subject()
         self.filename = filename
         self.debug = debug
 
     def get_data_stream(self) -> Observable:
-        return self.subj
+        return self._subj
 
     def start(self):
         '''Outputs the entire file into the stream in 1-second chunks.'''
@@ -47,7 +48,7 @@ class WavAudioSource(SourceBase[np.ndarray]):
             print(f'Total samples: {data.shape}')
 
         for chunk in np.array_split(data, math.ceil(len(data) / sample_rate)):
-            self.subj.on_next(chunk)
+            self._subj.on_next(chunk)
             if self.debug:
                 sd.play(chunk, self.sample_rate)
                 sd.wait()
