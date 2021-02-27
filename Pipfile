@@ -18,6 +18,7 @@ matplotlib = "*"
 
 [dev-packages]
 python-language-server = {extras = ["all"], version = "*"}
+pylint = "*"
 
 [requires]
 python_version = "3.8"

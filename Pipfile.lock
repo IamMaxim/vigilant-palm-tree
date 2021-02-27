@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "8322ee9556706bf753a1e005e15ee5f64952c6bccbf973c72542f553678a57f1"
+            "sha256": "503889bac9c455e07b512485a3614e3793fbd06ebc514f2d76a78222722e7491"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -806,6 +806,7 @@
                 "sha256:81ce108f6342421169ea039ff1f528208c99d2e5a9c4ca95cfc5291be6dfd982",
                 "sha256:a251b238db462b71d25948f940568bb5b3ae0e37dbaa05e10523f54f83e6cc7e"
             ],
+            "index": "pypi",
             "version": "==2.7.1"
         },
         "python-jsonrpc-server": {
