@@ -5,9 +5,9 @@ that data with that person's keyboard/mouse activity.
 
 ## Installation
 
-Install the requirements using
+Install the dependencies using
 
-    pip install -r requirements.txt 
+    pipenv install
 
 _Note: depending on your platform, you might need to use `pip3` instead of `pip`._
 
@@ -25,7 +25,7 @@ On Arch Linux, use:
 
 ## Usage
 
-Run `python -m vpt <subcommand>`. For detailed usage information, run `python vpt -h`.
+Run `pipenv run python -m vpt <subcommand>`. For detailed usage information, run `pipenv run python vpt -h`.
 _Note: depending on your platform, you might need to use `python3` instead of `python`._
 
 If you are using Linux, you might need to run some commands as root (or with `sudo`)
