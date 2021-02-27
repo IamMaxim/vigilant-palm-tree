@@ -22,3 +22,6 @@ pylint = "*"
 
 [requires]
 python_version = "3.8"
+
+[scripts]
+vpt = "python -m vpt"
