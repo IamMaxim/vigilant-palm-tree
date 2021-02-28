@@ -5,6 +5,7 @@ import time
 
 import keyboard
 import mouse
+import numpy as np
 import sounddevice as sd
 import soundfile as sf
 
@@ -88,9 +89,9 @@ def record_keyboard(duration=5, filename='vpt-keyboard.json'):
         json.dump(events, file, indent=4)
 
 
-def check():
-    '''Runs all of the recorders to check that everything works correctly.'''
-    print('Checking the devices for 5s...')
+def check(duration=5):
+    """Runs all of the recorders to check that everything works correctly."""
+    print(f'Checking the devices for {duration}s...')
 
     # Create capture nodes
     video_source = DeviceVideoSource()
@@ -99,7 +100,7 @@ def check():
     mouse_source = MouseSource()
 
     # Create GUI nodes
-    video_display = VideoDisplay(video_source, duration=5)
+    video_display = VideoDisplay(video_source, duration=duration)
 
     # Create file output nodes
     FileStore('.', mouse_source, keyboard_source, audio_source)
@@ -111,7 +112,7 @@ def check():
     mouse_source.start()
 
     gaze_detector = GazeDetector(video_source)
-    gaze_detector.get_data_stream().subscribe(print)
+    gaze_detector.get_data_stream().subscribe(lambda v: print(f"Engaged: {np.linalg.norm(v) < 0.5}"))
 
     # Run UI on the MainThread (this is a blocking call)
     video_display.run()
