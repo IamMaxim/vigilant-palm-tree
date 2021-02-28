@@ -11,15 +11,9 @@ class mclass:
     N = 100
 
     def __init__(self, window):
-        fig = Figure(figsize=(10, 1))
 
-        fig, axs = plt.subplots(2, sharex=True, sharey=True,)
-        axs[0].set_title("Mouse & Keyboard")
-        axs[0].axis('off')
-        axs[1].set_title("Engagement estimation")
-        axs[1].axis('off')
-
-        self.axs = axs
+        fig, self.axs = plt.subplots(
+            2, sharex=True, sharey=True, figsize=(6, 2))
         self.canvas = FigureCanvasTkAgg(fig, master=window)
         self.canvas.get_tk_widget().pack()
         self.canvas.draw()
@@ -29,14 +23,17 @@ class mclass:
         self.points = np.random.randint(0, 2, (self.N, 2))
         self.add_point()
 
-    def draw(self, i):
-        self.axs[i].cla()
-        self.axs[i].plot(self.points[-self.N:, i])
+    def draw(self, i, title):
+        axs = self.axs[i]
+        axs.cla()
+        axs.set_title(title, fontsize=10)
+        axs.axis('off')
+        axs.plot(self.points[-self.N:, i])
 
     def add_point(self):
         self.points = np.append(self.points, [np.random.randint(0, 2, 2)], 0)
-        self.draw(0)
-        self.draw(1)
+        self.draw(0, "Mouse & Keyboard input")
+        self.draw(1, "Engagement estimation")
         self.canvas.draw()
 
 
