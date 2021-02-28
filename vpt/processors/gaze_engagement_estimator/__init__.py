@@ -10,9 +10,16 @@ class GazeEngagementEstimator(ProcessorBase[np.ndarray]):
     '''Transforms the gaze estimation to engagement estimation.'''
     subj = Subject()
 
-    def __init__(self, rotation_vector_source: ProcessorBase[np.ndarray]):
+    def __init__(self, rotation_vector_source: ProcessorBase[np.ndarray], threshold=0.5):
+        self.threshold = threshold
         rotation_vector_source.get_data_stream().subscribe(lambda v:
-                                                             self.subj.on_next(np.linalg.norm(v)))
+                                                           self.subj.on_next(np.linalg.norm(v) < self.threshold))
+
+    def start(self):
+        pass
+
+    def stop(self):
+        pass
 
     def get_data_stream(self) -> Observable:
         return self.subj
