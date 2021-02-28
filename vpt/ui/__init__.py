@@ -8,12 +8,12 @@ matplotlib.use('TkAgg')
 
 
 class mclass:
-    N = 100
+    N = 50
 
     def __init__(self, window):
 
         fig, self.axs = plt.subplots(
-            2, sharex=True, sharey=True, figsize=(6, 2))
+            2, sharex=True, sharey=True, figsize=(5, 5))
         self.canvas = FigureCanvasTkAgg(fig, master=window)
         self.canvas.get_tk_widget().pack()
         self.canvas.draw()
@@ -28,7 +28,7 @@ class mclass:
         axs.cla()
         axs.set_title(title, fontsize=10)
         axs.axis('off')
-        axs.plot(self.points[-self.N:, i])
+        axs.bar(list(range(self.N)), self.points[-self.N:, i], 1)
 
     def add_point(self):
         self.points = np.append(self.points, [np.random.randint(0, 2, 2)], 0)
