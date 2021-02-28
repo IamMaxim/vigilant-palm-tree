@@ -163,7 +163,7 @@ model_points = np.array([
 
 class GazeDetector(ProcessorBase[np.ndarray]):
     '''Detects if the user is looking at the screen or not'''
-    __subj: Subject
+    _subj: Subject
 
     def __init__(self, video_source: SourceBase[VideoFrame]):
         video_source.get_data_stream().subscribe(self.process_frame)

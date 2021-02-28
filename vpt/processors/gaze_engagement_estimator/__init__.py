@@ -11,10 +11,10 @@ class GazeEngagementEstimator(ProcessorBase[np.ndarray]):
     _subj: Subject
 
     def __init__(self, rotation_vector_source: ProcessorBase[np.ndarray]):
+        self._subj = Subject()
         rotation_vector_source.get_data_stream().subscribe(
             lambda v: self._subj.on_next(np.linalg.norm(v))
         )
-        self._subj = Subject()
 
     def get_data_stream(self) -> Observable:
         return self._subj
