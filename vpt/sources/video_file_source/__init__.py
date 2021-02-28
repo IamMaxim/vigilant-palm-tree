@@ -5,14 +5,20 @@ from rx import Observable
 from rx.subject import Subject
 
 from data_structures import VideoFrame
-from nodes import SourceBase
+from vpt.sources.base import SourceBase
 
 
-class DeviceVideoSource(SourceBase[VideoFrame]):
+class VideoFileSource(SourceBase[VideoFrame]):
     need_to_run: bool
     __subject: Subject
-    video_capture: cv2.VideoCapture
-    video_filename: str
+
+    def __init__(self, filename: str):
+        self.__subject = Subject()
+        self.lock = threading.Lock()
+
+        self.video_capture = cv2.VideoCapture(filename)
+        if not self.video_capture.isOpened():
+            raise ValueError('could not open video stream for file {}'.format(filename))
 
     def start(self):
         self.need_to_run = True
@@ -22,15 +28,19 @@ class DeviceVideoSource(SourceBase[VideoFrame]):
     def stop(self):
         self.need_to_run = False
 
-    def capture_loop(self):
-        video_capture = cv2.VideoCapture(self.video_filename)
-        while self.need_to_run:
-            ret, frame = video_capture.read()
-            self.__subject.on_next(VideoFrame(frame))
+    def wait(self):
+        self.lock.acquire()
+        self.lock.release()
 
-    def __init__(self, filename: str):
-        self.__subject = Subject()
-        self.video_filename = filename
+    def capture_loop(self):
+        with self.lock:
+            while self.need_to_run:
+                ret, frame = self.video_capture.read()
+
+                if not ret:
+                    break
+
+                self.__subject.on_next(VideoFrame(frame))
 
     def get_data_stream(self) -> Observable:
         return self.__subject
