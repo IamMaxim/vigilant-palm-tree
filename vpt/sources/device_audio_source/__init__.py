@@ -1,5 +1,6 @@
 '''Gets the audio from the device.'''
 import threading
+from typing import Union
 
 import sounddevice as sd
 from rx import Observable
@@ -14,6 +15,11 @@ class DeviceAudioSource(SourceBase):
     sample_duration = 1
     sample_rate = 44100
     subj = Subject()
+
+    def __init__(self, device: Union[str, int] = None):
+        super().__init__()
+        if device is not None:
+            sd.default.device = device
 
     def get_data_stream(self) -> Observable:
         return self.subj
