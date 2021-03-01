@@ -22,10 +22,13 @@ class GraphView(SinkBase):
         engagement_source.get_data_stream().subscribe(self.display_engagement)
 
     def display_engagement(self, code: int):
-        pass
+        '''Register engagement level change'''
+        self.engagement = code < 2
 
     def display_key_event(self, event: keyboard.KeyboardEvent):
-        pass
+        '''Register keyboard event'''
+        self.keyboard = True
 
     def display_mouse_event(self, event: Union[mouse.MoveEvent, mouse.WheelEvent, mouse.ButtonEvent]):
-        pass
+        '''Register mouse event'''
+        self.mouse = True

@@ -11,7 +11,6 @@ class mclass:
     N = 50
 
     def __init__(self, window):
-
         fig, self.axs = plt.subplots(
             2, sharex=True, sharey=True, figsize=(5, 5))
         self.canvas = FigureCanvasTkAgg(fig, master=window)
