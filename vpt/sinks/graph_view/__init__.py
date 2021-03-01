@@ -1,9 +1,7 @@
 '''Display graphs & app controls.'''
 
-import time
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from vpt.sinks.base import SinkBase
 from vpt.sources.base import SourceBase
@@ -15,15 +13,13 @@ class GraphView(SinkBase):
     keyboard = False
     mouse = False
 
-    def __init__(self, window, mouse_source: SourceBase,
+    def __init__(self, mouse_source: SourceBase,
                  keyboard_source: SourceBase,
                  engagement_source: SourceBase, interval=0.1, history=5):
         '''Add periodically redrawing canvas to TkWindow'''
 
-        fig, axs = plt.subplots(
-            2, sharex=True, sharey=True, figsize=(5, 5))
-        canvas = FigureCanvasTkAgg(fig, master=window)
-        canvas.get_tk_widget().pack()
+        _fig, axs = plt.subplots(
+            1, 2, sharex=True, sharey=True, figsize=(5, 5))
 
         self.engagement = False
         self.keyboard = False
@@ -33,9 +29,9 @@ class GraphView(SinkBase):
         keyboard_source.get_data_stream().subscribe(self.display_key_event)
         engagement_source.get_data_stream().subscribe(self.display_engagement)
 
-        self.listen(interval, history, axs, canvas)
+        self.listen(interval, history, axs)
 
-    def listen(self, interval, history, axs, canvas):
+    def listen(self, interval, history, axs):
         '''Start plotting loop'''
         length = history / interval
         points = np.zeros((length, 2))
@@ -52,15 +48,16 @@ class GraphView(SinkBase):
                 self.mouse = False
 
             self.plot(points[:, 0], axs[0], "Mouse & Keyboard input")
-            self.plot(points[:, 1], axs[1], "Engagement estimation")
+            self.plot(points[:, 1], axs[1], "Engagement")
 
-            canvas.draw()
-            time.sleep(interval)
+            plt.show()
+            plt.pause(interval)
 
     def plot(self, points, axs, title):
         '''Plot points on the axis'''
         axs.cla()
-        axs.set_title(title, fontsize=10)
+        axs.set_title(
+            title + ("(present)" if points[-1] else "(absent)"), fontsize=10)
         axs.axis('off')
         axs.bar(list(len(points)), points, 1)
 
