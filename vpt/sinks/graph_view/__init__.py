@@ -10,35 +10,32 @@ from vpt.sources.base import SourceBase
 
 class GraphView(SinkBase):
     '''A sink node to display the graphs.'''
-    engagement = False
-    keyboard = False
-    mouse = False
 
     def __init__(self, mouse_source: SourceBase,
                  keyboard_source: SourceBase,
-                 engagement_source: SourceBase, interval=0.1, history=5):
+                 engagement_source: SourceBase):
         '''Add periodically redrawing canvas to TkWindow'''
-
-        _fig, axs = plt.subplots(
-            1, 2, sharex=True, sharey=True, figsize=(5, 5))
 
         self.engagement = False
         self.keyboard = False
         self.mouse = False
 
-        mouse_source.get_data_stream().subscribe(self.display_mouse_event)
-        keyboard_source.get_data_stream().subscribe(self.display_key_event)
-        engagement_source.get_data_stream().subscribe(self.display_engagement)
+        mouse_source.get_data_stream().subscribe(self.catch_mouse_event)
+        keyboard_source.get_data_stream().subscribe(self.catch_key_event)
+        # engagement_source.get_data_stream().subscribe(self.catch_engagement)
 
-        self.listen(interval, history, axs)
 
-    def listen(self, interval, history, axs):
+    def run(self,  interval=0.1, history=5):
         '''Start plotting loop'''
-        length = history / interval
-        points = np.zeros((length, 2))
+        _fig, axs = plt.subplots(
+            1, 2, sharex=True, sharey=True, figsize=(5, 5))
+
+        n = int(history / interval)
+        xs = list(range(n))
+        points = np.random.randint(0, 2, (n, 2))
 
         while 1:
-            points = np.append(points, [[0, 0]], 0)[-length:]
+            points = np.append(points, [[0, 0]], 0)[-n:]
 
             if self.engagement:
                 points[-1, 0] = 1
@@ -48,31 +45,33 @@ class GraphView(SinkBase):
                 self.keyboard = False
                 self.mouse = False
 
-            self.plot(points[:, 0], axs[0], "Mouse & Keyboard input")
-            self.plot(points[:, 1], axs[1], "Engagement")
+            self.plot(xs, points[:, 0], axs[0], "Mouse & Keyboard input")
+            self.plot(xs, points[:, 1], axs[1], "Engagement")
 
             Button(plt.axes([0.9, 0.0, 0.1, 0.075]),
                    'Stop recording').on_clicked(lambda: print("Stop recording"))
 
-            plt.show()
+            plt.ioff()
             plt.pause(interval)
 
-    def plot(self, points, axs, title):
+    def plot(self, xs, ys, axs, title):
         '''Plot points on the axis'''
         axs.cla()
         axs.set_title(
-            title + ("(present)" if points[-1] else "(absent)"), fontsize=10)
+            title + (" (present)" if ys[-1] else " (absent)"), fontsize=10)
         axs.axis('off')
-        axs.bar(list(len(points)), points, 1)
+        axs.bar(xs, ys, 1)
 
-    def display_engagement(self, code: int):
+    def catch_engagement(self, code: int):
         '''Register appropriate engagement level change'''
         self.engagement = code < 2
 
-    def display_key_event(self):
+    def catch_key_event(self):
         '''Register keyboard event'''
+        input("key event")
         self.keyboard = True
 
-    def display_mouse_event(self):
+    def catch_mouse_event(self):
         '''Register mouse event'''
+        input("mouse event")
         self.mouse = True
