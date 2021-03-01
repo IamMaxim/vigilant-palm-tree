@@ -22,6 +22,7 @@ def create_parser(audio_default=None):
                               help='The name of the audio source, as reported by the '
                                    '"sources audio" subcommand')
     check_parser.add_argument('--video',
+                              default=0,
                               help='The name of the audio source, as reported by the '
                                    '"sources video" subcommand')
     check_parser.add_argument('--duration',
@@ -35,6 +36,7 @@ def create_parser(audio_default=None):
                                help='The name of the audio source, as reported by the '
                                     '"sources audio" subcommand')
     record_parser.add_argument('--video',
+                               default=0,
                                help='The name of the audio source, as reported by the '
                                     '"sources video" subcommand')
 

@@ -5,15 +5,17 @@ import sounddevice as sd
 from vpt.processors.gaze_detector import GazeDetector
 from vpt.sinks import VideoDisplay, FileStore
 from vpt.sources import DeviceVideoSource, KeyboardSource, MouseSource, DeviceAudioSource
+from vpt.cli.cli import parse_args
 
 
 def check():
     '''Runs all of the recorders to check that everything works correctly.'''
+    args = parse_args(audio_default=sd.query_devices(kind='input')['name'])
     print('Checking the devices for 5s...')
 
     # Create capture nodes
-    video_source = DeviceVideoSource()
-    audio_source = DeviceAudioSource()
+    video_source = DeviceVideoSource(int(args['video']))
+    audio_source = DeviceAudioSource(args['audio'])
     keyboard_source = KeyboardSource()
     mouse_source = MouseSource()
 
