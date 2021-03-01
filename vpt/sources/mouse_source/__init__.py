@@ -8,14 +8,17 @@ from vpt.sources.base import SourceBase
 
 class MouseSource(SourceBase):
     '''A source node for mouse events.'''
-    subj = Subject()
+    _subj: Subject
+
+    def __init__(self):
+        self._subj = Subject()
 
     def get_data_stream(self) -> Observable:
-        return self.subj
+        return self._subj
 
     def callback(self, event):
         '''Sends the event to the stream.'''
-        self.subj.on_next(event)
+        self._subj.on_next(event)
 
     def start(self):
         mouse.hook(self.callback)

@@ -8,7 +8,10 @@ from vpt.sources.base import SourceBase
 
 class KeyboardSource(SourceBase[keyboard.KeyboardEvent]):
     '''A source node for keyboard events.'''
-    subj = Subject()
+    _subj: Subject
+
+    def __init__(self):
+        self._subj = Subject()
 
     def start(self):
         keyboard.hook(self.callback)
@@ -18,7 +21,7 @@ class KeyboardSource(SourceBase[keyboard.KeyboardEvent]):
 
     def callback(self, event: keyboard.KeyboardEvent):
         '''Sends the event to the stream.'''
-        self.subj.on_next(event)
+        self._subj.on_next(event)
 
     def get_data_stream(self) -> Observable:
-        return self.subj
+        return self._subj

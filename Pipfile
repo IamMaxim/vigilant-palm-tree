@@ -1,0 +1,27 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+sounddevice = "*"
+scipy = "*"
+numpy = "*"
+rx = "*"
+keyboard = "*"
+mouse = "*"
+opencv-python = "*"
+ffmpeg = "*"
+soundfile = "*"
+tensorflow = ">=2.3.1, <2.4.0"
+matplotlib = "*"
+
+[dev-packages]
+python-language-server = {extras = ["all"], version = "*"}
+pylint = "*"
+
+[requires]
+python_version = "3.8"
+
+[scripts]
+vpt = "python -m vpt"

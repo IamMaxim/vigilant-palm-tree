@@ -163,10 +163,11 @@ model_points = np.array([
 
 class GazeDetector(ProcessorBase[np.ndarray]):
     '''Detects if the user is looking at the screen or not'''
-    subj = Subject()
+    _subj: Subject
 
     def __init__(self, video_source: SourceBase[VideoFrame]):
         video_source.get_data_stream().subscribe(self.process_frame)
+        self._subj = Subject()
 
     def process_frame(self, frame: VideoFrame):
         '''Processes each incoming frame to detect gaze'''
@@ -186,7 +187,7 @@ class GazeDetector(ProcessorBase[np.ndarray]):
         #   and pass it to PnP solve method
         for facebox in faceboxes:
             face_img = frame.frame[facebox[1]: facebox[3],
-                       facebox[0]: facebox[2]]
+                                   facebox[0]: facebox[2]]
             face_img = cv2.resize(face_img, (128, 128))
             face_img = cv2.cvtColor(face_img, cv2.COLOR_BGR2RGB)
 
@@ -225,10 +226,10 @@ class GazeDetector(ProcessorBase[np.ndarray]):
             # data = np.concatenate((data, rot_arr), axis=0)
             # debug.draw_rotation_values()
 
-            self.subj.on_next(rot_arr)
+            self._subj.on_next(rot_arr)
 
     def get_data_stream(self) -> Observable:
-        return self.subj
+        return self._subj
 
     def start(self):
         raise NotImplementedError("Processor nodes do not support start()")
