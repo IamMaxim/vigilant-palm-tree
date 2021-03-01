@@ -2,6 +2,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.widgets import Button
 
 from vpt.sinks.base import SinkBase
 from vpt.sources.base import SourceBase
@@ -49,6 +50,9 @@ class GraphView(SinkBase):
 
             self.plot(points[:, 0], axs[0], "Mouse & Keyboard input")
             self.plot(points[:, 1], axs[1], "Engagement")
+
+            Button(plt.axes([0.9, 0.0, 0.1, 0.075]),
+                   'Stop recording').on_clicked(lambda: print("Stop recording"))
 
             plt.show()
             plt.pause(interval)
