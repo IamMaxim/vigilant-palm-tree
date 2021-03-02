@@ -5,10 +5,10 @@ import time
 
 import keyboard
 import mouse
-import numpy as np
 import sounddevice as sd
 import soundfile as sf
 
+from vpt.processors import MouseCompressor, EngagementEstimator, SpeechDetector
 from vpt.processors.gaze_detector import GazeDetector
 from vpt.sinks import VideoDisplay, FileStore
 from vpt.sources import DeviceVideoSource, KeyboardSource, MouseSource, DeviceAudioSource
@@ -99,11 +99,16 @@ def check(duration=5):
     keyboard_source = KeyboardSource()
     mouse_source = MouseSource()
 
+    speech_detector = SpeechDetector(audio_source)
+
+    mouse_throttler = MouseCompressor(mouse_source)
+    mouse_throttler.get_data_stream().subscribe(lambda x: print(x))
+
     # Create GUI nodes
     video_display = VideoDisplay(video_source, duration=duration)
 
     # Create file output nodes
-    FileStore('.', mouse_source, keyboard_source, audio_source)
+    FileStore('.', mouse_throttler, keyboard_source, audio_source)
 
     # Start capture on all types of sources
     video_source.start()
@@ -112,7 +117,11 @@ def check(duration=5):
     mouse_source.start()
 
     gaze_detector = GazeDetector(video_source)
-    gaze_detector.get_data_stream().subscribe(lambda v: print(f"Engaged: {np.linalg.norm(v) < 0.5}"))
+    # gaze_detector.get_data_stream().subscribe(lambda v: print(f"Engaged: {np.linalg.norm(v) < 0.5}"))
+
+    engagement_estimator = EngagementEstimator(gaze_detector, speech_detector, keyboard_source, mouse_throttler)
+
+    engagement_estimator.get_data_stream().subscribe(print)
 
     # Run UI on the MainThread (this is a blocking call)
     video_display.run()
