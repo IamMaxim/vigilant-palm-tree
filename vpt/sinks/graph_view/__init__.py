@@ -24,10 +24,10 @@ class GraphView(SinkBase):
         keyboard_source.get_data_stream().subscribe(self.catch_key_event)
         # engagement_source.get_data_stream().subscribe(self.catch_engagement)
 
-    def run(self,  interval=0.1, history=5):
+    def run(self,  interval=0.5, history=5):
         '''Start plotting loop'''
         fig, axs = plt.subplots(
-            1, 2, sharex=True, sharey=True, figsize=(5, 3))
+            1, 2, sharex=True, sharey=True, figsize=(5, 2))
         fig.canvas.toolbar.pack_forget()
 
         n = int(history / interval)
@@ -51,15 +51,14 @@ class GraphView(SinkBase):
 
             plt.xticks([0, n/2, n], [str(history)+'s',
                                      str(history / 2)+'s', str(0)+'s'])
-            plt.yticks([0, 1], ['absent', 'present'])
+            plt.yticks([0.1, 1.1], ['absent', 'present'])
             plt.pause(interval)
 
     def plot(self, points, axs, title):
         '''Plot points on the axis'''
         axs.cla()
         axs.set_title(title, fontsize=10)
-        # axs.axis('off')
-        axs.plot(points)
+        axs.bar(range(points.shape[0]), points+0.1)
 
     def catch_engagement(self, code):
         '''Register appropriate engagement level change'''
