@@ -26,12 +26,13 @@ class GraphView(SinkBase):
 
     def run(self,  interval=0.1, history=5):
         '''Start plotting loop'''
-        _fig, axs = plt.subplots(
-            1, 2, sharex=True, sharey=True, figsize=(5, 5))
+        fig, axs = plt.subplots(
+            1, 2, sharex=True, sharey=True, figsize=(5, 3))
+        fig.canvas.toolbar.pack_forget()
 
         n = int(history / interval)
-        xs = list(range(n))
         points = np.random.randint(0, 2, (n, 2))
+        # points = np.random.zeros((n, 2))
 
         while 1:
             points = np.append(points, np.random.randint(0, 2, (1, 2)), 0)[-n:]
@@ -45,33 +46,31 @@ class GraphView(SinkBase):
                 self.keyboard = False
                 self.mouse = False
 
-            self.plot(xs, points[:, 0], axs[0], "Mouse & Keyboard input")
-            self.plot(xs, points[:, 1], axs[1], "Engagement")
+            self.plot(points[:, 0], axs[0], "Input")
+            self.plot(points[:, 1], axs[1], "Engagement")
 
-            Button(plt.axes([0.9, 0.0, 0.1, 0.075]),
-                   'Stop recording').on_clicked(lambda: print("Stop recording"))
-
-            plt.ioff()
+            plt.xticks([0, n/2, n], [str(history)+'s',
+                                     str(history / 2)+'s', str(0)+'s'])
+            plt.yticks([0, 1], ['absent', 'present'])
             plt.pause(interval)
 
-    def plot(self, xs, ys, axs, title):
+    def plot(self, points, axs, title):
         '''Plot points on the axis'''
         axs.cla()
-        axs.set_title(
-            title + (" (present)" if ys[-1] else " (absent)"), fontsize=10)
-        axs.axis('off')
-        axs.bar(xs, ys, 1)
+        axs.set_title(title, fontsize=10)
+        # axs.axis('off')
+        axs.plot(points)
 
-    def catch_engagement(self, code: int):
+    def catch_engagement(self, code):
         '''Register appropriate engagement level change'''
         self.engagement = code < 2
 
-    def catch_key_event(self):
+    def catch_key_event(self, event):
         '''Register keyboard event'''
         input("key event")
         self.keyboard = True
 
-    def catch_mouse_event(self):
+    def catch_mouse_event(self, event):
         '''Register mouse event'''
         input("mouse event")
         self.mouse = True
