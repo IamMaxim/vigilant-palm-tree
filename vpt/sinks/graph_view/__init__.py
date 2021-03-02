@@ -24,7 +24,6 @@ class GraphView(SinkBase):
         keyboard_source.get_data_stream().subscribe(self.catch_key_event)
         # engagement_source.get_data_stream().subscribe(self.catch_engagement)
 
-
     def run(self,  interval=0.1, history=5):
         '''Start plotting loop'''
         _fig, axs = plt.subplots(
@@ -35,7 +34,8 @@ class GraphView(SinkBase):
         points = np.random.randint(0, 2, (n, 2))
 
         while 1:
-            points = np.append(points, [[0, 0]], 0)[-n:]
+            points = np.append(points, np.random.randint(0, 2, (1, 2)), 0)[-n:]
+            # points = np.append(points, [[0, 0]], 0)[-n:]
 
             if self.engagement:
                 points[-1, 0] = 1
