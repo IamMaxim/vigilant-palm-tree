@@ -4,8 +4,8 @@ import numpy as np
 from rx.subject import Subject
 from scipy import fft
 
-from vpt.processors.base import ProcessorBase
 from vpt.sources.base import SourceBase
+from vpt.processors.base import ProcessorBase
 
 # The frequency range of human voice in Hz.
 VOICE_RANGE = range(80, 1100 + 1)
