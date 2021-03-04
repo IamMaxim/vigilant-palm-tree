@@ -1,5 +1,5 @@
-'''A group of functions to make sure the hardware is correctly functioning
-    and recognized by the program.'''
+"""A group of functions to make sure the hardware is correctly functioning
+    and recognized by the program."""
 import json
 import time
 
@@ -123,10 +123,14 @@ def check(duration=5):
 
     engagement_estimator.get_data_stream().subscribe(lambda x: print('Engaged:', x > 0.5))
 
-    # graph_display = GraphView(mouse_source, keyboard_source, engagement_estimator)
+    graph_display = GraphView(mouse_source, keyboard_source, engagement_estimator)
 
     # Run UI on the MainThread (this is a blocking call)
-    video_display.run()
+    # video_display.run()
+
+    while True:
+        graph_display.update()
+        time.sleep(0.01)
 
     # Stop capture on all types of sources
     video_source.stop()
