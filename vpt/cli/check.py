@@ -10,7 +10,7 @@ import soundfile as sf
 
 from vpt.processors import MouseCompressor, EngagementEstimator, SpeechDetector
 from vpt.processors.gaze_detector import GazeDetector
-from vpt.sinks import VideoDisplay, FileStore
+from vpt.sinks import VideoDisplay, FileStore, GraphView
 from vpt.sources import DeviceVideoSource, KeyboardSource, MouseSource, DeviceAudioSource
 
 
@@ -121,7 +121,9 @@ def check(duration=5):
 
     engagement_estimator = EngagementEstimator(gaze_detector, speech_detector, keyboard_source, mouse_throttler)
 
-    engagement_estimator.get_data_stream().subscribe(print)
+    engagement_estimator.get_data_stream().subscribe(lambda x: print('Engaged:', x > 0.5))
+
+    # graph_display = GraphView(mouse_source, keyboard_source, engagement_estimator)
 
     # Run UI on the MainThread (this is a blocking call)
     video_display.run()

@@ -12,6 +12,6 @@ if args['cmd'] == 'sources':
     elif args['source'] == 'video':
         print_video_inputs()
 elif args['cmd'] == 'check':
-    check(20)
+    check(5)
 elif args['cmd'] == 'record':
     record()
