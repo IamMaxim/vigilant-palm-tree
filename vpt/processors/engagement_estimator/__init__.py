@@ -30,12 +30,16 @@ class EngagementEstimator(ProcessorBase):
         # Initial events for keyboard and mouse are required as video/audio is a continuous stream of data, but keyboard
         # or mouse events may not be generated for a long time initially. Until each of input observables have at least
         # one object, the final outputting object is not emitted.
+        initial_head_rotation = np.array([-100, -100, -100])
+        initial_voice_present = False
         initial_keyboard_event = keyboard.KeyboardEvent(keyboard.KEY_UP, 0)
         initial_mouse_event = mouse.ButtonEvent(event_type=mouse.UP, button=0, time=time.time())
 
         # Observable with all data channels merged into one stream
-        obs = head_rotation_vector.get_data_stream().pipe(operators.combine_latest(
-            voice_present.get_data_stream(),
+        obs = head_rotation_vector.get_data_stream() \
+            .pipe(operators.start_with(initial_head_rotation)) \
+            .pipe(operators.combine_latest(
+            voice_present.get_data_stream().pipe(operators.start_with(initial_voice_present)),
             keyboard_source.get_data_stream().pipe(operators.start_with(initial_keyboard_event)),
             mouse_source.get_data_stream().pipe(operators.start_with(initial_mouse_event))
         ))
