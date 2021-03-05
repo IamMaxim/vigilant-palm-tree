@@ -5,6 +5,8 @@ import keyboard
 import matplotlib
 import mouse
 
+from data_structures import VideoFrame
+
 matplotlib.use("Qt5Agg")
 import matplotlib.pyplot as plt
 import numpy as np
@@ -18,7 +20,9 @@ from vpt.sources.base import SourceBase
 class GraphView(SinkBase):
     """A sink node to display the graphs."""
 
-    def __init__(self, mouse_source: SourceBase,
+    def __init__(self,
+                 video_source: SourceBase[VideoFrame],
+                 mouse_source: SourceBase,
                  keyboard_source: SourceBase,
                  engagement_source: SourceBase):
         self.last_keyboard_time = 0
@@ -28,7 +32,7 @@ class GraphView(SinkBase):
 
         self.points = np.empty((0, 2))
 
-        fig, self.axs = plt.subplots(1, 2, figsize=(5, 2))
+        fig, self.axs = plt.subplots(2, 2, figsize=(5, 2))
 
         initial_keyboard_event = keyboard.KeyboardEvent(keyboard.KEY_UP, 0)
         initial_mouse_event = mouse.ButtonEvent(event_type=mouse.UP, button=0, time=time.time())
@@ -36,6 +40,7 @@ class GraphView(SinkBase):
         mouse_source.get_data_stream() \
             .pipe(operators.start_with(initial_mouse_event)) \
             .pipe(operators.combine_latest(
+            video_source.get_data_stream().pipe(operators.start_with(None)),
             keyboard_source.get_data_stream().pipe(operators.start_with(initial_keyboard_event)),
             engagement_source.get_data_stream()
         )).subscribe(self.update_data)
@@ -45,7 +50,7 @@ class GraphView(SinkBase):
 
     def update(self):
         try:
-            mouse, keyboard, engagement = self.data
+            mouse, frame, keyboard, engagement = self.data
 
             kb_event = self.last_keyboard_time != keyboard.time
             ms_event = self.last_mouse_time != mouse.time
@@ -77,8 +82,11 @@ class GraphView(SinkBase):
             #     self.mouse = False
 
             print('plotting')
-            self.plot(self.points[:, 0], self.axs[0], "Input (mouse/keyboard)")
-            self.plot(self.points[:, 1], self.axs[1], "Engagement")
+            if frame is not None:
+                plt.subplot(2, 2, 1)
+                plt.imshow(frame.frame)
+            self.plot(self.points[:, 0], self.axs[1][0], "Input (mouse/keyboard)")
+            self.plot(self.points[:, 1], self.axs[1][1], "Engagement")
             print('plotted')
 
             # plt.xticks([0, len(self.points) / 2, len(self.points)], [str(self.history) + 's',
@@ -86,7 +94,7 @@ class GraphView(SinkBase):
             # plt.yticks([0.1, 1.1], ['absent', 'present'])
 
             plt.ion()
-            plt.pause(0.001)
+            plt.pause(0.016)
         except AttributeError:
             # No data yet
             pass
