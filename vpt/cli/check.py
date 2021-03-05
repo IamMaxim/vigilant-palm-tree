@@ -10,6 +10,7 @@ import soundfile as sf
 
 from vpt.processors import MouseCompressor, EngagementEstimator, SpeechDetector
 from vpt.processors.gaze_detector import GazeDetector
+from vpt.processors.video_engagement_estimator import VideoEngagementEstimator
 from vpt.sinks import VideoDisplay, FileStore, GraphView
 from vpt.sources import DeviceVideoSource, KeyboardSource, MouseSource, DeviceAudioSource
 
@@ -113,8 +114,9 @@ def check(duration=5):
     mouse_source.start()
 
     gaze_detector = GazeDetector(video_source)
+    video_estimator = VideoEngagementEstimator(gaze_detector)
 
-    engagement_estimator = EngagementEstimator(gaze_detector, speech_detector, keyboard_source, mouse_throttler)
+    engagement_estimator = EngagementEstimator(video_estimator, speech_detector)
 
     graph_display = GraphView(video_source, mouse_source, keyboard_source, engagement_estimator)
 

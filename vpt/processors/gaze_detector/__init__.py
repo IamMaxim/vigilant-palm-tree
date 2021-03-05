@@ -162,7 +162,7 @@ model_points = np.array([
 
 
 class GazeDetector(ProcessorBase[np.ndarray]):
-    '''Detects if the user is looking at the screen or not'''
+    """Detects if the user is looking at the screen or not"""
     _subj: Subject
 
     def __init__(self, video_source: SourceBase[VideoFrame]):
@@ -170,7 +170,7 @@ class GazeDetector(ProcessorBase[np.ndarray]):
         self._subj = Subject()
 
     def process_frame(self, frame: VideoFrame):
-        '''Processes each incoming frame to detect gaze'''
+        """Processes each incoming frame to detect gaze"""
         size = frame.frame.shape
         # Camera internals
         focal_length = size[1]
@@ -182,6 +182,9 @@ class GazeDetector(ProcessorBase[np.ndarray]):
         )
 
         faceboxes = mark_detector.extract_cnn_facebox(frame.frame)
+
+        if len(faceboxes) == 0:
+            self._subj.on_next(None)
 
         # For each facebox found in the picture, extract 128x128 region
         #   and pass it to PnP solve method

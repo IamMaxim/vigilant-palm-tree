@@ -7,7 +7,7 @@ import matplotlib
 import mouse
 from matplotlib.widgets import Button
 
-from data_structures import VideoFrame
+from data_structures import VideoFrame, Engagement
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -16,7 +16,8 @@ from rx import operators
 from vpt.sinks.base import SinkBase
 from vpt.sources.base import SourceBase
 
-matplotlib.use("Qt5Agg")
+
+# matplotlib.use("Qt5Agg")
 
 
 class GraphView(SinkBase):
@@ -34,7 +35,7 @@ class GraphView(SinkBase):
 
         self.points = np.empty((0, 2))
 
-        fig, self.axs = plt.subplots(2, 2, figsize=(5, 2))
+        fig, self.axs = plt.subplots(2, 2, figsize=(10, 8))
 
         initial_keyboard_event = keyboard.KeyboardEvent(keyboard.KEY_UP, 0)
         initial_mouse_event = mouse.ButtonEvent(event_type=mouse.UP, button=0, time=time.time())
@@ -69,7 +70,9 @@ class GraphView(SinkBase):
             if ms_event:
                 self.last_mouse_time = mouse.time
 
-            self.points = np.concatenate((self.points, np.array([kb_event or ms_event, engagement]).reshape(1, 2)),
+            is_engaged = engagement == Engagement.ENGAGEMENT or engagement == Engagement.CONFERENCING
+
+            self.points = np.concatenate((self.points, np.array([kb_event or ms_event, is_engaged]).reshape(1, 2)),
                                          axis=0)
 
             # Truncate the data to self.max_points latest values
@@ -90,7 +93,7 @@ class GraphView(SinkBase):
 
             plt.ion()
             # plt.show()
-            plt.pause(0.001)
+            plt.pause(0.016)
         except AttributeError:
             # No data yet
             pass
