@@ -1,9 +1,11 @@
 """Display graphs & app controls."""
 import time
 
+import cv2
 import keyboard
 import matplotlib
 import mouse
+from matplotlib.widgets import Button
 
 from data_structures import VideoFrame
 import matplotlib.pyplot as plt
@@ -48,6 +50,12 @@ class GraphView(SinkBase):
     def update_data(self, data):
         self.data = data
 
+    # def start_recording_callback(self):
+    #     print('Started recording')
+    #
+    # def stop_recording_callback(self):
+    #     print('Stopped recording')
+
     def update(self):
         try:
             mouse, frame, keyboard, engagement = self.data
@@ -68,16 +76,21 @@ class GraphView(SinkBase):
             if self.points.shape[0] > self.max_points:
                 self.points = self.points[self.points.shape[0] - self.max_points: self.points.shape[0], :]
 
-            print('plotting')
             if frame is not None:
                 plt.subplot(2, 2, 1)
-                plt.imshow(frame.frame)
+                plt.imshow(cv2.cvtColor(frame.frame, cv2.COLOR_BGR2RGB))
+
+            # start_recording = Button(self.axs[0][1], 'Start rec')
+            # start_recording.on_clicked(self.start_recording_callback)
+            # stop_recording = Button(self.axs[0][1], 'Stop rec')
+            # stop_recording.on_clicked(self.stop_recording_callback)
+
             self.plot(self.points[:, 0], self.axs[1][0], "Input (mouse/keyboard)")
             self.plot(self.points[:, 1], self.axs[1][1], "Engagement")
-            print('plotted')
 
             plt.ion()
-            plt.pause(0.016)
+            # plt.show()
+            plt.pause(0.001)
         except AttributeError:
             # No data yet
             pass

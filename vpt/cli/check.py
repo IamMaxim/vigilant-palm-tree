@@ -102,10 +102,6 @@ def check(duration=5):
     speech_detector = SpeechDetector(audio_source)
 
     mouse_throttler = MouseCompressor(mouse_source)
-    mouse_throttler.get_data_stream().subscribe(lambda x: print(x))
-
-    # Create GUI nodes
-    video_display = VideoDisplay(video_source, duration=duration)
 
     # Create file output nodes
     FileStore('.', mouse_throttler, keyboard_source, audio_source)
@@ -117,16 +113,10 @@ def check(duration=5):
     mouse_source.start()
 
     gaze_detector = GazeDetector(video_source)
-    # gaze_detector.get_data_stream().subscribe(lambda v: print(f"Engaged: {np.linalg.norm(v) < 0.5}"))
 
     engagement_estimator = EngagementEstimator(gaze_detector, speech_detector, keyboard_source, mouse_throttler)
 
-    engagement_estimator.get_data_stream().subscribe(lambda x: print('Engaged:', x > 0.5))
-
     graph_display = GraphView(video_source, mouse_source, keyboard_source, engagement_estimator)
-
-    # Run UI on the MainThread (this is a blocking call)
-    # video_display.run()
 
     while True:
         graph_display.update()

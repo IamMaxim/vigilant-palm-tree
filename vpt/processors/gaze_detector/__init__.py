@@ -92,7 +92,7 @@ class MarkDetector:
 
         if diff == 0:  # Already a square.
             return box
-        if diff > 0:   # Height > width, a slim box.
+        if diff > 0:  # Height > width, a slim box.
             left_x -= delta
             right_x += delta
             if diff % 2 == 1:
@@ -187,7 +187,7 @@ class GazeDetector(ProcessorBase[np.ndarray]):
         #   and pass it to PnP solve method
         for facebox in faceboxes:
             face_img = frame.frame[facebox[1]: facebox[3],
-                                   facebox[0]: facebox[2]]
+                       facebox[0]: facebox[2]]
             face_img = cv2.resize(face_img, (128, 128))
             face_img = cv2.cvtColor(face_img, cv2.COLOR_BGR2RGB)
 
@@ -210,8 +210,8 @@ class GazeDetector(ProcessorBase[np.ndarray]):
             # Solve PnP
             dist_coeffs = np.zeros((4, 1))  # Assuming no lens distortion
             (_success, rotation_vector, _translation_vector) = cv2.solvePnP(
-                    model_points, image_points, camera_matrix,
-                    dist_coeffs, flags=cv2.SOLVEPNP_UPNP)
+                model_points, image_points, camera_matrix,
+                dist_coeffs, flags=cv2.SOLVEPNP_UPNP)
 
             # Normalize x axis values
             if rotation_vector[0] < 0:
