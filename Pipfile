@@ -26,5 +26,5 @@ python_version = "3.8"
 
 [scripts]
 vpt = "python -m vpt"
-bundle-win = "pyinstaller .\vpt\__main__.py --name vpt --distpath .\dist --add-data 'models;models'"
+bundle-win = "pyinstaller ./vpt/__main__.py --name vpt --distpath ./dist --add-data 'models;models'"
 bundle-unix = "pyinstaller ./vpt/__main__.py --name vpt --distpath ./dist --add-data \"models:models\""
