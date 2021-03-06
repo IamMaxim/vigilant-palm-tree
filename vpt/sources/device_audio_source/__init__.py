@@ -33,9 +33,18 @@ class DeviceAudioSource(SourceBase[np.ndarray]):
         while not self.stopped:
             rec = sd.rec(int(self.sample_duration * self.sample_rate),
                          samplerate=self.sample_rate,
-                         channels=1)
-            sd.wait()
+                         channels=2,
+                         blocking=True)
+
+            rec = self.trim_corruption_lol(rec)
             self._subj.on_next(rec)
+
+    def trim_corruption_lol(self, chunk):
+        eps = 1e-4
+        for sample_idx in range(len(chunk)):
+            if np.any(chunk[sample_idx] > eps):
+                break
+        return chunk[int(sample_idx * 1.1):, :]
 
     def start(self):
         self.stopped = False
