@@ -1,61 +1,46 @@
 import time
 
-import numpy as np
-
-from vpt.sources.base import SourceBase
-from vpt.processors import EngagementEstimator, GazeDetector, engagement_estimator
-from vpt.sinks import VideoDisplay, FileStore, GraphView
+from vpt.processors import EngagementEstimator, GazeDetector, SpeechDetector, MouseCompressor
+from vpt.processors.video_engagement_estimator import VideoEngagementEstimator
+from vpt.sinks import GraphView, SQLiteStore
 from vpt.sources import DeviceVideoSource, KeyboardSource, MouseSource, DeviceAudioSource
-
-from rx import create
-
-
-class Dummy(SourceBase[float]):
-    def __init__(self):
-        self.running = True
-
-        def something(observer, scheduler):
-            while self.running:
-                observer.on_next(np.random.randint(0, 2))
-                time.sleep(0.1)
-            observer.on_completed()
-
-        self.subj = create(something)
-
-    def get_data_stream(self):
-        '''Returns the stream of data that can be listened to.'''
-        return self.subj
-
-    def start(self):
-        '''Starts the data stream.'''
-        self.running = True
-
-    def stop(self):
-        '''Stops the data stream.'''
-        self.running = False
 
 
 def record():
-    '''Runs all of the recorders to check that everything works correctly.'''
+    """Runs all of the recorders to check that everything works correctly."""
     print('Recording...')
 
     # Create capture nodes
-    engagement_source = Dummy()
+    video_source = DeviceVideoSource()
+    audio_source = DeviceAudioSource()
     keyboard_source = KeyboardSource()
-    mouse_source = MouseSource()
+    __mouse_source = MouseSource()
 
-    graph_display = GraphView(mouse_source, keyboard_source, engagement_source)
+    gaze_detector = GazeDetector(video_source)
+    video_estimator = VideoEngagementEstimator(gaze_detector)
+
+    speech_detector = SpeechDetector(audio_source)
+
+    mouse_throttler = MouseCompressor(__mouse_source)
+
+    engagement_estimator = EngagementEstimator(video_estimator, speech_detector)
+
+    store = SQLiteStore(f'session-{int(time.time())}.db', mouse_throttler, keyboard_source, engagement_estimator)
+    graph_display = GraphView(video_source, mouse_throttler, keyboard_source, engagement_estimator)
 
     # Start capture on all types of sources
-    engagement_source.start()
+    video_source.start()
+    audio_source.start()
     keyboard_source.start()
-    mouse_source.start()
+    __mouse_source.start()
 
-    graph_display.run()
+    while True:
+        graph_display.update()
 
     # Stop capture on all types of sources
-    engagement_source.stop()
+    video_source.stop()
+    audio_source.stop()
     keyboard_source.stop()
-    mouse_source.stop()
+    __mouse_source.stop()
 
     print('Done')

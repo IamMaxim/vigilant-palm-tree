@@ -17,8 +17,10 @@ class SQLiteStore(SinkBase):
 
     def __init__(self, db_path: str, mouse_source: SourceBase,
                  keyboard_source: SourceBase, engagement_source: SourceBase):
-        '''Create a database or open an existing one.'''
+        """Create a database or open an existing one."""
         self.connection = sqlite3.connect(db_path)
+
+        # Create tables
         cur = self.connection.cursor()
         cur.execute('''
             CREATE TABLE IF NOT EXISTS engagement (
