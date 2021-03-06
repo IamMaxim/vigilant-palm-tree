@@ -12,7 +12,7 @@ def create_parser(audio_default=None):
                                         "to predict a person's state of work engagement and "
                                         "correlate that data with that person's keyboard/mouse "
                                         "activity")
-    subparsers = parser.add_subparsers(dest='cmd', required=True)
+    subparsers = parser.add_subparsers(dest='cmd')
 
     check_parser = subparsers.add_parser('check',
                                          description='Make sure your hardware is correctly '
