@@ -1,5 +1,6 @@
 '''Gets the audio from the device.'''
 import threading
+from typing import Union
 
 import numpy as np
 import sounddevice as sd
@@ -18,6 +19,11 @@ class DeviceAudioSource(SourceBase[np.ndarray]):
 
     def __init__(self):
         self._subj = Subject()
+
+    def __init__(self, device: Union[str, int] = None):
+        super().__init__()
+        if device is not None:
+            sd.default.device = device
 
     def get_data_stream(self) -> Observable:
         return self._subj
