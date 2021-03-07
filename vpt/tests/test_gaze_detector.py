@@ -1,9 +1,9 @@
 import sys
-# Test supposed to run as python -m unittest path/to/file.py
-# from the root of repository
 # If you know better way than using this sys.path thingy, tell me
+#
 # This is needed so that the vpt module would be recognized when
 # running this file with `$ python path/to/test.py`
+# from the root of the repository
 sys.path.append('.')
 
 import unittest
