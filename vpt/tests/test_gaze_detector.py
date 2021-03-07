@@ -2,6 +2,8 @@ import sys
 # Test supposed to run as python -m unittest path/to/file.py
 # from the root of repository
 # If you know better way than using this sys.path thingy, tell me
+# This is needed so that the vpt module would be recognized when
+# running this file with `$ python path/to/test.py`
 sys.path.append('.')
 
 import unittest
@@ -33,7 +35,8 @@ class TestGazeDetector(unittest.TestCase):
         video_source.wait()
 
         percentage = 100.0 * np.count_nonzero(stat) / len(stat)
-        print('{}\t{}%'.format(self.filename, percentage))
+        print('\n{}\t{}%\t'.format(self.filename, percentage), end='')
+        sys.stdout.flush()
 
         if self.want:
             self.assertGreater(percentage, 75, 'expected gaze to be detected most of the time')
