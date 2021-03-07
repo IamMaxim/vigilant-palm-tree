@@ -14,7 +14,6 @@ from vpt.processors.gaze_detector import GazeDetector
 from vpt.processors.gaze_engagement_estimator import GazeEngagementEstimator
 from vpt.sinks.video_display import VideoDisplay
 
-print(sys.path)
 
 class TestGazeDetector(unittest.TestCase):
     filename: str
