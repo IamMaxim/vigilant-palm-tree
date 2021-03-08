@@ -24,7 +24,7 @@ class GraphView(SinkBase):
     def __init__(self,
                  mouse_source: SourceBase,
                  keyboard_source: SourceBase,
-                 engagement_source: SourceBase, history=5, interval=.5):
+                 engagement_source: SourceBase, history=5, interval=1):
 
         self.points_count = int(history / interval)
         self.app, self.qapp = self.init_window(interval)
@@ -66,6 +66,7 @@ class GraphView(SinkBase):
     def update_data(self, data):
         '''Update event records'''
         self.data = data
+        # print("update data", data)
 
     # def start_recording_callback(self):
     #     print('Started recording')
@@ -75,31 +76,33 @@ class GraphView(SinkBase):
 
     def narrow_data(self):
         '''Get 2 points 0/1 from data'''
-        if not self.data:
-            return [0, 0]
-        mouse, keyboard, engagement = self.data
+        point = [0, 0]
+        if self.data:
+            mouse, keyboard, engagement = self.data
 
-        kb_event = self.last_keyboard_time != keyboard.time
-        ms_event = self.last_mouse_time != mouse.time
+            kb_event = self.last_keyboard_time != keyboard.time
+            ms_event = self.last_mouse_time != mouse.time
 
-        if kb_event:
-            self.last_keyboard_time = keyboard.time
-        if ms_event:
-            self.last_mouse_time = mouse.time
-        is_engaged = engagement in (
-            Engagement.ENGAGEMENT, Engagement.CONFERENCING)
+            if kb_event:
+                self.last_keyboard_time = keyboard.time
+            if ms_event:
+                self.last_mouse_time = mouse.time
+            is_engaged = engagement in (
+                Engagement.ENGAGEMENT, Engagement.CONFERENCING)
 
-        return [kb_event or ms_event, is_engaged]
+            point = [kb_event or ms_event, is_engaged]
+
+        # print('data point', point)
+        return point
 
     def update(self):
         '''Apply events and redraw'''
         try:
-            # point = self.narrow_data()
-            point = np.random.randint(0, 2, 2)
-            # print(point)
+            point = self.narrow_data()
+            # point = np.random.randint(0, 2, 2)
             self.points = np.append(self.points, [point], 0)
-            self.points = self.poits[-self.points_count:]
-            self.app.plot(self.points[:, 0], self.points[:, 1])
+            self.points = self.points[-self.points_count:]
+            self.app.plot(self.points)
 
             # start_recording = Button(self.axs[0][1], 'Start rec')
             # start_recording.on_clicked(self.start_recording_callback)
@@ -112,13 +115,14 @@ class GraphView(SinkBase):
 
         except AttributeError:
             # No data yet
+            print("error in update")
             pass
 
 
 class Window(QtWidgets.QMainWindow):
     '''Graph frontend window'''
 
-    def __init__(self, points_count):
+    def __init__(self, n):
         super().__init__()
         self._main = QtWidgets.QWidget()
         self.setCentralWidget(self._main)
@@ -135,12 +139,15 @@ class Window(QtWidgets.QMainWindow):
         self.axs_inp.set_title("Input(keyboard/mouse)", fontsize=10)
         self.axs_eng.set_title("Engagement", fontsize=10)
 
-        self.line_inp, *_ = self.axs_inp.plot(range(points_count))
-        self.line_eng, *_ = self.axs_eng.plot(range(points_count))
+        self.n = n
+        self.rn = range(n)
 
-    def plot(self, inp_ys, eng_ys):
+        self.line_inp, *_ = self.axs_inp.plot(self.rn, [0] * self.n)
+        self.line_eng, *_ = self.axs_eng.plot(self.rn, [0] * self.n)
+
+    def plot(self, ys):
         '''Update points'''
-        print("plotting", inp_ys)
-        self.line_inp.set_data(inp_ys)
-        self.line_eng.set_data(eng_ys)
+        # print("plotting", ys)
+        self.line_inp.set_data(self.rn, ys[:, 0])
+        self.line_eng.set_data(self.rn, ys[:, 1])
         self.canvas.draw()
