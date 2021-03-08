@@ -11,31 +11,36 @@ from vpt.sources.base import SourceBase
 
 class DeviceVideoSource(SourceBase[VideoFrame]):
     '''A data source for the video stream from the device.'''
-    need_to_run: bool
+    stopped: bool
     _subj: Subject
     video_capture: cv2.VideoCapture
     device = 0
 
     def start(self):
         '''Starts the video recording stream in a separate thread.'''
-        self.need_to_run = True
-        thread = threading.Thread(target=self.capture_loop)
-        thread.start()
+        if not self.stopped:
+            return
+
+        self.stopped = False
+        threading.Thread(target=self.capture_loop).start()
 
     def stop(self):
         '''Stops recording video.'''
-        self.need_to_run = False
+        self.stopped = True
 
     def capture_loop(self):
         '''Captures frames from the video and sends them to the stream.'''
         video_capture = cv2.VideoCapture(self.device)
-        while self.need_to_run:
+        while not self.stopped:
             _ret, frame = video_capture.read()
             self._subj.on_next(VideoFrame(frame))
 
     def __init__(self, device_id: int = 0):
         self._subj = Subject()
         self.device = device_id
+        self.stopped = True
 
-    def get_data_stream(self) -> Observable:
+    @property
+    def output(self) -> Observable:
+        '''The getter for the video frames observable.'''
         return self._subj

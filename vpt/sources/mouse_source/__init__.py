@@ -9,11 +9,15 @@ from vpt.sources.base import SourceBase
 class MouseSource(SourceBase):
     '''A source node for mouse events.'''
     _subj: Subject
+    stopped: bool
 
     def __init__(self):
         self._subj = Subject()
+        self.stopped = True
 
-    def get_data_stream(self) -> Observable:
+    @property
+    def output(self) -> Observable:
+        '''The getter for the mouse events observable.'''
         return self._subj
 
     def callback(self, event):
@@ -21,7 +25,11 @@ class MouseSource(SourceBase):
         self._subj.on_next(event)
 
     def start(self):
+        if not self.stopped:
+            return
+        self.stopped = False
         mouse.hook(self.callback)
 
     def stop(self):
+        self.stopped = True
         mouse.unhook_all()

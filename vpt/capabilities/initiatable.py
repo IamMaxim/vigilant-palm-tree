@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 class Initiatable(ABC):
     '''Base class for nodes that can be started and stopped.
        Should be used for sources and processors.'''
+    stopped: bool
 
     @abstractmethod
     def start(self):

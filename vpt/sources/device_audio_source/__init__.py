@@ -18,11 +18,14 @@ class DeviceAudioSource(SourceBase[np.ndarray]):
     _subj: Subject
 
     def __init__(self, device: Union[str, int] = None):
+        self.stopped = True
         self._subj = Subject()
         if device is not None:
             sd.default.device = device
 
-    def get_data_stream(self) -> Observable:
+    @property
+    def output(self) -> Observable:
+        '''The getter for the audio chunks observable.'''
         return self._subj
 
     def run(self):
@@ -33,11 +36,11 @@ class DeviceAudioSource(SourceBase[np.ndarray]):
                          channels=2,
                          blocking=True)
 
-            rec = self.trim_corruption_lol(rec)
+            rec = self.trim_corruption(rec)
             self._subj.on_next(rec)
 
     @staticmethod
-    def trim_corruption_lol(chunk):
+    def trim_corruption(chunk):
         '''Trim the flat signal that comes in the beginning of the waveform
            recorded with `sounddevice`.'''
         eps = 1e-4
@@ -48,8 +51,13 @@ class DeviceAudioSource(SourceBase[np.ndarray]):
         return chunk[int(idx * 1.1):, :]
 
     def start(self):
+        '''Start sending out audio frames.'''
+        if not self.stopped:
+            return
+
         self.stopped = False
         threading.Thread(target=self.run).start()
 
     def stop(self):
-        pass
+        '''Stop the data generating thread.'''
+        self.stopped = True
