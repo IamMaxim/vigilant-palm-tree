@@ -1,6 +1,14 @@
+# Virtual environments
 venv
+.venv
+
+# Cache
 __pycache__
+
+# IDEs
 .idea
+
+# Test output
 video_output
 audio.wav
 /keyboard_output.txt
@@ -8,3 +16,8 @@ audio.wav
 /vpt-audio.wav
 /vpt-keyboard.txt
 /vpt-mouse.txt
+
+# PyInstaller
+*.spec
+build
+dist
