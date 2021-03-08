@@ -130,7 +130,7 @@ class SQLiteStore(SinkBase):
                 ''', ('move', event.x, event.y, int(event.time)))
             elif isinstance(event, mouse.WheelEvent):
                 cur.execute('''
-                    INSERT INTO mouse_events VALUES (?, NULL, NULL, ?, NULL ?)
+                    INSERT INTO mouse_events VALUES (?, NULL, NULL, ?, NULL, ?)
                 ''', ('wheel', event.delta, int(event.time)))
             else:
                 cur.execute('''
