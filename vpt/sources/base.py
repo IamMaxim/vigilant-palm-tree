@@ -2,11 +2,11 @@
 from typing import TypeVar
 from abc import ABC
 
-from ..capabilities import OutputCapable, Initiatable
+from ..capabilities import OutputCapable
 
 T = TypeVar('T')
 
 
-class SourceBase(OutputCapable[T], Initiatable, ABC):
+class SourceBase(OutputCapable[T], ABC):
     '''Base class for data sources.
        Should be used for capturers.'''
