@@ -1,11 +1,8 @@
 '''Base interfaces for sink nodes.'''
 from abc import ABC
-from typing import TypeVar, Generic
+
+from ..capabilities import InputCapable
 
 
-T = TypeVar('T')
-
-
-# Should be used for GUI, writing to datastore, etc.
-class SinkBase(Generic[T], ABC):
+class SinkBase(InputCapable, ABC):
     '''Base class for data sinks.'''
