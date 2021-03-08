@@ -1,6 +1,7 @@
 '''Gets the audio from the device.'''
 
 import math
+import threading
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -30,14 +31,24 @@ class WavAudioSource(SourceBase[np.ndarray]):
     def __init__(self, filename, debug=False):
         '''Select the WAV file to read from.'''
         self._subj = Subject()
+        self.stopped = True
         self.filename = filename
         self.debug = debug
 
-    def get_data_stream(self) -> Observable:
+    @property
+    def output(self) -> Observable:
+        '''The getter for the audio chunks observable.'''
         return self._subj
 
     def start(self):
         '''Outputs the entire file into the stream in 1-second chunks.'''
+        if not self.stopped:
+            return
+        self.stopped = False
+        threading.Thread(target=self.read_input_file).start()
+
+    def read_input_file(self):
+        '''The thread's routine to read a file and output it into the observable.'''
         data, sample_rate = sf.read(self.filename)
         if data.ndim == 1:
             data = data.reshape(len(data), 1)
@@ -48,12 +59,16 @@ class WavAudioSource(SourceBase[np.ndarray]):
             print(f'Total samples: {data.shape}')
 
         for chunk in np.array_split(data, math.ceil(len(data) / sample_rate)):
+            if self.stopped:
+                return
+
             self._subj.on_next(chunk)
             if self.debug:
                 sd.play(chunk, self.sample_rate)
                 sd.wait()
                 self.plot_chunk(chunk)
                 plt.show()
+        self.stopped = True
 
     def plot_chunk(self, chunk):
         '''Plot a chunk of audio as a waveform and as a spectrum.'''
@@ -75,4 +90,5 @@ class WavAudioSource(SourceBase[np.ndarray]):
         plt.tight_layout()
 
     def stop(self):
-        pass
+        '''Stops the thread from outputting any more chunks, unless it's done.'''
+        self.stopped = True

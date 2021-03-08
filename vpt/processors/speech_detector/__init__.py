@@ -1,6 +1,7 @@
 '''Processes an audio stream to detect speech.'''
 
 import numpy as np
+from rx import Observable
 from rx.subject import Subject
 from scipy import fft
 
@@ -28,14 +29,18 @@ class SpeechDetector(ProcessorBase[bool]):
                  noise_threshold: float = .5,
                  silence_threshold: float = .3):
         '''Wire up the detector to an arbitrary audio source.'''
+        self._subj = Subject()
+        self.stopped = True
+        self.sources = [audio_source]
         audio_source.get_data_stream().subscribe(self.detect_speech)
         self.mean_loudness = None
         self._samples = 0
-        self._subj = Subject()
         self.noise_threshold = noise_threshold
         self.silence_threshold = silence_threshold
 
-    def get_data_stream(self):
+    @property
+    def output(self) -> Observable:
+        '''The getter for the speech codes observable.'''
         return self._subj
 
     def detect_speech(self, frame: np.ndarray):
@@ -84,9 +89,3 @@ class SpeechDetector(ProcessorBase[bool]):
         '''Normalize an array of frequency amplitudes, scaling them from 0 to 1.'''
         # Multiplication is used instead of division for performance
         return frequencies * (1 / frequencies.max(axis=0))
-
-    def start(self):
-        pass
-
-    def stop(self):
-        pass

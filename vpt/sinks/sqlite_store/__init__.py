@@ -31,6 +31,8 @@ class SQLiteStore(SinkBase):
     def __init__(self, db_path: str, mouse_source: SourceBase,
                  keyboard_source: SourceBase, engagement_source: SourceBase):
         """Create a database or open an existing one."""
+        self.stopped = True
+        self.sources = [mouse_source, keyboard_source, engagement_source]
         self.connection = sqlite3.connect(db_path)
 
         self.engagement_queue = Queue()
@@ -66,9 +68,9 @@ class SQLiteStore(SinkBase):
         self.connection.commit()
         cur.close()
 
-        mouse_source.get_data_stream().subscribe(self.save_mouse)
-        keyboard_source.get_data_stream().subscribe(self.save_keyboard)
-        engagement_source.get_data_stream().subscribe(self.save_engagement)
+        mouse_source.output.subscribe(self.store_mouse_event)
+        keyboard_source.output.subscribe(self.store_key_event)
+        engagement_source.output.subscribe(self.store_engagement)
 
     def __del__(self):
         """Clean up resources."""

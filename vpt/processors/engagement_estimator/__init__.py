@@ -45,11 +45,6 @@ class EngagementEstimator(ProcessorBase):
         else:
             raise Exception('Invalid engagement state machine state detected')
 
-    def get_data_stream(self) -> Observable:
+    def output(self) -> Observable:
         return self.subj
 
-    def start(self):
-        pass
-
-    def stop(self):
-        pass
