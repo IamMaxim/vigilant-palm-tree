@@ -27,7 +27,8 @@ class GraphView(SinkBase):
                  engagement_source: SourceBase, history=5, interval=1):
 
         self.points_count = int(history / interval)
-        self.app, self.qapp = self.init_window(history, interval)
+        self.app, self.qapp, self.record_button = self.init_window(
+            history, interval)
 
         self.last_keyboard_time = 0
         self.last_mouse_time = 0
@@ -46,6 +47,9 @@ class GraphView(SinkBase):
                 engagement_source.get_data_stream()
             )).subscribe(self.update_data)
 
+        self.recording = False
+        self.toggle_recording()
+
     def init_window(self, history, interval):
         '''Create QT Window'''
         qapp = QtWidgets.QApplication.instance()
@@ -53,6 +57,11 @@ class GraphView(SinkBase):
             qapp = QtWidgets.QApplication(sys.argv)
 
         app = Window(self.points_count, history)
+
+        record_button = QtWidgets.QPushButton("Paused")
+        record_button.clicked.connect(self.toggle_recording)
+        app.layout.addWidget(record_button)
+
         app.show()
         app.activateWindow()
         app.raise_()
@@ -61,7 +70,13 @@ class GraphView(SinkBase):
         self._timer.add_callback(self.update)
         self._timer.start()
 
-        return app, qapp
+        return app, qapp, record_button
+
+    def toggle_recording(self):
+        '''Change button text'''
+        self.recording = not self.recording
+        self.record_button.setText(
+            'Recoding' if self.recording else 'Paused')
 
     def update_data(self, data):
         '''Update event records'''
@@ -97,6 +112,8 @@ class GraphView(SinkBase):
 
     def update(self):
         '''Apply events and redraw'''
+        if not self.recording:
+            return
         try:
             point = self.narrow_data()
             # point = np.random.randint(0, 2, 2)
@@ -126,15 +143,13 @@ class Window(QtWidgets.QMainWindow):
         super().__init__()
         self._main = QtWidgets.QWidget()
         self.setCentralWidget(self._main)
-        layout = QtWidgets.QVBoxLayout(self._main)
-        push = QtWidgets.QPushButton("push me")
-        layout.addWidget(push)
+        self.layout = QtWidgets.QVBoxLayout(self._main)
 
         self.fig, [self.axs_inp, self.axs_eng] = plt.subplots(
             1, 2, sharex=True, sharey=True, figsize=(5, 2))
 
         self.canvas = FigureCanvas(self.fig)
-        layout.addWidget(self.canvas)
+        self.layout.addWidget(self.canvas)
 
         self.axs_inp.set_title("Input (keyboard/mouse)", fontsize=10)
         self.set_axis(self.axs_inp, n, history)
