@@ -40,12 +40,12 @@ class GraphView(SinkBase):
         initial_keyboard_event = keyboard.KeyboardEvent(keyboard.KEY_UP, 0)
         initial_mouse_event = mouse.ButtonEvent(event_type=mouse.UP, button=0, time=time.time())
 
-        mouse_source.get_data_stream() \
+        mouse_source.output \
             .pipe(operators.start_with(initial_mouse_event)) \
             .pipe(operators.combine_latest(
-            video_source.get_data_stream().pipe(operators.start_with(None)),
-            keyboard_source.get_data_stream().pipe(operators.start_with(initial_keyboard_event)),
-            engagement_source.get_data_stream()
+            video_source.output.pipe(operators.start_with(None)),
+            keyboard_source.output.pipe(operators.start_with(initial_keyboard_event)),
+            engagement_source.output
         )).subscribe(self.update_data)
 
     def update_data(self, data):

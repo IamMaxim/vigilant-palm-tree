@@ -68,9 +68,9 @@ class SQLiteStore(SinkBase):
         self.connection.commit()
         cur.close()
 
-        mouse_source.output.subscribe(self.store_mouse_event)
-        keyboard_source.output.subscribe(self.store_key_event)
-        engagement_source.output.subscribe(self.store_engagement)
+        mouse_source.output.subscribe(self.save_mouse)
+        keyboard_source.output.subscribe(self.save_keyboard)
+        engagement_source.output.subscribe(self.save_engagement)
 
     def __del__(self):
         """Clean up resources."""

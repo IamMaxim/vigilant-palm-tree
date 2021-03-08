@@ -32,7 +32,7 @@ class SpeechDetector(ProcessorBase[bool]):
         self._subj = Subject()
         self.stopped = True
         self.sources = [audio_source]
-        audio_source.get_data_stream().subscribe(self.detect_speech)
+        audio_source.output.subscribe(self.detect_speech)
         self.mean_loudness = None
         self._samples = 0
         self.noise_threshold = noise_threshold

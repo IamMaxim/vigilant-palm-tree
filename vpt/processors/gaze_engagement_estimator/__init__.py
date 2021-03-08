@@ -5,7 +5,6 @@ import numpy as np
 from rx import Observable
 from rx.subject import Subject
 
-from vpt.processors.base import SourceBase
 from vpt.processors.base import ProcessorBase
 from vpt.capabilities import OutputCapable
 

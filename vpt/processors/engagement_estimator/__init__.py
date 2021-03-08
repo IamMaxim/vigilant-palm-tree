@@ -23,7 +23,7 @@ class EngagementEstimator(ProcessorBase):
         self.voice_accum = 0
 
         # Observable with all data channels merged into one stream
-        obs = head_rotation_vector.get_data_stream().pipe(operators.combine_latest(voice_present.get_data_stream()))
+        obs = head_rotation_vector.output.pipe(operators.combine_latest(voice_present.output))
 
         obs.subscribe(self.process_state)
 
@@ -45,6 +45,7 @@ class EngagementEstimator(ProcessorBase):
         else:
             raise Exception('Invalid engagement state machine state detected')
 
+    @property
     def output(self) -> Observable:
         return self.subj
 

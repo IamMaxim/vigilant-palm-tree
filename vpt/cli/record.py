@@ -1,4 +1,5 @@
 import time
+from typing import Union
 
 from vpt.processors import EngagementEstimator, GazeDetector, SpeechDetector, MouseCompressor
 from vpt.processors.video_engagement_estimator import VideoEngagementEstimator
@@ -6,13 +7,13 @@ from vpt.sinks import GraphView, SQLiteStore
 from vpt.sources import DeviceVideoSource, KeyboardSource, MouseSource, DeviceAudioSource
 
 
-def record(audio_source: str, video_source: str):
+def record(audio_source: Union[str, int], video_source_id: int):
     """Runs all of the recorders to check that everything works correctly."""
     print('Recording...')
 
     # Create capture nodes
-    video_source = DeviceVideoSource()
-    audio_source = DeviceAudioSource()
+    video_source = DeviceVideoSource(video_source_id)
+    audio_source = DeviceAudioSource(1, 44100, audio_source)
     keyboard_source = KeyboardSource()
     __mouse_source = MouseSource()
 
