@@ -24,15 +24,15 @@ class GraphView(SinkBase):
     def __init__(self,
                  mouse_source: SourceBase,
                  keyboard_source: SourceBase,
-                 engagement_source: SourceBase):
+                 engagement_source: SourceBase, history=5, interval=0.1):
 
+        self.points_count = int(history / interval)
         self.app, self.qapp = self.init_window()
 
         self.last_keyboard_time = 0
         self.last_mouse_time = 0
         self.data = []
-        self.max_points = 32
-        self.points = np.empty((0, 2))
+        self.points = np.zeros((self.points_count, 2))
 
         initial_keyboard_event = keyboard.KeyboardEvent(keyboard.KEY_UP, 0)
         initial_mouse_event = mouse.ButtonEvent(
@@ -52,7 +52,7 @@ class GraphView(SinkBase):
         if not qapp:
             qapp = QtWidgets.QApplication(sys.argv)
 
-        app = Window()
+        app = Window(self.points_count)
         app.show()
         app.activateWindow()
         app.raise_()
@@ -73,33 +73,30 @@ class GraphView(SinkBase):
     # def stop_recording_callback(self):
     #     print('Stopped recording')
 
+    def narrow_data(self):
+        '''Get 2 points 0/1 from data'''
+        if not self.data:
+            return [0, 0]
+        mouse, keyboard, engagement = self.data
+
+        kb_event = self.last_keyboard_time != keyboard.time
+        ms_event = self.last_mouse_time != mouse.time
+
+        if kb_event:
+            self.last_keyboard_time = keyboard.time
+        if ms_event:
+            self.last_mouse_time = mouse.time
+        is_engaged = engagement in (
+            Engagement.ENGAGEMENT, Engagement.CONFERENCING)
+
+        return [kb_event or ms_event, is_engaged]
+
     def update(self):
         '''Apply events and redraw'''
         print("Rerendering")
-        if not self.data:
-            return
         try:
-            mouse, keyboard, engagement = self.data
-
-            kb_event = self.last_keyboard_time != keyboard.time
-            ms_event = self.last_mouse_time != mouse.time
-
-            if kb_event:
-                self.last_keyboard_time = keyboard.time
-
-            if ms_event:
-                self.last_mouse_time = mouse.time
-
-            is_engaged = engagement in (
-                Engagement.ENGAGEMENT, Engagement.CONFERENCING)
-
-            self.points = np.concatenate((self.points, np.array([kb_event or ms_event, is_engaged]).reshape(1, 2)),
-                                         axis=0)
-
-            # Truncate the data to self.max_points latest values
-            if self.points.shape[0] > self.max_points:
-                self.points = self.points[self.points.shape[0] -
-                                          self.max_points: self.points.shape[0], :]
+            self.points = np.append(self.points, self.narrow_data(), 0)
+            self.points = self.poits[-self.points_count:]
 
             # start_recording = Button(self.axs[0][1], 'Start rec')
             # start_recording.on_clicked(self.start_recording_callback)
@@ -109,18 +106,17 @@ class GraphView(SinkBase):
             # self.plot(self.points[:, 0], self.axs[1]
             #           [0], "Input (mouse/keyboard)")
             # self.plot(self.points[:, 1], self.axs[1][1], "Engagement")
-            self.app.plot(self.points[:, 0])
+            self.app.plot(self.points[:, 0], self.points[:, 1])
+
         except AttributeError:
             # No data yet
             pass
 
 
-class 
-
 class Window(QtWidgets.QMainWindow):
-    '''Graph frontend'''
+    '''Graph frontend window'''
 
-    def __init__(self):
+    def __init__(self, points_count):
         super().__init__()
         self._main = QtWidgets.QWidget()
         self.setCentralWidget(self._main)
@@ -128,36 +124,20 @@ class Window(QtWidgets.QMainWindow):
         push = QtWidgets.QPushButton("push me")
         layout.addWidget(push)
 
-        self.fig, [self.axs, _] = plt.subplots(
+        self.fig, [self.axs_inp, self.axs_eng] = plt.subplots(
             1, 2, sharex=True, sharey=True, figsize=(5, 2))
 
         self.canvas = FigureCanvas(self.fig)
         layout.addWidget(self.canvas)
-        self.axs.set_title("Input", fontsize=10)
-        self._line, *_ = self.axs.plot([0], [0])
 
-        # # self._dynamic_ax = self.fig.subplots()
-        # # self._line, = self._dynamic_ax.plot(t, np.sin(t + time.time()))
+        self.axs_inp.set_title("Input(keyboard/mouse)", fontsize=10)
+        self.axs_eng.set_title("Engagement", fontsize=10)
 
-        # self._timer = dynamic_canvas.new_timer(50)
-        # self._timer.add_callback(self._update_canvas)
-        # self._timer.start()
+        self.line_inp, *_ = self.axs_inp.plot([0] * points_count)
+        self.line_eng, *_ = self.axs_eng.plot([0] * points_count)
 
-    def plot(self, points):
+    def plot(self, inp_ys, eng_ys):
         '''Update points'''
-        self._line.set_data(range(len(points)), points)
+        self.line_inp.set_data(inp_ys)
+        self.line_eng.set_data(eng_ys)
         self.fig.canvas.draw()
-
-
-# if __name__ == "__main__":
-#     # Check whether there is already a running QApplication (e.g., if running
-#     # from an IDE).
-#     qapp = QtWidgets.QApplication.instance()
-#     if not qapp:
-#         qapp = QtWidgets.QApplication(sys.argv)
-
-#     app = ApplicationWindow()
-#     app.show()
-#     app.activateWindow()
-#     app.raise_()
-#     qapp.exec_()
