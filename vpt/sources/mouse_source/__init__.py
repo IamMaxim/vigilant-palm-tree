@@ -9,7 +9,6 @@ from vpt.sources.base import SourceBase
 class MouseSource(SourceBase):
     '''A source node for mouse events.'''
     _subj: Subject
-    stopped: bool
 
     def __init__(self):
         self._subj = Subject()

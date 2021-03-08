@@ -9,7 +9,6 @@ from vpt.sources.base import SourceBase
 class KeyboardSource(SourceBase[keyboard.KeyboardEvent]):
     '''A source node for keyboard events.'''
     _subj: Subject
-    stopped: bool
 
     def __init__(self):
         self._subj = Subject()

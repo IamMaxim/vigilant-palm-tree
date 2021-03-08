@@ -27,7 +27,6 @@ class WavAudioSource(SourceBase[np.ndarray]):
     filename: str
     sample_rate: int
     debug: bool
-    stopped: bool
 
     def __init__(self, filename, debug=False):
         '''Select the WAV file to read from.'''

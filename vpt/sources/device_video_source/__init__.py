@@ -11,7 +11,6 @@ from vpt.sources.base import SourceBase
 
 class DeviceVideoSource(SourceBase[VideoFrame]):
     '''A data source for the video stream from the device.'''
-    stopped: bool
     _subj: Subject
     video_capture: cv2.VideoCapture
     device = 0
