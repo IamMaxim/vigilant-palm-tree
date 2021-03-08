@@ -12,16 +12,17 @@ from vpt.sources.base import SourceBase
 
 class DeviceAudioSource(SourceBase[np.ndarray]):
     '''A data source for the audio stream from the device.'''
-    stopped = False
-    sample_duration = 1
-    sample_rate = 44100
     _subj: Subject
+    device: Union[str, int]
+    channels: int
+    sample_rate: float
 
-    def __init__(self, device: Union[str, int] = None):
+    def __init__(self, channels: int, sample_rate: float, device: Union[str, int] = None):
         self.stopped = True
         self._subj = Subject()
-        if device is not None:
-            sd.default.device = device
+        self.device = device
+        self.channels = channels
+        self.sample_rate = sample_rate
 
     @property
     def output(self) -> Observable:
@@ -30,10 +31,12 @@ class DeviceAudioSource(SourceBase[np.ndarray]):
 
     def run(self):
         '''Records the audio into a stream.'''
+        sample_duration = 1
         while not self.stopped:
-            rec = sd.rec(int(self.sample_duration * self.sample_rate),
+            rec = sd.rec(int(sample_duration * self.sample_rate),
                          samplerate=self.sample_rate,
-                         channels=2,
+                         channels=self.channels,
+                         device=self.device,
                          blocking=True)
 
             rec = self.trim_corruption(rec)
