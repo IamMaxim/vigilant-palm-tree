@@ -1,5 +1,6 @@
 """Display graphs & app controls."""
 import time
+from typing import Union
 
 import cv2
 import keyboard
@@ -13,6 +14,7 @@ import numpy as np
 
 from rx import operators
 
+from vpt.capabilities import OutputCapable
 from vpt.sinks.base import SinkBase
 from vpt.sources.base import SourceBase
 
@@ -24,10 +26,10 @@ class GraphView(SinkBase):
     """A sink node to display the graphs."""
 
     def __init__(self,
-                 video_source: SourceBase[VideoFrame],
-                 mouse_source: SourceBase,
-                 keyboard_source: SourceBase,
-                 engagement_source: SourceBase):
+                 video_source: OutputCapable[VideoFrame],
+                 mouse_source: OutputCapable[Union[mouse.MoveEvent, mouse.WheelEvent, mouse.ButtonEvent]],
+                 keyboard_source: OutputCapable[keyboard.KeyboardEvent],
+                 engagement_source: OutputCapable[Engagement]):
         self.last_keyboard_time = 0
         self.last_mouse_time = 0
 

@@ -1,6 +1,7 @@
 from rx import Observable
 from rx.subject import Subject
 
+from vpt.capabilities import OutputCapable
 from vpt.processors.base import ProcessorBase
 from vpt.sources.base import SourceBase
 
@@ -16,7 +17,7 @@ class VideoEngagementEstimator(ProcessorBase):
 
     _subj: Subject
 
-    def __init__(self, head_rotation_source: SourceBase[np.ndarray]):
+    def __init__(self, head_rotation_source: OutputCapable[np.ndarray]):
         self._subj = Subject()
         head_rotation_source.output.subscribe(self.process_rotation)
         self.boundary = 1

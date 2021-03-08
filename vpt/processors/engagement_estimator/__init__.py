@@ -8,6 +8,7 @@ from rx import Observable, operators
 from rx.subject import Subject
 
 from data_structures import Engagement
+from vpt.capabilities import OutputCapable
 from vpt.processors.base import ProcessorBase
 from vpt.sources.base import SourceBase
 
@@ -15,7 +16,7 @@ from vpt.sources.base import SourceBase
 class EngagementEstimator(ProcessorBase):
     """Given gaze and speech data, estimates the user's engagement level."""
 
-    def __init__(self, head_rotation_vector: SourceBase[np.ndarray], voice_present: SourceBase[bool]):
+    def __init__(self, head_rotation_vector: OutputCapable[np.ndarray], voice_present: OutputCapable[bool]):
         self.subj = Subject()
 
         # Current state

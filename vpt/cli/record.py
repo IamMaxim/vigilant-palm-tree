@@ -1,6 +1,8 @@
 import time
 from typing import Union
 
+import sounddevice as sd
+
 from vpt.processors import EngagementEstimator, GazeDetector, SpeechDetector, MouseCompressor
 from vpt.processors.video_engagement_estimator import VideoEngagementEstimator
 from vpt.sinks import GraphView, SQLiteStore
@@ -11,9 +13,14 @@ def record(audio_source: Union[str, int], video_source_id: int):
     """Runs all of the recorders to check that everything works correctly."""
     print('Recording...')
 
+    audio_device = sd.query_devices(kind='input',
+                                    device=[d['name'] for d in sd.query_devices()].index(audio_source))
+
     # Create capture nodes
     video_source = DeviceVideoSource(video_source_id)
-    audio_source = DeviceAudioSource(1, 44100, audio_source)
+    audio_source = DeviceAudioSource(audio_device['max_input_channels'],
+                                     audio_device['default_samplerate'],
+                                     audio_source)
     keyboard_source = KeyboardSource()
     __mouse_source = MouseSource()
 

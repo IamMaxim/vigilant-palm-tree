@@ -9,8 +9,8 @@ import keyboard
 import mouse
 
 from data_structures import Engagement
+from vpt.capabilities import OutputCapable
 from vpt.sinks.base import SinkBase
-from vpt.sources.base import SourceBase
 
 
 class SQLiteStore(SinkBase):
@@ -28,8 +28,9 @@ class SQLiteStore(SinkBase):
 
     connection: sqlite3.Connection
 
-    def __init__(self, db_path: str, mouse_source: SourceBase,
-                 keyboard_source: SourceBase, engagement_source: SourceBase):
+    def __init__(self, db_path: str,
+                 mouse_source: OutputCapable[Union[mouse.MoveEvent, mouse.WheelEvent, mouse.ButtonEvent]],
+                 keyboard_source: OutputCapable[keyboard.KeyboardEvent], engagement_source: OutputCapable[Engagement]):
         """Create a database or open an existing one."""
         self.stopped = True
         self.sources = [mouse_source, keyboard_source, engagement_source]
