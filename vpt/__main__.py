@@ -1,5 +1,4 @@
 """Main entry point for the package"""
-from vpt.cli.record import record
 from vpt.cli.check import check
 from vpt.cli.cli import parse_args
 from vpt.cli.sources import print_audio_inputs, print_video_inputs, get_default_audio_input_name
@@ -14,5 +13,6 @@ if args['cmd'] == 'sources':
 elif args['cmd'] == 'check':
     check()
 elif args['cmd'] is None:
-    # If not argument, fall back to recording
-    record()
+    # If no argument, fall back to recording
+    # record(args['audio'], args['video'])
+    pass
