@@ -5,12 +5,12 @@ from time import sleep
 import cv2
 
 from data_structures import VideoFrame
-from vpt.sources.base import SourceBase
 from vpt.sinks.base import SinkBase
+from vpt.sources.base import SourceBase
 
 
 class VideoDisplay(SinkBase):
-    '''A sink node to display the stream as video feed.'''
+    """A sink node to display the stream as video feed."""
     frame: VideoFrame = None
     start_time: float
     duration: float
@@ -27,14 +27,15 @@ class VideoDisplay(SinkBase):
         video_frame_source.output.subscribe(self.process_frame)
 
     def process_frame(self, frame: VideoFrame):
-        '''Updates the currently displayed frame.'''
+        """Updates the currently displayed frame."""
         self.frame = frame
 
-    def start(self):
-        '''Starts the video display.
-           Note: this is a blocking method. It returns as soon as user presses the ESC key.'''
+    def run(self):
+        """Starts the video display.
+           Note: this is a blocking method. It returns as soon as user presses the ESC key."""
         super().start()
         self.start_time = time.time()
+
         while not self.stopped:
             # If we have a time on max time and we exceeded the duration, break the loop
             if self.duration != -1 and time.time() > self.start_time + self.duration:

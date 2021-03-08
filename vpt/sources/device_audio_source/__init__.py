@@ -36,7 +36,7 @@ class DeviceAudioSource(SourceBase[np.ndarray]):
             rec = sd.rec(int(sample_duration * self.sample_rate),
                          samplerate=self.sample_rate,
                          channels=self.channels,
-                         device=self.device,
+                         device=[d['name'] for d in sd.query_devices()].index(self.device),
                          blocking=True)
 
             rec = self.trim_corruption(rec)
@@ -54,10 +54,6 @@ class DeviceAudioSource(SourceBase[np.ndarray]):
         return chunk[int(idx * 1.1):, :]
 
     def start(self):
-        '''Start sending out audio frames.'''
-        if not self.stopped:
-            return
-
         self.stopped = False
         threading.Thread(target=self.run).start()
 

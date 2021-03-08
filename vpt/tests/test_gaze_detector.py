@@ -25,8 +25,8 @@ class TestGazeDetector(unittest.TestCase):
         gaze_estimator = GazeEngagementEstimator(gaze_detector, 0.6)
 
         stat = []
-        gaze_estimator.get_data_stream().subscribe(lambda verdict: stat.append(verdict))
-        #gaze_detector.get_data_stream().subscribe(lambda verdict: print(np.linalg.norm(verdict)))
+        gaze_estimator.output.subscribe(lambda verdict: stat.append(verdict))
+        #gaze_detector.output.subscribe(lambda verdict: print(np.linalg.norm(verdict)))
         #video_display = VideoDisplay(video_source, duration=5)
 
         video_source.start()

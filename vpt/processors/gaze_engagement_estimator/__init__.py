@@ -5,13 +5,12 @@ import numpy as np
 from rx import Observable
 from rx.subject import Subject
 
-from vpt.processors.base import SourceBase
 from vpt.processors.base import ProcessorBase
 from vpt.capabilities import OutputCapable
 
 
 class GazeEngagementEstimator(ProcessorBase[np.ndarray]):
-    '''Transforms the gaze estimation to engagement estimation.'''
+    """Transforms the gaze estimation to engagement estimation."""
     _subj: Subject
     sources: List[OutputCapable]
 

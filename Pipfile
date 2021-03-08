@@ -15,6 +15,8 @@ ffmpeg = "*"
 soundfile = "*"
 tensorflow = ">=2.3.1, <2.4.0"
 matplotlib = "*"
+pyqt5 = "*"
+pyobjc-framework-quartz = {markers = "platform_system == 'Darwin'",version = "*"}
 
 [dev-packages]
 python-language-server = {extras = ["all"], version = "*"}
