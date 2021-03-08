@@ -47,7 +47,7 @@ class DeviceAudioSource(SourceBase[np.ndarray]):
         '''Trim the flat signal that comes in the beginning of the waveform
            recorded with `sounddevice`.'''
         eps = 1e-4
-        idx = None
+        idx = 0
         for idx, sample in enumerate(chunk):
             if np.any(sample > eps):
                 break
