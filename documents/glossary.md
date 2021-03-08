@@ -4,13 +4,13 @@ The keys terms used in the project.
 
 ## Conceptual terms
 
-|                       |                                                                                                                     |
+| Term                  | Description                                                                                                         |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------- |
 | **Gaze code**         | Representation of user's gaze, encoded as 3 states (workspace, elsewhere, absent)                                   |
 | **Voice code**        | Representation of user's voice, encoded as 2 states (present, absent).                                              |
 | **Interaction state** | Estimation of user's activity at any given time based on their gaze and speech inputs.                              |
 | **Engagement level**  | Scale of user's involment into their working process. Consists of 5 levels mapping to the interaction states.       |
-| **User presence**     | State of active engagement. Corresponds to the engagement levels 0-1.                                              |
+| **User presence**     | State of active engagement. Corresponds to the engagement levels 0-1.                                               |
 | **User absence**      | State of lack of engagement. Corresponds to the engagement levels 2-4.                                              |
 | **Tracking sequence** | Present/absent timeline used for representing user's activities over a period of time.                              |
 | **Storage format**    | Data fields and their types used for storing recoding sequence. There are 2 such formats - for SQL and File stores. |
@@ -19,7 +19,7 @@ The keys terms used in the project.
 
 ### Base classes
 
-|                    |                                                                          |
+| Term               | Description                                                              |
 | ------------------ | ------------------------------------------------------------------------ |
 | **Source node**    | Base class for data sources, e.g. `DeviceVideoSource`, `KeyboardSource`  |
 | **Processor node** | Base class for data processors, e.g. `SpeechDetector`, `MouseCompressor` |
@@ -27,7 +27,7 @@ The keys terms used in the project.
 
 ### Source nodes
 
-|                       |                                                                          |
+| Term                  | Description                                                              |
 | --------------------- | ------------------------------------------------------------------------ |
 | **DeviceVideoSource** | Provides a video stream coming from a physical device (e.g. webcamera)   |
 | **MP4VideoSource**    | Provides a video stream coming from an MP4 video file.                   |
@@ -38,7 +38,7 @@ The keys terms used in the project.
 
 ### Processor nodes
 
-|                         |                                                                                                  |
+| Term                    | Description                                                                                      |
 | ----------------------- | ------------------------------------------------------------------------------------------------ |
 | **GazeDetector**        | Converts a video stream to a stream of gaze codes.                                               |
 | **SpeechDetector**      | Detects speech in an audio stream and outputs a signal stream for that.                          |
@@ -47,7 +47,7 @@ The keys terms used in the project.
 
 ### Sink nodes
 
-|                  |                                                                                          |
+| Term             | Description                                                                              |
 | ---------------- | ---------------------------------------------------------------------------------------- |
 | **VideoDisplay** | Displays a video stream in a window.                                                     |
 | **SQLiteStore**  | Persistently store the engagement level and keyboard/mouse events in an SQLite database. |
