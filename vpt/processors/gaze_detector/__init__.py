@@ -166,8 +166,8 @@ class GazeDetector(ProcessorBase[np.ndarray]):
     _subj: Subject
 
     def __init__(self, video_source: SourceBase[VideoFrame]):
-        video_source.get_data_stream().subscribe(self.process_frame)
         self._subj = Subject()
+        video_source.get_data_stream().subscribe(self.process_frame)
 
     def process_frame(self, frame: VideoFrame):
         '''Processes each incoming frame to detect gaze'''

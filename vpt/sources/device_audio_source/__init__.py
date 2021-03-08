@@ -17,11 +17,8 @@ class DeviceAudioSource(SourceBase[np.ndarray]):
     sample_rate = 44100
     _subj: Subject
 
-    def __init__(self):
-        self._subj = Subject()
-
     def __init__(self, device: Union[str, int] = None):
-        super().__init__()
+        self._subj = Subject()
         if device is not None:
             sd.default.device = device
 
@@ -39,12 +36,16 @@ class DeviceAudioSource(SourceBase[np.ndarray]):
             rec = self.trim_corruption_lol(rec)
             self._subj.on_next(rec)
 
-    def trim_corruption_lol(self, chunk):
+    @staticmethod
+    def trim_corruption_lol(chunk):
+        '''Trim the flat signal that comes in the beginning of the waveform
+           recorded with `sounddevice`.'''
         eps = 1e-4
-        for sample_idx in range(len(chunk)):
-            if np.any(chunk[sample_idx] > eps):
+        idx = None
+        for idx, sample in enumerate(chunk):
+            if np.any(sample > eps):
                 break
-        return chunk[int(sample_idx * 1.1):, :]
+        return chunk[int(idx * 1.1):, :]
 
     def start(self):
         self.stopped = False

@@ -28,10 +28,10 @@ class SpeechDetector(ProcessorBase[bool]):
                  noise_threshold: float = .5,
                  silence_threshold: float = .3):
         '''Wire up the detector to an arbitrary audio source.'''
+        self._subj = Subject()
         audio_source.get_data_stream().subscribe(self.detect_speech)
         self.mean_loudness = None
         self._samples = 0
-        self._subj = Subject()
         self.noise_threshold = noise_threshold
         self.silence_threshold = silence_threshold
 
