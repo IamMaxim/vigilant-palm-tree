@@ -1,5 +1,7 @@
 """Human facial landmark detector based on Convolutional Neural Network."""
 import math
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2' # To disable TF's warnings
 
 import cv2
 import numpy as np
@@ -11,6 +13,8 @@ from tensorflow import keras
 from data_structures import VideoFrame
 from vpt.processors.base import ProcessorBase
 from vpt.sources.base import SourceBase
+
+tf.get_logger().setLevel('ERROR')
 
 
 class FaceDetector:

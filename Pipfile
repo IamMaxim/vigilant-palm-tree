@@ -21,9 +21,12 @@ pyobjc-framework-quartz = {markers = "platform_system == 'Darwin'",version = "*"
 [dev-packages]
 python-language-server = {extras = ["all"], version = "*"}
 pylint = "*"
+pyinstaller = "*"
 
 [requires]
 python_version = "3.8"
 
 [scripts]
 vpt = "python -m vpt"
+bundle-win = "pyinstaller ./vpt/__main__.py --name vpt --distpath ./dist --add-data 'models;models'"
+bundle-unix = "pyinstaller ./vpt/__main__.py --name vpt --distpath ./dist --add-data \"models:models\""
