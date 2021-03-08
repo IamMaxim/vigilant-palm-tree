@@ -5,6 +5,7 @@ import numpy as np
 from rx import Observable
 from rx.subject import Subject
 
+from vpt.processors.base import SourceBase
 from vpt.processors.base import ProcessorBase
 from vpt.capabilities import OutputCapable
 
@@ -14,12 +15,13 @@ class GazeEngagementEstimator(ProcessorBase[np.ndarray]):
     _subj: Subject
     sources: List[OutputCapable]
 
-    def __init__(self, rotation_vector_source: OutputCapable[np.ndarray]):
+    def __init__(self, rotation_vector_source: OutputCapable[np.ndarray], threshold=0.5):
+        self.threshold = threshold
         self._subj = Subject()
         self.stopped = True
         self.sources = [rotation_vector_source]
         rotation_vector_source.output.subscribe(
-            lambda v: self._subj.on_next(np.linalg.norm(v))
+            lambda v: self._subj.on_next(np.linalg.norm(v) < self.threshold)
         )
 
     @property

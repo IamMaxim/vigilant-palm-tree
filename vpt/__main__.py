@@ -12,3 +12,7 @@ if args['cmd'] == 'sources':
         print_video_inputs()
 elif args['cmd'] == 'check':
     check()
+elif args['cmd'] is None:
+    # If no argument, fall back to recording
+    # record(args['audio'], args['video'])
+    pass
