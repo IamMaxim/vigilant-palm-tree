@@ -112,7 +112,12 @@ class SQLiteStore(SinkBase):
             cur = self.connection.cursor()
             cur.execute('''
                 INSERT INTO keystrokes VALUES (?, ?, ?, ?)
-            ''', (event.event_type, event.scan_code, ','.join(event.modifiers), int(event.time)))
+            ''', (
+                event.event_type,
+                event.scan_code,
+                ','.join(event.modifiers) if event.modifiers is not None else ''
+                , int(event.time)
+            ))
             self.connection.commit()
             cur.close()
 
