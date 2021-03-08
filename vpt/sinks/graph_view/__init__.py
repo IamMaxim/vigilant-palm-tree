@@ -27,7 +27,7 @@ class GraphView(SinkBase):
                  engagement_source: SourceBase, history=5, interval=1):
 
         self.points_count = int(history / interval)
-        self.app, self.qapp = self.init_window(interval)
+        self.app, self.qapp = self.init_window(history, interval)
 
         self.last_keyboard_time = 0
         self.last_mouse_time = 0
@@ -46,13 +46,13 @@ class GraphView(SinkBase):
                 engagement_source.get_data_stream()
             )).subscribe(self.update_data)
 
-    def init_window(self, interval):
+    def init_window(self, history, interval):
         '''Create QT Window'''
         qapp = QtWidgets.QApplication.instance()
         if not qapp:
             qapp = QtWidgets.QApplication(sys.argv)
 
-        app = Window(self.points_count)
+        app = Window(self.points_count, history)
         app.show()
         app.activateWindow()
         app.raise_()
@@ -122,7 +122,7 @@ class GraphView(SinkBase):
 class Window(QtWidgets.QMainWindow):
     '''Graph frontend window'''
 
-    def __init__(self, n):
+    def __init__(self, n, history):
         super().__init__()
         self._main = QtWidgets.QWidget()
         self.setCentralWidget(self._main)
@@ -136,14 +136,23 @@ class Window(QtWidgets.QMainWindow):
         self.canvas = FigureCanvas(self.fig)
         layout.addWidget(self.canvas)
 
-        self.axs_inp.set_title("Input(keyboard/mouse)", fontsize=10)
+        self.axs_inp.set_title("Input (keyboard/mouse)", fontsize=10)
+        self.set_axis(self.axs_inp, n, history)
         self.axs_eng.set_title("Engagement", fontsize=10)
+        self.set_axis(self.axs_eng, n, history)
 
         self.n = n
         self.rn = range(n)
 
         self.line_inp, *_ = self.axs_inp.plot(self.rn, [0] * self.n)
         self.line_eng, *_ = self.axs_eng.plot(self.rn, [0] * self.n)
+
+    def set_axis(self, ax, n, history):
+        xlabels = [str(x)+'s' for x in [history, history/2, 0]]
+        ax.set_xticks([0, n/2, n])
+        ax.set_xticklabels(xlabels)
+        ax.set_yticks([0, 1])
+        ax.set_yticklabels(["absent", "present"])
 
     def plot(self, ys):
         '''Update points'''
