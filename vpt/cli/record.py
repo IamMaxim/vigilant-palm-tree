@@ -23,10 +23,13 @@ def record():
 
     mouse_throttler = MouseCompressor(__mouse_source)
 
-    engagement_estimator = EngagementEstimator(video_estimator, speech_detector)
+    engagement_estimator = EngagementEstimator(
+        video_estimator, speech_detector)
 
-    store = SQLiteStore(f'session-{int(time.time())}.db', mouse_throttler, keyboard_source, engagement_estimator)
-    graph_display = GraphView(video_source, mouse_throttler, keyboard_source, engagement_estimator)
+    store = SQLiteStore(f'session-{int(time.time())}.db',
+                        mouse_throttler, keyboard_source, engagement_estimator)
+    graph_display = GraphView(
+        mouse_throttler, keyboard_source, engagement_estimator)
 
     # Start capture on all types of sources
     video_source.start()
@@ -34,9 +37,9 @@ def record():
     keyboard_source.start()
     __mouse_source.start()
 
-    while True:
-        store.update()
-        graph_display.update()
+    # while True:
+    #     store.update()
+    #     graph_display.update()
 
     # Stop capture on all types of sources
     video_source.stop()

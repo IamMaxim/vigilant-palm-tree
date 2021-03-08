@@ -116,9 +116,11 @@ def check(duration=5):
     gaze_detector = GazeDetector(video_source)
     video_estimator = VideoEngagementEstimator(gaze_detector)
 
-    engagement_estimator = EngagementEstimator(video_estimator, speech_detector)
+    engagement_estimator = EngagementEstimator(
+        video_estimator, speech_detector)
 
-    graph_display = GraphView(video_source, mouse_source, keyboard_source, engagement_estimator)
+    graph_display = GraphView(
+        mouse_source, keyboard_source, engagement_estimator)
 
     while True:
         graph_display.update()

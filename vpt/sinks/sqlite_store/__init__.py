@@ -115,8 +115,8 @@ class SQLiteStore(SinkBase):
             ''', (
                 event.event_type,
                 event.scan_code,
-                ','.join(event.modifiers) if event.modifiers is not None else ''
-                , int(event.time)
+                ','.join(event.modifiers) if event.modifiers is not None else '', int(
+                    event.time)
             ))
             self.connection.commit()
             cur.close()
@@ -131,7 +131,7 @@ class SQLiteStore(SinkBase):
                 ''', ('move', event.x, event.y, int(event.time)))
             elif isinstance(event, mouse.WheelEvent):
                 cur.execute('''
-                    INSERT INTO mouse_events VALUES (?, NULL, NULL, ?, NULL ?)
+                    INSERT INTO mouse_events VALUES (?, NULL, NULL, ?, NULL, ?)
                 ''', ('wheel', event.delta, int(event.time)))
             else:
                 cur.execute('''
