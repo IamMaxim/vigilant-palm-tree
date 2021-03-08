@@ -5,7 +5,7 @@ import cv2
 from rx import Observable
 from rx.subject import Subject
 
-from data_structures import VideoFrame
+from vpt.data_structures import VideoFrame
 from vpt.sources.base import SourceBase
 
 

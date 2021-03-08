@@ -21,6 +21,7 @@ pyobjc-framework-quartz = {markers = "platform_system == 'Darwin'",version = "*"
 [dev-packages]
 python-language-server = {extras = ["all"], version = "*"}
 pylint = "*"
+autopep8 = "*"
 
 [requires]
 python_version = "3.8"

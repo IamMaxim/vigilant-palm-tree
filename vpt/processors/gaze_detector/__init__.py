@@ -8,7 +8,7 @@ from rx import Observable
 from rx.subject import Subject
 from tensorflow import keras
 
-from data_structures import VideoFrame
+from vpt.data_structures import VideoFrame
 from vpt.processors.base import ProcessorBase
 from vpt.sources.base import SourceBase
 

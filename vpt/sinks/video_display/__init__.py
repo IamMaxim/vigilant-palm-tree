@@ -4,7 +4,7 @@ from time import sleep
 
 import cv2
 
-from data_structures import VideoFrame
+from vpt.data_structures import VideoFrame
 from vpt.sinks.base import SinkBase
 from vpt.sources.base import SourceBase
 

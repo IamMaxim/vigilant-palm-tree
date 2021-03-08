@@ -9,7 +9,7 @@ from typing import Union, Any
 import keyboard
 import mouse
 
-from data_structures import Engagement
+from vpt.data_structures import Engagement
 from vpt.sinks.base import SinkBase
 from vpt.sources.base import SourceBase
 

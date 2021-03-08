@@ -7,7 +7,7 @@ import numpy as np
 from rx import Observable, operators
 from rx.subject import Subject
 
-from data_structures import Engagement
+from vpt.data_structures import Engagement
 from vpt.processors.base import ProcessorBase
 from vpt.sources.base import SourceBase
 
