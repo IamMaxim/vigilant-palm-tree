@@ -27,13 +27,13 @@ duration (in seconds).
 
 ## Data collection
 
-To launch the application, simply launch the executable without any parameters:
+To launch the application, simply start the executable without any parameters:
 
 ```
 $ vpt
 ```
 
-This will open a window with live graphs of data and buttons to start/stop recording. You may minimize the
+This will open a window with live graphs of data and buttons to start/stop recording. You may minimize the window and start working now.
 
 If the recording process unexpectedly terminates, the data will still be saved.
 
