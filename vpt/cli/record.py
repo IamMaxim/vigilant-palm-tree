@@ -6,7 +6,7 @@ from vpt.sinks import GraphView, SQLiteStore
 from vpt.sources import DeviceVideoSource, KeyboardSource, MouseSource, DeviceAudioSource
 
 
-def record():
+def record(audio_source: str, video_source: str):
     """Runs all of the recorders to check that everything works correctly."""
     print('Recording...')
 

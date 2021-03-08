@@ -17,10 +17,8 @@ class DeviceAudioSource(SourceBase[np.ndarray]):
     sample_rate = 44100
     _subj: Subject
 
-    def __init__(self):
-        self._subj = Subject()
-
     def __init__(self, device: Union[str, int] = None):
+        self._subj = Subject()
         super().__init__()
         if device is not None:
             sd.default.device = device

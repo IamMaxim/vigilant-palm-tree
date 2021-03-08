@@ -1,10 +1,9 @@
 '''The SQLite store is responsible for writing streams to an SQLite database.'''
-import queue
 import sqlite3
 import threading
 import time
 from queue import Queue
-from typing import Union, Any
+from typing import Union
 
 import keyboard
 import mouse
