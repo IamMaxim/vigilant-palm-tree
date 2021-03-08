@@ -8,3 +8,5 @@ audio.wav
 /vpt-audio.wav
 /vpt-keyboard.txt
 /vpt-mouse.txt
+# Different platforms have different dependencies, so lockfile is OS-dependent. Thus, do not commit it.
+Pipfile.lock

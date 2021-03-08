@@ -5,12 +5,12 @@ from time import sleep
 import cv2
 
 from data_structures import VideoFrame
-from vpt.sources.base import SourceBase
 from vpt.sinks.base import SinkBase
+from vpt.sources.base import SourceBase
 
 
 class VideoDisplay(SinkBase):
-    '''A sink node to display the stream as video feed.'''
+    """A sink node to display the stream as video feed."""
     frame: VideoFrame = None
     stopped: bool
     start_time: float
@@ -28,12 +28,12 @@ class VideoDisplay(SinkBase):
         video_frame_source.get_data_stream().subscribe(self.process_frame)
 
     def process_frame(self, frame: VideoFrame):
-        '''Updates the currently displayed frame.'''
+        """Updates the currently displayed frame."""
         self.frame = frame
 
     def run(self):
-        '''Starts the video display.
-           Note: this is a blocking method. It returns as soon as user presses the ESC key.'''
+        """Starts the video display.
+           Note: this is a blocking method. It returns as soon as user presses the ESC key."""
         print('run')
 
         while not self.stopped:
@@ -58,7 +58,7 @@ class VideoDisplay(SinkBase):
                 continue
 
     def stop(self):
-        '''Stops displaying the video stream.'''
+        """Stops displaying the video stream."""
         cv2.destroyWindow('Video')
         self.stopped = True
         cv2.waitKey(1)
