@@ -14,8 +14,11 @@ def check():
     print('Checking the devices for 5s...')
 
     # Create capture nodes
+    audio_device = sd.query_devices(kind='input', device=args['audio'])
     video_source = DeviceVideoSource(int(args['video']))
-    audio_source = DeviceAudioSource(args['audio'])
+    audio_source = DeviceAudioSource(audio_device['max_input_channels'],
+                                     audio_device['default_samplerate'],
+                                     args['audio'])
     keyboard_source = KeyboardSource()
     mouse_source = MouseSource()
 
