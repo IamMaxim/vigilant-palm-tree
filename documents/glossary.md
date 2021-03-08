@@ -10,7 +10,7 @@ The keys terms used in the project.
 | **Voice code**        | Representation of user's voice, encoded as 2 states (present, absent).                                              |
 | **Interaction state** | Estimation of user's activity at any given time based on their gaze and speech inputs.                              |
 | **Engagement level**  | Scale of user's involment into their working process. Consists of 5 levels mapping to the interaction states.       |
-| **User presence**     | State of active engagement. Corresponds to the engagement lelvels 0-1.                                              |
+| **User presence**     | State of active engagement. Corresponds to the engagement levels 0-1.                                              |
 | **User absence**      | State of lack of engagement. Corresponds to the engagement levels 2-4.                                              |
 | **Tracking sequence** | Present/absent timeline used for representing user's activities over a period of time.                              |
 | **Storage format**    | Data fields and their types used for storing recoding sequence. There are 2 such formats - for SQL and File stores. |
