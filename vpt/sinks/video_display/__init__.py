@@ -21,7 +21,7 @@ class VideoDisplay(SinkBase):
         :param duration: max duration after which the display will automatically close.
             -1 means the window will never close. Given in seconds.
         """
-        self.stopped = False
+        self.stopped = True
         self.sources = [video_frame_source]
         self.duration = duration
         video_frame_source.output.subscribe(self.process_frame)
