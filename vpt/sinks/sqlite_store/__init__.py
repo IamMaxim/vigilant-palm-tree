@@ -1,17 +1,16 @@
 '''The SQLite store is responsible for writing streams to an SQLite database.'''
-import queue
 import sqlite3
 import threading
 import time
 from queue import Queue
-from typing import Union, Any
+from typing import Union
 
 import keyboard
 import mouse
 
 from vpt.data_structures import Engagement
+from vpt.capabilities import OutputCapable
 from vpt.sinks.base import SinkBase
-from vpt.sources.base import SourceBase
 
 
 class SQLiteStore(SinkBase):
@@ -29,9 +28,12 @@ class SQLiteStore(SinkBase):
 
     connection: sqlite3.Connection
 
-    def __init__(self, db_path: str, mouse_source: SourceBase,
-                 keyboard_source: SourceBase, engagement_source: SourceBase):
+    def __init__(self, db_path: str,
+                 mouse_source: OutputCapable[Union[mouse.MoveEvent, mouse.WheelEvent, mouse.ButtonEvent]],
+                 keyboard_source: OutputCapable[keyboard.KeyboardEvent], engagement_source: OutputCapable[Engagement]):
         """Create a database or open an existing one."""
+        self.stopped = True
+        self.sources = [mouse_source, keyboard_source, engagement_source]
         self.connection = sqlite3.connect(db_path)
 
         self.engagement_queue = Queue()
@@ -67,9 +69,9 @@ class SQLiteStore(SinkBase):
         self.connection.commit()
         cur.close()
 
-        mouse_source.get_data_stream().subscribe(self.save_mouse)
-        keyboard_source.get_data_stream().subscribe(self.save_keyboard)
-        engagement_source.get_data_stream().subscribe(self.save_engagement)
+        mouse_source.output.subscribe(self.save_mouse)
+        keyboard_source.output.subscribe(self.save_keyboard)
+        engagement_source.output.subscribe(self.save_engagement)
 
     def __del__(self):
         """Clean up resources."""

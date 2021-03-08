@@ -1,12 +1,17 @@
 """Display graphs & app controls."""
 import time
 import sys
+from typing import Union
+
+import cv2
 import keyboard
 import mouse
 import numpy as np
 import matplotlib.pyplot as plt
 
 from rx import operators
+
+from vpt.capabilities import OutputCapable
 from vpt.sinks.base import SinkBase
 from vpt.sources.base import SourceBase
 from vpt.data_structures import Engagement
@@ -22,9 +27,14 @@ class GraphView(SinkBase):
     """A sink node to display the graphs."""
 
     def __init__(self,
-                 mouse_source: SourceBase,
-                 keyboard_source: SourceBase,
-                 engagement_source: SourceBase, history=5, interval=1):
+                 video_source: OutputCapable[VideoFrame],
+                 mouse_source: OutputCapable[Union[mouse.MoveEvent, mouse.WheelEvent, mouse.ButtonEvent]],
+                 keyboard_source: OutputCapable[keyboard.KeyboardEvent],
+                 engagement_source: OutputCapable[Engagement]):
+        self.last_keyboard_time = 0
+        self.last_mouse_time = 0
+
+        self.max_points = 32
 
         self.points_count = int(history / interval)
         self.app, self.qapp, self.record_button = self.init_window(
@@ -39,7 +49,7 @@ class GraphView(SinkBase):
         initial_mouse_event = mouse.ButtonEvent(
             event_type=mouse.UP, button=0, time=time.time())
 
-        mouse_source.get_data_stream() \
+        mouse_source.output \
             .pipe(operators.start_with(initial_mouse_event)) \
             .pipe(operators.combine_latest(
                 keyboard_source.get_data_stream().pipe(

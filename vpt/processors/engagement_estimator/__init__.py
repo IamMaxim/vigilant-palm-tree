@@ -8,6 +8,7 @@ from rx import Observable, operators
 from rx.subject import Subject
 
 from vpt.data_structures import Engagement
+from vpt.capabilities import OutputCapable
 from vpt.processors.base import ProcessorBase
 from vpt.sources.base import SourceBase
 
@@ -15,7 +16,7 @@ from vpt.sources.base import SourceBase
 class EngagementEstimator(ProcessorBase):
     """Given gaze and speech data, estimates the user's engagement level."""
 
-    def __init__(self, head_rotation_vector: SourceBase[np.ndarray], voice_present: SourceBase[bool]):
+    def __init__(self, head_rotation_vector: OutputCapable[np.ndarray], voice_present: OutputCapable[bool]):
         self.subj = Subject()
 
         # Current state
@@ -23,7 +24,7 @@ class EngagementEstimator(ProcessorBase):
         self.voice_accum = 0
 
         # Observable with all data channels merged into one stream
-        obs = head_rotation_vector.get_data_stream().pipe(operators.combine_latest(voice_present.get_data_stream()))
+        obs = head_rotation_vector.output.pipe(operators.combine_latest(voice_present.output))
 
         obs.subscribe(self.process_state)
 
@@ -45,11 +46,6 @@ class EngagementEstimator(ProcessorBase):
         else:
             raise Exception('Invalid engagement state machine state detected')
 
-    def get_data_stream(self) -> Observable:
+    @property
+    def output(self) -> Observable:
         return self.subj
-
-    def start(self):
-        pass
-
-    def stop(self):
-        pass

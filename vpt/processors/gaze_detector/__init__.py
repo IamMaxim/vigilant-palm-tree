@@ -1,5 +1,7 @@
 """Human facial landmark detector based on Convolutional Neural Network."""
 import math
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2' # To disable TF's warnings
 
 import cv2
 import numpy as np
@@ -11,6 +13,8 @@ from tensorflow import keras
 from vpt.data_structures import VideoFrame
 from vpt.processors.base import ProcessorBase
 from vpt.sources.base import SourceBase
+
+tf.get_logger().setLevel('ERROR')
 
 
 class FaceDetector:
@@ -166,8 +170,10 @@ class GazeDetector(ProcessorBase[np.ndarray]):
     _subj: Subject
 
     def __init__(self, video_source: SourceBase[VideoFrame]):
-        video_source.get_data_stream().subscribe(self.process_frame)
         self._subj = Subject()
+        self.stopped = True
+        self.sources = [video_source]
+        video_source.output.subscribe(self.process_frame)
 
     def process_frame(self, frame: VideoFrame):
         """Processes each incoming frame to detect gaze"""
@@ -231,11 +237,7 @@ class GazeDetector(ProcessorBase[np.ndarray]):
 
             self._subj.on_next(rot_arr)
 
-    def get_data_stream(self) -> Observable:
+    @property
+    def output(self) -> Observable:
+        '''The getter for the gaze codes observable.'''
         return self._subj
-
-    def start(self):
-        raise NotImplementedError("Processor nodes do not support start()")
-
-    def stop(self):
-        raise NotImplementedError("Processor nodes do not support stop()")
