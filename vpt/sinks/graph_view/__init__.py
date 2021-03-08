@@ -1,23 +1,21 @@
 """Display graphs & app controls."""
 import time
-import threading
 import sys
 import keyboard
 import mouse
 import numpy as np
-
 import matplotlib.pyplot as plt
+
+from rx import operators
+from vpt.sinks.base import SinkBase
+from vpt.sources.base import SourceBase
+from vpt.data_structures import Engagement
+
 from matplotlib.backends.qt_compat import QtCore, QtWidgets
 if QtCore.qVersion() >= "5.":
     from matplotlib.backends.backend_qt5agg import (FigureCanvas)
 else:
     from matplotlib.backends.backend_qt4agg import (FigureCanvas)
-
-from rx import operators
-
-from vpt.sinks.base import SinkBase
-from vpt.sources.base import SourceBase
-from vpt.data_structures import Engagement
 
 
 class GraphView(SinkBase):
@@ -28,7 +26,7 @@ class GraphView(SinkBase):
                  keyboard_source: SourceBase,
                  engagement_source: SourceBase):
 
-        self.app = self.init_window()
+        self.app, self.qapp = self.init_window()
 
         self.last_keyboard_time = 0
         self.last_mouse_time = 0
@@ -58,9 +56,12 @@ class GraphView(SinkBase):
         app.show()
         app.activateWindow()
         app.raise_()
-        threading.Thread(target=qapp.exec_).start()
 
-        return app
+        self._timer = app.canvas.new_timer(50)
+        self._timer.add_callback(self.update)
+        self._timer.start()
+
+        return app, qapp
 
     def update_data(self, data):
         '''Update event records'''
@@ -73,8 +74,8 @@ class GraphView(SinkBase):
     #     print('Stopped recording')
 
     def update(self):
-        '''Apply events'''
-        # print("Updating")
+        '''Apply events and redraw'''
+        print("Rerendering")
         if not self.data:
             return
         try:
@@ -114,6 +115,8 @@ class GraphView(SinkBase):
             pass
 
 
+class 
+
 class Window(QtWidgets.QMainWindow):
     '''Graph frontend'''
 
@@ -128,7 +131,8 @@ class Window(QtWidgets.QMainWindow):
         self.fig, [self.axs, _] = plt.subplots(
             1, 2, sharex=True, sharey=True, figsize=(5, 2))
 
-        layout.addWidget(FigureCanvas(self.fig))
+        self.canvas = FigureCanvas(self.fig)
+        layout.addWidget(self.canvas)
         self.axs.set_title("Input", fontsize=10)
         self._line, *_ = self.axs.plot([0], [0])
 

@@ -40,6 +40,7 @@ def record():
     # while True:
     #     store.update()
     #     graph_display.update()
+    graph_display.qapp.exec_()
 
     # Stop capture on all types of sources
     video_source.stop()
