@@ -23,24 +23,17 @@ def check():
     video_display = VideoDisplay(video_source, duration=5)
 
     # Create file output nodes
-    FileStore('.', mouse_source, keyboard_source, audio_source)
-
-    # Start capture on all types of sources
-    video_source.start()
-    audio_source.start()
-    keyboard_source.start()
-    mouse_source.start()
+    file_store = FileStore('.', mouse_source, keyboard_source, audio_source)
 
     gaze_detector = GazeDetector(video_source)
-    gaze_detector.get_data_stream().subscribe(print)
+    gaze_detector.output.subscribe(print)
 
     # Run UI on the MainThread (this is a blocking call)
-    video_display.run()
+    file_store.start()
+    video_display.start()
 
     # Stop capture on all types of sources
-    video_source.stop()
-    audio_source.stop()
-    keyboard_source.stop()
-    mouse_source.stop()
+    file_store.stop()
+    video_display.stop()
 
     print('Done')
