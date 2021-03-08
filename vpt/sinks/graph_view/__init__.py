@@ -24,14 +24,14 @@ class GraphView(SinkBase):
     def __init__(self,
                  mouse_source: SourceBase,
                  keyboard_source: SourceBase,
-                 engagement_source: SourceBase, history=5, interval=0.1):
+                 engagement_source: SourceBase, history=5, interval=.5):
 
         self.points_count = int(history / interval)
-        self.app, self.qapp = self.init_window()
+        self.app, self.qapp = self.init_window(interval)
 
         self.last_keyboard_time = 0
         self.last_mouse_time = 0
-        self.data = []
+        self.data = False
         self.points = np.zeros((self.points_count, 2))
 
         initial_keyboard_event = keyboard.KeyboardEvent(keyboard.KEY_UP, 0)
@@ -46,7 +46,7 @@ class GraphView(SinkBase):
                 engagement_source.get_data_stream()
             )).subscribe(self.update_data)
 
-    def init_window(self):
+    def init_window(self, interval):
         '''Create QT Window'''
         qapp = QtWidgets.QApplication.instance()
         if not qapp:
@@ -57,7 +57,7 @@ class GraphView(SinkBase):
         app.activateWindow()
         app.raise_()
 
-        self._timer = app.canvas.new_timer(50)
+        self._timer = app.canvas.new_timer(interval)
         self._timer.add_callback(self.update)
         self._timer.start()
 
@@ -93,10 +93,13 @@ class GraphView(SinkBase):
 
     def update(self):
         '''Apply events and redraw'''
-        print("Rerendering")
         try:
-            self.points = np.append(self.points, self.narrow_data(), 0)
+            # point = self.narrow_data()
+            point = np.random.randint(0, 2, 2)
+            # print(point)
+            self.points = np.append(self.points, [point], 0)
             self.points = self.poits[-self.points_count:]
+            self.app.plot(self.points[:, 0], self.points[:, 1])
 
             # start_recording = Button(self.axs[0][1], 'Start rec')
             # start_recording.on_clicked(self.start_recording_callback)
@@ -106,7 +109,6 @@ class GraphView(SinkBase):
             # self.plot(self.points[:, 0], self.axs[1]
             #           [0], "Input (mouse/keyboard)")
             # self.plot(self.points[:, 1], self.axs[1][1], "Engagement")
-            self.app.plot(self.points[:, 0], self.points[:, 1])
 
         except AttributeError:
             # No data yet
@@ -133,11 +135,12 @@ class Window(QtWidgets.QMainWindow):
         self.axs_inp.set_title("Input(keyboard/mouse)", fontsize=10)
         self.axs_eng.set_title("Engagement", fontsize=10)
 
-        self.line_inp, *_ = self.axs_inp.plot([0] * points_count)
-        self.line_eng, *_ = self.axs_eng.plot([0] * points_count)
+        self.line_inp, *_ = self.axs_inp.plot(range(points_count))
+        self.line_eng, *_ = self.axs_eng.plot(range(points_count))
 
     def plot(self, inp_ys, eng_ys):
         '''Update points'''
+        print("plotting", inp_ys)
         self.line_inp.set_data(inp_ys)
         self.line_eng.set_data(eng_ys)
-        self.fig.canvas.draw()
+        self.canvas.draw()
