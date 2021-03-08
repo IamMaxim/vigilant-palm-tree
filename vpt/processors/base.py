@@ -7,5 +7,5 @@ from ..capabilities import InputCapable, OutputCapable, Initiatable
 T = TypeVar('T')
 
 
-class ProcessorBase(InputCapable, OutputCapable[T], Initiatable, ABC):
+class ProcessorBase(OutputCapable[T], InputCapable, Initiatable, ABC):
     '''Should be used for intermediary processing nodes.'''
