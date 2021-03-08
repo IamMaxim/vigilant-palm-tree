@@ -29,7 +29,7 @@ class FileStore(SinkBase):
         with contextlib.suppress(FileNotFoundError):
             os.remove(self.dir / 'audio.wav')
         self.audio_file = sf.SoundFile(self.dir / 'audio.wav',
-                                       mode='w', samplerate=44100, channels=1)
+                                       mode='w', samplerate=44100, channels=2)
         audio_source.get_data_stream().subscribe(self.store_audio_frame)
 
     def store_audio_frame(self, frame: np.ndarray):

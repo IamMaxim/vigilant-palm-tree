@@ -5,11 +5,9 @@ that data with that person's keyboard/mouse activity.
 
 ## Installation
 
-Install the requirements using
+Install the dependencies using
 
-    pip install -r requirements.txt 
-
-_Note: depending on your platform, you might need to use `pip3` instead of `pip`._
+    pipenv install
 
 If you are running Linux, you might need to manually install the [PortAudio](http://www.portaudio.com/) library (might
 be called `libportaudio2` or similar), as well as the `libsndfile` library (called `libsndfile1` or similar). On
@@ -25,8 +23,7 @@ On Arch Linux, use:
 
 ## Usage
 
-Run `python -m vpt <subcommand>`. For detailed usage information, run `python vpt -h`.
-_Note: depending on your platform, you might need to use `python3` instead of `python`._
+Run `pipenv run  vpt <subcommand>`. For detailed usage information, run `pipenv run vpt -h`.
 
 If you are using Linux, you might need to run some commands as root (or with `sudo`)
 as [mouse recording](https://github.com/boppreh/mouse#:~:text=requires%20sudo)

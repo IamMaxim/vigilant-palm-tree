@@ -9,7 +9,7 @@ from vpt.processors.base import ProcessorBase
 
 class GazeEngagementEstimator(ProcessorBase[np.ndarray]):
     '''Transforms the gaze estimation to engagement estimation.'''
-    subj = Subject()
+    _subj: Subject
 
     def __init__(self, rotation_vector_source: SourceBase[np.ndarray], threshold=0.5):
         self.threshold = threshold
@@ -22,5 +22,6 @@ class GazeEngagementEstimator(ProcessorBase[np.ndarray]):
     def stop(self):
         pass
 
+
     def get_data_stream(self) -> Observable:
-        return self.subj
+        return self._subj

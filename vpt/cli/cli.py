@@ -14,29 +14,28 @@ def create_parser(audio_default=None):
                                         "activity")
     subparsers = parser.add_subparsers(dest='cmd', required=True)
 
-    check_parser = subparsers.add_parser('check',
-                                         description='Make sure your hardware is correctly '
-                                                     'functioning and recognized by the program')
-    check_parser.add_argument('--audio',
+    device_parser = ArgumentParser(add_help=False)
+    device_parser.add_argument('--audio',
                               default=audio_default,
                               help='The name of the audio source, as reported by the '
                                    '"sources audio" subcommand')
-    check_parser.add_argument('--video',
+    device_parser.add_argument('--video',
+                              default=0,
                               help='The name of the audio source, as reported by the '
                                    '"sources video" subcommand')
+
+    check_parser = subparsers.add_parser('check',
+                                         parents=[device_parser],
+                                         description='Make sure your hardware is correctly '
+                                                     'functioning and recognized by the program')
     check_parser.add_argument('--duration',
                               default=5,
                               type=float,
                               help='Duration of the recording (in seconds)')
 
-    record_parser = subparsers.add_parser('record', description='Start recording the data')
-    record_parser.add_argument('--audio',
-                               default=audio_default,
-                               help='The name of the audio source, as reported by the '
-                                    '"sources audio" subcommand')
-    record_parser.add_argument('--video',
-                               help='The name of the audio source, as reported by the '
-                                    '"sources video" subcommand')
+    record_parser = subparsers.add_parser('record',
+                                          parents=[device_parser],
+                                          description='Start recording the data')
 
     sources_parser = subparsers.add_parser('sources', description='List all available sources')
     sources_parser.add_argument('source', choices=['audio', 'video'])
