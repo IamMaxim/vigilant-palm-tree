@@ -35,6 +35,7 @@ def record():
     __mouse_source.start()
 
     while True:
+        store.update()
         graph_display.update()
 
     # Stop capture on all types of sources
