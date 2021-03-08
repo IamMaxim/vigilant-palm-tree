@@ -12,11 +12,11 @@ $ vpt check
 
 This will record the data for 5 seconds and then create 3 files in your current working directory:
 
-* `vpt-audio.wav`: a sample of audio recorded through your audio source
+- `vpt-audio.wav`: a sample of audio recorded through your audio source
 
-* `vpt-keyboard.txt`: a list of recorded keyboard actions
+- `vpt-keyboard.txt`: a list of recorded keyboard actions
 
-* `vpt-mouse.txt`: a list of mouse actions (moves & clicks)
+- `vpt-mouse.txt`: a list of mouse actions (moves & clicks)
 
 Feel free to use your keyboard and mouse during the 5 seconds of the check to ensure that the data from them is
 correctly recorded.
@@ -58,7 +58,7 @@ Video source 2
 To select an audio source for recording, use `--audio <NAME>` for specifying the audio source and `--video <NAME>` for
 specifying the video source:
 
-```
+```sh
 $ vpt record --audio AudioSource2 --video "Video source 2"
 ```
 
@@ -66,14 +66,14 @@ $ vpt record --audio AudioSource2 --video "Video source 2"
 
 Once you have collected some data, you may generate a PDF report with the `report` option:
 
-```
+```sh
 $ vpt report
 ```
 
 If you wish to only analyze a part of the data, you can specify the `--start <TIME>` and `--end <TIME>` with a time
 point in the format `YYYY.MM.DD HH:MM:SS`:
 
-```
+```sh
 $ vpt report --start "2021-01-01 00:00:00" --end "2021-01-07 23:59:59"
 ```
 
@@ -84,7 +84,7 @@ Omitting the `--start` will select the all the data up to `--end` and vice versa
 If you wish to get a dataset of keyboard/mouse activity along with the predicted work state engagement levels from
 audio/video, use the `dump` option:
 
-```
+```sh
 $ vpt dump
 ```
 
@@ -92,7 +92,7 @@ This will create a `vpt-data.sql` SQLite database in the current working directo
 
 To dump the data into a different file, use the `-o` parameter:
 
-```
+```sh
 $ vpt dump -o for-analysis.sql
 ```
 
@@ -100,7 +100,7 @@ $ vpt dump -o for-analysis.sql
 
 To clear the data collected by the program, use the `clear` option:
 
-```
+```sh
 $ vpt clear
 Warning! You are about to delete the data from 2021-01-01 13:37:00 to 2021-02-01 13:38:00.
 Are you sure (y/N)?
@@ -111,18 +111,8 @@ Type `y` and hit `Enter` to confirm deletion.
 If you only wish to delete a part of the data, you may constrain the range of deletion with `--start <TIME>`
 and `--end <TIME>` options with a time point in the format `YYYY.MM.DD HH:MM:SS`:
 
-```
+```sh
 $ vpt clear --start "2021-01-01 13:37:00" --end "2021-01-02 13:37:00"
 Warning! You are about to delete the data from 2021-01-01 13:37:00 to 2021-01-02 13:37:00.
 Are you sure (y/N)?
 ```
-
-
-
-
-
-
-
-
-
-
