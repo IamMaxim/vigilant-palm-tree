@@ -12,7 +12,6 @@ from vpt.sinks.base import SinkBase
 class VideoDisplay(SinkBase):
     '''A sink node to display the stream as video feed.'''
     frame: VideoFrame = None
-    stopped: bool
     start_time: float
     duration: float
 
@@ -22,20 +21,20 @@ class VideoDisplay(SinkBase):
         :param duration: max duration after which the display will automatically close.
             -1 means the window will never close. Given in seconds.
         """
-        self.stopped = False
+        self.stopped = True
+        self.sources = [video_frame_source]
         self.duration = duration
-        self.start_time = time.time()
-        video_frame_source.get_data_stream().subscribe(self.process_frame)
+        video_frame_source.output.subscribe(self.process_frame)
 
     def process_frame(self, frame: VideoFrame):
         '''Updates the currently displayed frame.'''
         self.frame = frame
 
-    def run(self):
+    def start(self):
         '''Starts the video display.
            Note: this is a blocking method. It returns as soon as user presses the ESC key.'''
-        print('run')
-
+        super().start()
+        self.start_time = time.time()
         while not self.stopped:
             # If we have a time on max time and we exceeded the duration, break the loop
             if self.duration != -1 and time.time() > self.start_time + self.duration:
@@ -59,6 +58,6 @@ class VideoDisplay(SinkBase):
 
     def stop(self):
         '''Stops displaying the video stream.'''
+        super().stop()
         cv2.destroyWindow('Video')
-        self.stopped = True
         cv2.waitKey(1)

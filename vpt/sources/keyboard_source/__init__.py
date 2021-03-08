@@ -12,16 +12,23 @@ class KeyboardSource(SourceBase[keyboard.KeyboardEvent]):
 
     def __init__(self):
         self._subj = Subject()
+        self.stopped = True
 
     def start(self):
+        if not self.stopped:
+            return
+        self.stopped = False
         keyboard.hook(self.callback)
 
     def stop(self):
+        self.stopped = True
         keyboard.unhook_all()
 
     def callback(self, event: keyboard.KeyboardEvent):
         '''Sends the event to the stream.'''
         self._subj.on_next(event)
 
-    def get_data_stream(self) -> Observable:
+    @property
+    def output(self) -> Observable:
+        '''The getter for the keyboard events observable.'''
         return self._subj

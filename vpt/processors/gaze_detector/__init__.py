@@ -170,8 +170,10 @@ class GazeDetector(ProcessorBase[np.ndarray]):
     _subj: Subject
 
     def __init__(self, video_source: SourceBase[VideoFrame]):
-        video_source.get_data_stream().subscribe(self.process_frame)
         self._subj = Subject()
+        self.stopped = True
+        self.sources = [video_source]
+        video_source.output.subscribe(self.process_frame)
 
     def process_frame(self, frame: VideoFrame):
         '''Processes each incoming frame to detect gaze'''
@@ -232,11 +234,7 @@ class GazeDetector(ProcessorBase[np.ndarray]):
 
             self._subj.on_next(rot_arr)
 
-    def get_data_stream(self) -> Observable:
+    @property
+    def output(self) -> Observable:
+        '''The getter for the gaze codes observable.'''
         return self._subj
-
-    def start(self):
-        raise NotImplementedError("Processor nodes do not support start()")
-
-    def stop(self):
-        raise NotImplementedError("Processor nodes do not support stop()")

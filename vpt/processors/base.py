@@ -1,17 +1,11 @@
 '''The base interfaces for the processor nodes.'''
+from abc import ABC
 from typing import TypeVar
-from abc import abstractmethod, ABC
 
-from rx import Observable
-
-from vpt.sinks.base import SinkBase
-from vpt.sources.base import SourceBase
+from ..capabilities import InputCapable, OutputCapable
 
 T = TypeVar('T')
 
 
-class ProcessorBase(SinkBase[T], SourceBase[T], ABC):
-    '''Should be used for intermediary processing nodes'''
-    @abstractmethod
-    def get_data_stream(self) -> Observable:
-        pass
+class ProcessorBase(OutputCapable[T], InputCapable, ABC):
+    '''Should be used for intermediary processing nodes.'''

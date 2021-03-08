@@ -12,43 +12,55 @@ from vpt.sources.base import SourceBase
 
 class DeviceAudioSource(SourceBase[np.ndarray]):
     '''A data source for the audio stream from the device.'''
-    stopped = False
-    sample_duration = 1
-    sample_rate = 44100
     _subj: Subject
+    device: Union[str, int]
+    channels: int
+    sample_rate: float
 
-    def __init__(self):
+    def __init__(self, channels: int, sample_rate: float, device: Union[str, int] = None):
+        self.stopped = True
         self._subj = Subject()
+        self.device = device
+        self.channels = channels
+        self.sample_rate = sample_rate
 
-    def __init__(self, device: Union[str, int] = None):
-        super().__init__()
-        if device is not None:
-            sd.default.device = device
-
-    def get_data_stream(self) -> Observable:
+    @property
+    def output(self) -> Observable:
+        '''The getter for the audio chunks observable.'''
         return self._subj
 
     def run(self):
         '''Records the audio into a stream.'''
+        sample_duration = 1
         while not self.stopped:
-            rec = sd.rec(int(self.sample_duration * self.sample_rate),
+            rec = sd.rec(int(sample_duration * self.sample_rate),
                          samplerate=self.sample_rate,
-                         channels=2,
+                         channels=self.channels,
+                         device=self.device,
                          blocking=True)
 
-            rec = self.trim_corruption_lol(rec)
+            rec = self.trim_corruption(rec)
             self._subj.on_next(rec)
 
-    def trim_corruption_lol(self, chunk):
+    @staticmethod
+    def trim_corruption(chunk):
+        '''Trim the flat signal that comes in the beginning of the waveform
+           recorded with `sounddevice`.'''
         eps = 1e-4
-        for sample_idx in range(len(chunk)):
-            if np.any(chunk[sample_idx] > eps):
+        idx = 0
+        for idx, sample in enumerate(chunk):
+            if np.any(sample > eps):
                 break
-        return chunk[int(sample_idx * 1.1):, :]
+        return chunk[int(idx * 1.1):, :]
 
     def start(self):
+        '''Start sending out audio frames.'''
+        if not self.stopped:
+            return
+
         self.stopped = False
         threading.Thread(target=self.run).start()
 
     def stop(self):
-        pass
+        '''Stop the data generating thread.'''
+        self.stopped = True
