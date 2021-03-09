@@ -138,6 +138,6 @@ class Window(QtWidgets.QMainWindow):
 
     def plot(self, ys):
         '''Update points'''
-        self.line_inp.set_data(range(self.points), ys[:, 0])
-        self.line_eng.set_data(range(self.points), ys[:, 1])
+        self.line_inp.set_data(range(self.points), [i[0] for i in ys])
+        self.line_eng.set_data(range(self.points), [i[1] for i in ys])
         self.canvas.draw()
