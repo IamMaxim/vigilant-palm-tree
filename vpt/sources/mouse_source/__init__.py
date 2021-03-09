@@ -24,11 +24,15 @@ class MouseSource(SourceBase):
         self._subj.on_next(event)
 
     def start(self):
+        '''Attach an event listener.'''
         if not self.stopped:
             return
         self.stopped = False
         mouse.hook(self.callback)
 
     def stop(self):
+        '''Detach the event listener.'''
+        if self.stopped:
+            return
         self.stopped = True
         mouse.unhook_all()

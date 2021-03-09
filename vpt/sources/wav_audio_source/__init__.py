@@ -22,11 +22,12 @@ def freq_decompose(signal):
 
 
 class WavAudioSource(SourceBase[np.ndarray]):
-    '''A data source for the audio stream from the device.'''
+    '''A data source for the audio stream from a WAV file.'''
     _subj: Subject
     filename: str
     sample_rate: int
     debug: bool
+    _thread: threading.Thread
 
     def __init__(self, filename, debug=False):
         '''Select the WAV file to read from.'''
@@ -45,9 +46,10 @@ class WavAudioSource(SourceBase[np.ndarray]):
         if not self.stopped:
             return
         self.stopped = False
-        threading.Thread(target=self.read_input_file).start()
+        self._thread = threading.Thread(target=self.run_threaded)
+        self._thread.start()
 
-    def read_input_file(self):
+    def run_threaded(self):
         '''The thread's routine to read a file and output it into the observable.'''
         data, sample_rate = sf.read(self.filename)
         if data.ndim == 1:
@@ -91,4 +93,7 @@ class WavAudioSource(SourceBase[np.ndarray]):
 
     def stop(self):
         '''Stops the thread from outputting any more chunks, unless it's done.'''
+        if self.stopped:
+            return
         self.stopped = True
+        self._thread.join()

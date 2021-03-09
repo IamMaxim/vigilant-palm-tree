@@ -14,20 +14,24 @@ class DeviceVideoSource(SourceBase[VideoFrame]):
     _subj: Subject
     video_capture: cv2.VideoCapture
     device = 0
+    _thread: threading.Thread
 
     def start(self):
         '''Starts the video recording stream in a separate thread.'''
         if not self.stopped:
             return
-
         self.stopped = False
-        threading.Thread(target=self.capture_loop).start()
+        self._thread = threading.Thread(target=self.run_threaded)
+        self._thread.start()
 
     def stop(self):
         '''Stops recording video.'''
+        if self.stopped:
+            return
         self.stopped = True
+        self._thread.join()
 
-    def capture_loop(self):
+    def run_threaded(self):
         '''Captures frames from the video and sends them to the stream.'''
         video_capture = cv2.VideoCapture(self.device)
         while not self.stopped:

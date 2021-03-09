@@ -15,12 +15,16 @@ class KeyboardSource(SourceBase[keyboard.KeyboardEvent]):
         self.stopped = True
 
     def start(self):
+        '''Attach an event listener.'''
         if not self.stopped:
             return
         self.stopped = False
         keyboard.hook(self.callback)
 
     def stop(self):
+        '''Detach the event listener.'''
+        if self.stopped:
+            return
         self.stopped = True
         keyboard.unhook_all()
 

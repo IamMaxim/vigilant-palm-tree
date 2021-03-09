@@ -31,7 +31,7 @@ class TestGazeDetector(unittest.TestCase):
 
         video_source.start()
         #video_display.run()
-        video_source.wait()
+        # video_source.wait()
 
         percentage = 100.0 * np.count_nonzero(stat) / len(stat)
         print('\n{}\t{}%\t'.format(self.filename, percentage), end='')

@@ -9,38 +9,44 @@ from vpt.sources.base import SourceBase
 
 
 class VideoFileSource(SourceBase[VideoFrame]):
-    need_to_run: bool
-    __subject: Subject
+    '''A data source for the video stream from an MP4 file.'''
+    _subj: Subject
+    _thread: threading.Thread
 
     def __init__(self, filename: str):
-        self.__subject = Subject()
-        self.lock = threading.Lock()
+        self._subj = Subject()
+        self.stopped = True
 
         self.video_capture = cv2.VideoCapture(filename)
         if not self.video_capture.isOpened():
             raise ValueError('could not open video stream for file {}'.format(filename))
 
     def start(self):
-        self.need_to_run = True
-        thread = threading.Thread(target=self.capture_loop)
-        thread.start()
+        '''Start the capturing thread.'''
+        if not self.stopped:
+            return
+        self.stopped = False
+        self._thread = threading.Thread(target=self.run_threaded)
+        self._thread.start()
 
     def stop(self):
-        self.need_to_run = False
+        '''Stop the capturing thread.'''
+        if self.stopped:
+            return
+        self.stopped = True
+        self._thread.join()
 
-    def wait(self):
-        self.lock.acquire()
-        self.lock.release()
+    def run_threaded(self):
+        '''The main loop fetching frames from a file.'''
+        while not self.stopped:
+            ret, frame = self.video_capture.read()
 
-    def capture_loop(self):
-        with self.lock:
-            while self.need_to_run:
-                ret, frame = self.video_capture.read()
+            if not ret:
+                break
 
-                if not ret:
-                    break
+            self._subj.on_next(VideoFrame(frame))
 
-                self.__subject.on_next(VideoFrame(frame))
-
-    def get_data_stream(self) -> Observable:
-        return self.__subject
+    @property
+    def output(self) -> Observable:
+        '''Getter for the video frames observable.'''
+        return self._subj
