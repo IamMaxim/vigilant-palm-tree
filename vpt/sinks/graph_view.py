@@ -58,11 +58,7 @@ class GraphView(SinkBase):
         self.toggle_recording()
 
     def init_window(self, history, interval):
-        '''Create QT Window'''
-        qapp = QtWidgets.QApplication.instance()
-        if not qapp:
-            qapp = QtWidgets.QApplication(sys.argv)
-
+        '''Create QT Window.'''
         app = Window(self.max_points, history)
 
         record_button = QtWidgets.QPushButton("Paused")
@@ -77,13 +73,13 @@ class GraphView(SinkBase):
         self._timer.add_callback(self.update)
         self._timer.start()
 
-        return app, qapp, record_button
+        return app, record_button
 
     def toggle_recording(self):
         '''Change button text'''
         self.recording = not self.recording
         self.record_button.setText(
-            'Recoding' if self.recording else 'Paused')
+            'Recording' if self.recording else 'Paused')
 
     def update_data(self, data):
         '''Update event records'''

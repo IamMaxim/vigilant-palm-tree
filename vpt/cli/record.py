@@ -1,7 +1,12 @@
-import time
+'''The 'record' CLI command.'''
+
+import sys
+from datetime import datetime
 from typing import Union
 
 import sounddevice as sd
+from rx.scheduler.mainloop import QtScheduler
+from matplotlib.backends.qt_compat import QtCore, QtWidgets
 
 from vpt.processors import EngagementEstimator, GazeDetector, SpeechDetector, MouseCompressor
 from vpt.processors.video_engagement_estimator import VideoEngagementEstimator
@@ -11,10 +16,8 @@ from vpt.sources import DeviceVideoSource, KeyboardSource, MouseSource, DeviceAu
 
 def record(audio_source: Union[str, int], video_source_id: int):
     """Runs all of the recorders to check that everything works correctly."""
-    print('Recording...')
-
-    audio_device = sd.query_devices(kind='input',
-                                    device=[d['name'] for d in sd.query_devices()].index(audio_source))
+    scheduler = QtScheduler(QtCore)
+    audio_device = sd.query_devices(kind='input', device=audio_source)
 
     # Create capture nodes
     video_source = DeviceVideoSource(video_source_id)
@@ -22,38 +25,33 @@ def record(audio_source: Union[str, int], video_source_id: int):
                                      audio_device['default_samplerate'],
                                      audio_source)
     keyboard_source = KeyboardSource()
-    __mouse_source = MouseSource()
+    mouse_source = MouseSource()
 
     gaze_detector = GazeDetector(video_source)
     video_estimator = VideoEngagementEstimator(gaze_detector)
-
     speech_detector = SpeechDetector(audio_source)
+    mouse_compressor = MouseCompressor(mouse_source)
+    engagement_estimator = EngagementEstimator(video_estimator,
+                                               speech_detector)
 
-    mouse_throttler = MouseCompressor(__mouse_source)
+    store = SQLiteStore(f'session-{datetime.now().strftime("%m-%d-%H-%M")}.db',
+                        mouse_compressor,
+                        keyboard_source,
+                        engagement_estimator)
+    graph_display = GraphView(mouse_compressor,
+                              keyboard_source,
+                              engagement_estimator)
 
-    engagement_estimator = EngagementEstimator(
-        video_estimator, speech_detector)
+    qapp = QtWidgets.QApplication.instance()
+    if not qapp:
+        qapp = QtWidgets.QApplication(sys.argv)
 
-    store = SQLiteStore(f'session-{int(time.time())}.db',
-                        mouse_throttler, keyboard_source, engagement_estimator)
-    graph_display = GraphView(
-        mouse_throttler, keyboard_source, engagement_estimator)
+    store.start(scheduler)
+    graph_display.start(scheduler)
 
-    # Start capture on all types of sources
-    video_source.start()
-    audio_source.start()
-    keyboard_source.start()
-    __mouse_source.start()
+    exit_code = qapp.exec_()
 
-    # while True:
-    #     store.update()
-    #     graph_display.update()
-    graph_display.qapp.exec_()
+    graph_display.stop()
+    store.stop()
 
-    # Stop capture on all types of sources
-    video_source.stop()
-    audio_source.stop()
-    keyboard_source.stop()
-    __mouse_source.stop()
-
-    print('Done')
+    sys.exit(exit_code)
