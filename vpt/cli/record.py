@@ -42,6 +42,10 @@ def record(audio_source: Union[str, int], video_source_id: int):
                            keyboard_source,
                            engagement_estimator)
 
+    mouse_compressor.output.subscribe(lambda *x: store.update())
+    keyboard_source.output.subscribe(lambda *x: store.update())
+    engagement_estimator.output.subscribe(lambda *x: store.update())
+
     qapp = QtWidgets.QApplication.instance()
     if not qapp:
         qapp = QtWidgets.QApplication(sys.argv)
