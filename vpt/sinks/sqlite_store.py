@@ -74,44 +74,41 @@ class SQLiteStore(SinkBase):
 
     def store_engagement(self, code: int):
         """Store an instance of engagement."""
-        with self.lock:
-            cur = self.connection.cursor()
-            cur.execute('''
-                INSERT INTO engagement VALUES (?, ?)
-            ''', (code, int(time.time())))
-            self.connection.commit()
-            cur.close()
+        cur = self.connection.cursor()
+        cur.execute('''
+            INSERT INTO engagement VALUES (?, ?)
+        ''', (code, int(time.time())))
+        self.connection.commit()
+        cur.close()
 
     def store_key_event(self, event: keyboard.KeyboardEvent):
         """Store a keypress with all of its modifiers."""
-        with self.lock:
-            cur = self.connection.cursor()
-            cur.execute('''
-                INSERT INTO keystrokes VALUES (?, ?, ?, ?)
-            ''', (
-                event.event_type,
-                event.scan_code,
-                ','.join(event.modifiers) if event.modifiers is not None else '', int(
-                    event.time)
-            ))
-            self.connection.commit()
-            cur.close()
+        cur = self.connection.cursor()
+        cur.execute('''
+            INSERT INTO keystrokes VALUES (?, ?, ?, ?)
+        ''', (
+            event.event_type,
+            event.scan_code,
+            ','.join(event.modifiers) if event.modifiers is not None else '', int(
+                event.time)
+        ))
+        self.connection.commit()
+        cur.close()
 
     def store_mouse_event(self, event: Union[mouse.MoveEvent, mouse.WheelEvent, mouse.ButtonEvent]):
         """Store mouse movements, button presses and scrolls."""
-        with self.lock:
-            cur = self.connection.cursor()
-            if isinstance(event, mouse.MoveEvent):
-                cur.execute('''
-                    INSERT INTO mouse_events VALUES (?, ?, ?, NULL, NULL, ?)
-                ''', ('move', event.x, event.y, int(event.time)))
-            elif isinstance(event, mouse.WheelEvent):
-                cur.execute('''
-                    INSERT INTO mouse_events VALUES (?, NULL, NULL, ?, NULL, ?)
-                ''', ('wheel', event.delta, int(event.time)))
-            else:
-                cur.execute('''
-                    INSERT INTO mouse_events VALUES (?, NULL, NULL, NULL, ?, ?)
-                ''', ('button', f'{event.button}:{event.event_type}', int(event.time)))
-            self.connection.commit()
-            cur.close()
+        cur = self.connection.cursor()
+        if isinstance(event, mouse.MoveEvent):
+            cur.execute('''
+                INSERT INTO mouse_events VALUES (?, ?, ?, NULL, NULL, ?)
+            ''', ('move', event.x, event.y, int(event.time)))
+        elif isinstance(event, mouse.WheelEvent):
+            cur.execute('''
+                INSERT INTO mouse_events VALUES (?, NULL, NULL, ?, NULL, ?)
+            ''', ('wheel', event.delta, int(event.time)))
+        else:
+            cur.execute('''
+                INSERT INTO mouse_events VALUES (?, NULL, NULL, NULL, ?, ?)
+            ''', ('button', f'{event.button}:{event.event_type}', int(event.time)))
+        self.connection.commit()
+        cur.close()
