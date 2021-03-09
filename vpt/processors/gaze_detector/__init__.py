@@ -1,7 +1,8 @@
 """Human facial landmark detector based on Convolutional Neural Network."""
 import math
 import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2' # To disable TF's warnings
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # To disable TF's warnings
 
 import cv2
 import numpy as np
@@ -196,7 +197,7 @@ class GazeDetector(ProcessorBase[np.ndarray]):
         #   and pass it to PnP solve method
         for facebox in faceboxes:
             face_img = frame.frame[facebox[1]: facebox[3],
-                       facebox[0]: facebox[2]]
+                                   facebox[0]: facebox[2]]
             face_img = cv2.resize(face_img, (128, 128))
             face_img = cv2.cvtColor(face_img, cv2.COLOR_BGR2RGB)
 

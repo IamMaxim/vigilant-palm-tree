@@ -5,7 +5,6 @@ import numpy as np
 
 from vpt.sources import MP4VideoSource
 from vpt.processors.gaze_detector import GazeDetector
-from vpt.processors.gaze_engagement_estimator import GazeEngagementEstimator
 
 # If you know better way than using this sys.path thingy, tell me
 #
@@ -22,10 +21,9 @@ class TestGazeDetector(unittest.TestCase):
     def test_gaze(self):
         video_source = MP4VideoSource(self.filename)
         gaze_detector = GazeDetector(video_source)
-        gaze_estimator = GazeEngagementEstimator(gaze_detector, 0.6)
 
         stat = []
-        gaze_estimator.output.subscribe(stat.append)
+        gaze_detector.output.subscribe(lambda v: stat.append(lambda v: np.linalg.norm(v) < 0.6))
         # gaze_detector.output.subscribe(lambda verdict: print(np.linalg.norm(verdict)))
         # video_display = VideoDisplay(video_source, duration=5)
 

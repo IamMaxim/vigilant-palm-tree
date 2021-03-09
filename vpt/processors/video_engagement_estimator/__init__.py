@@ -1,14 +1,14 @@
+from typing import Union
+
+import numpy as np
 from rx import Observable
 from rx.subject import Subject
 
 from vpt.capabilities import OutputCapable
 from vpt.processors.base import ProcessorBase
-from vpt.sources.base import SourceBase
-
-import numpy as np
 
 
-class VideoEngagementEstimator(ProcessorBase):
+class VideoEngagementEstimator(ProcessorBase[Union[None, bool]]):
     """Returns:
         - none if no face was detected in the video frame
         - true if face was detected and it is looking at the camera
@@ -19,10 +19,13 @@ class VideoEngagementEstimator(ProcessorBase):
 
     def __init__(self, head_rotation_source: OutputCapable[np.ndarray]):
         self._subj = Subject()
+        self.stopped = True
+        self.sources = [head_rotation_source]
         head_rotation_source.output.subscribe(self.process_rotation)
         self.boundary = 1
 
-    def process_rotation(self, rot: np.ndarray):
+    def process_rotation(self, rot: Union[np.ndarray, None]):
+        '''Compute the gaze code based on the rotation vector.'''
         if rot is None:
             self._subj.on_next(None)
         else:
@@ -30,4 +33,5 @@ class VideoEngagementEstimator(ProcessorBase):
 
     @property
     def output(self) -> Observable:
+        '''The getter for the gaze codes observable.'''
         return self._subj

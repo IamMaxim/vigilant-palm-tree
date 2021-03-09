@@ -1,4 +1,6 @@
 """Registers mouse events to a data stream."""
+from typing import Union
+
 import mouse
 from rx import Observable
 from rx.subject import Subject
@@ -6,7 +8,7 @@ from rx.subject import Subject
 from vpt.sources.base import SourceBase
 
 
-class MouseSource(SourceBase):
+class MouseSource(SourceBase[Union[mouse.MoveEvent, mouse.WheelEvent, mouse.ButtonEvent]]):
     """A source node for mouse events."""
     _subj: Subject
 
