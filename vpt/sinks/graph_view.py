@@ -2,6 +2,7 @@
 import time
 import sys
 from typing import Union
+from collections import deque
 
 import keyboard
 import mouse
@@ -31,10 +32,17 @@ class GraphView(SinkBase):
                  engagement_source: OutputCapable[Engagement]):
         self.stopped = True
         self.sources = [mouse_source, keyboard_source, engagement_source]
+        self.window = None
+        self.last_keyboard_time = 0
+        self.last_mouse_time = 0
+        self.points_in_buffer = 20
+        self.buffer = deque([0] * self.points_in_buffer, maxlen=self.points_in_buffer)
+        self.scheduler = None
 
     def start(self, scheduler: QtScheduler):
         if not self.stopped:
             return
+        self.scheduler = scheduler
         super().start(scheduler)
         mouse_source, keyboard_source, engagement_source = self.sources
 
@@ -48,41 +56,28 @@ class GraphView(SinkBase):
                 keyboard_source.get_data_stream().pipe(
                     operators.start_with(initial_keyboard_event)),
                 engagement_source.get_data_stream()
-            )).subscribe(self.update_data, scheduler=scheduler)
+            )).subscribe(self.update, scheduler=scheduler)
 
-    def init_window(self, history, interval):
-        '''Create QT Window.'''
-        app = Window(self.max_points, history)
+        if self.window is None:
+            self.window = Window(points=self.points_in_buffer,
+                                 toggle_callback=self.toggle_recording)
 
-        record_button = QtWidgets.QPushButton("Paused")
-        record_button.clicked.connect(self.toggle_recording)
-        app.layout.addWidget(record_button)
-
-        app.show()
-        app.activateWindow()
-        app.raise_()
-
-        self._timer = app.canvas.new_timer(interval)
-        self._timer.add_callback(self.update)
-        self._timer.start()
-
-        return app, record_button
+        self.window.show()
+        self.window.activateWindow()
+        self.window.raise_()
 
     def toggle_recording(self):
         '''Change button text'''
-        self.recording = not self.recording
-        self.record_button.setText(
-            'Recording' if self.recording else 'Paused')
+        if not self.stopped:
+            self.stop()
+        else:
+            self.start(self.scheduler)
 
-    def update_data(self, data):
-        '''Update event records'''
-        self.data = data
-
-    def narrow_data(self):
-        '''Get 2 points 0/1 from data'''
+    def narrow_data(self, data):
+        '''Get 2 points 0/1 from data.'''
         point = [0, 0]
-        if self.data:
-            mouse, keyboard, engagement = self.data
+        if data:
+            mouse, keyboard, engagement = data
 
             kb_event = self.last_keyboard_time != keyboard.time
             ms_event = self.last_mouse_time != mouse.time
@@ -97,26 +92,12 @@ class GraphView(SinkBase):
             point = [kb_event or ms_event, is_engaged]
         return point
 
-    def update(self):
+    def update(self, data):
         '''Apply events and redraw'''
-        if not self.recording:
-            return
         try:
-            point = self.narrow_data()
-            # point = np.random.randint(0, 2, 2)
-            self.points = np.append(self.points, [point], 0)
-            self.points = self.points[-self.max_points:]
-            self.app.plot(self.points)
-
-            # start_recording = Button(self.axs[0][1], 'Start rec')
-            # start_recording.on_clicked(self.start_recording_callback)
-            # stop_recording = Button(self.axs[0][1], 'Stop rec')
-            # stop_recording.on_clicked(self.stop_recording_callback)
-
-            # self.plot(self.points[:, 0], self.axs[1]
-            #           [0], "Input (mouse/keyboard)")
-            # self.plot(self.points[:, 1], self.axs[1][1], "Engagement")
-
+            point = self.narrow_data(data)
+            self.buffer.append(point)
+            self.window.plot(self.buffer)
         except AttributeError:
             # No data yet
             print("error in update")
@@ -125,11 +106,15 @@ class GraphView(SinkBase):
 class Window(QtWidgets.QMainWindow):
     '''Graph frontend window'''
 
-    def __init__(self, n, history):
+    def __init__(self, points: int, toggle_callback):
         super().__init__()
         _main = QtWidgets.QWidget()
         self.setCentralWidget(_main)
         layout = QtWidgets.QVBoxLayout(_main)
+
+        record_button = QtWidgets.QPushButton("Start/stop recording")
+        record_button.clicked.connect(toggle_callback)
+        layout.addWidget(record_button)
 
         figure, [self.axs_inp, self.axs_eng] = plt.subplots(
             1, 2, sharex=True, sharey=True, figsize=(5, 2))
@@ -137,25 +122,22 @@ class Window(QtWidgets.QMainWindow):
         self.canvas = FigureCanvas(figure)
         layout.addWidget(self.canvas)
 
+        self.points = points
         self.axs_inp.set_title("Input (keyboard/mouse)", fontsize=10)
-        self.set_axis(self.axs_inp, n, history)
+        self.set_axis_ticks(self.axs_inp)
         self.axs_eng.set_title("Engagement", fontsize=10)
-        self.set_axis(self.axs_eng, n, history)
+        self.set_axis_ticks(self.axs_eng)
 
-        self.n = n
+        self.line_inp, *_ = self.axs_inp.plot(range(self.points), np.zeros(self.points))
+        self.line_eng, *_ = self.axs_eng.plot(range(self.points), np.zeros(self.points))
 
-        self.line_inp, *_ = self.axs_inp.plot(range(self.n), np.zeros(self.n))
-        self.line_eng, *_ = self.axs_eng.plot(range(self.n), np.zeros(self.n))
-
-    def set_axis(self, ax, n, history):
-        xlabels = [str(x)+'s' for x in [history, history/2, 0]]
-        ax.set_xticks([0, n/2, n])
-        ax.set_xticklabels(xlabels)
-        ax.set_yticks([0, 1])
-        ax.set_yticklabels(["absent", "present"])
+    @staticmethod
+    def set_axis_ticks(axis):
+        axis.set_yticks([0, 1])
+        axis.set_yticklabels(["absent", "present"])
 
     def plot(self, ys):
         '''Update points'''
-        self.line_inp.set_data(range(self.n), ys[:, 0])
-        self.line_eng.set_data(range(self.n), ys[:, 1])
+        self.line_inp.set_data(range(self.points), ys[:, 0])
+        self.line_eng.set_data(range(self.points), ys[:, 1])
         self.canvas.draw()

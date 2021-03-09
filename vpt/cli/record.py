@@ -38,20 +38,20 @@ def record(audio_source: Union[str, int], video_source_id: int):
                         mouse_compressor,
                         keyboard_source,
                         engagement_estimator)
-    graph_display = GraphView(mouse_compressor,
-                              keyboard_source,
-                              engagement_estimator)
+    graph_view = GraphView(mouse_compressor,
+                           keyboard_source,
+                           engagement_estimator)
 
     qapp = QtWidgets.QApplication.instance()
     if not qapp:
         qapp = QtWidgets.QApplication(sys.argv)
 
     store.start(scheduler)
-    graph_display.start(scheduler)
+    graph_view.start(scheduler)
 
     exit_code = qapp.exec_()
 
-    graph_display.stop()
+    graph_view.stop()
     store.stop()
 
     sys.exit(exit_code)
