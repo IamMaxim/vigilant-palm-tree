@@ -36,7 +36,7 @@ class GraphView(SinkBase):
         self.last_keyboard_time = 0
         self.last_mouse_time = 0
         self.points_in_buffer = 20
-        self.buffer = deque([0] * self.points_in_buffer, maxlen=self.points_in_buffer)
+        self.buffer = deque([(0, 0)] * self.points_in_buffer, maxlen=self.points_in_buffer)
         self.scheduler = None
 
     def start(self, scheduler: QtScheduler):
