@@ -3,47 +3,44 @@ import time
 import sys
 from typing import Union
 
-import cv2
 import keyboard
 import mouse
 import numpy as np
 import matplotlib.pyplot as plt
-
 from rx import operators
-
-from vpt.capabilities import OutputCapable
-from vpt.sinks.base import SinkBase
-from vpt.sources.base import SourceBase
-from vpt.data_structures import Engagement
-
 from matplotlib.backends.qt_compat import QtCore, QtWidgets
 if QtCore.qVersion() >= "5.":
     from matplotlib.backends.backend_qt5agg import (FigureCanvas)
 else:
     from matplotlib.backends.backend_qt4agg import (FigureCanvas)
 
+from vpt.capabilities import OutputCapable
+from vpt.sinks.base import SinkBase
+from vpt.data_structures import Engagement
+
 
 class GraphView(SinkBase):
     """A sink node to display the graphs."""
 
     def __init__(self,
-                 video_source: OutputCapable[VideoFrame],
-                 mouse_source: OutputCapable[Union[mouse.MoveEvent, mouse.WheelEvent, mouse.ButtonEvent]],
+                 mouse_source: OutputCapable[
+                     Union[mouse.MoveEvent, mouse.WheelEvent, mouse.ButtonEvent]
+                 ],
                  keyboard_source: OutputCapable[keyboard.KeyboardEvent],
                  engagement_source: OutputCapable[Engagement]):
+        self.sources = [mouse_source, keyboard_source, engagement_source]
+        self.stopped = True
         self.last_keyboard_time = 0
         self.last_mouse_time = 0
 
         self.max_points = 32
-
-        self.points_count = int(history / interval)
         self.app, self.qapp, self.record_button = self.init_window(
             history, interval)
 
         self.last_keyboard_time = 0
         self.last_mouse_time = 0
         self.data = False
-        self.points = np.zeros((self.points_count, 2))
+        self.points = np.zeros((self.max_points, 2))
 
         initial_keyboard_event = keyboard.KeyboardEvent(keyboard.KEY_UP, 0)
         initial_mouse_event = mouse.ButtonEvent(
@@ -66,7 +63,7 @@ class GraphView(SinkBase):
         if not qapp:
             qapp = QtWidgets.QApplication(sys.argv)
 
-        app = Window(self.points_count, history)
+        app = Window(self.max_points, history)
 
         record_button = QtWidgets.QPushButton("Paused")
         record_button.clicked.connect(self.toggle_recording)
@@ -91,13 +88,6 @@ class GraphView(SinkBase):
     def update_data(self, data):
         '''Update event records'''
         self.data = data
-        # print("update data", data)
-
-    # def start_recording_callback(self):
-    #     print('Started recording')
-    #
-    # def stop_recording_callback(self):
-    #     print('Stopped recording')
 
     def narrow_data(self):
         '''Get 2 points 0/1 from data'''
@@ -116,8 +106,6 @@ class GraphView(SinkBase):
                 Engagement.ENGAGEMENT, Engagement.CONFERENCING)
 
             point = [kb_event or ms_event, is_engaged]
-
-        # print('data point', point)
         return point
 
     def update(self):
@@ -128,7 +116,7 @@ class GraphView(SinkBase):
             point = self.narrow_data()
             # point = np.random.randint(0, 2, 2)
             self.points = np.append(self.points, [point], 0)
-            self.points = self.points[-self.points_count:]
+            self.points = self.points[-self.max_points:]
             self.app.plot(self.points)
 
             # start_recording = Button(self.axs[0][1], 'Start rec')
@@ -143,7 +131,6 @@ class GraphView(SinkBase):
         except AttributeError:
             # No data yet
             print("error in update")
-            pass
 
 
 class Window(QtWidgets.QMainWindow):
@@ -151,15 +138,15 @@ class Window(QtWidgets.QMainWindow):
 
     def __init__(self, n, history):
         super().__init__()
-        self._main = QtWidgets.QWidget()
-        self.setCentralWidget(self._main)
-        self.layout = QtWidgets.QVBoxLayout(self._main)
+        _main = QtWidgets.QWidget()
+        self.setCentralWidget(_main)
+        layout = QtWidgets.QVBoxLayout(_main)
 
-        self.fig, [self.axs_inp, self.axs_eng] = plt.subplots(
+        figure, [self.axs_inp, self.axs_eng] = plt.subplots(
             1, 2, sharex=True, sharey=True, figsize=(5, 2))
 
-        self.canvas = FigureCanvas(self.fig)
-        self.layout.addWidget(self.canvas)
+        self.canvas = FigureCanvas(figure)
+        layout.addWidget(self.canvas)
 
         self.axs_inp.set_title("Input (keyboard/mouse)", fontsize=10)
         self.set_axis(self.axs_inp, n, history)
@@ -167,10 +154,9 @@ class Window(QtWidgets.QMainWindow):
         self.set_axis(self.axs_eng, n, history)
 
         self.n = n
-        self.rn = range(n)
 
-        self.line_inp, *_ = self.axs_inp.plot(self.rn, [0] * self.n)
-        self.line_eng, *_ = self.axs_eng.plot(self.rn, [0] * self.n)
+        self.line_inp, *_ = self.axs_inp.plot(range(self.n), np.zeros(self.n))
+        self.line_eng, *_ = self.axs_eng.plot(range(self.n), np.zeros(self.n))
 
     def set_axis(self, ax, n, history):
         xlabels = [str(x)+'s' for x in [history, history/2, 0]]
@@ -181,7 +167,6 @@ class Window(QtWidgets.QMainWindow):
 
     def plot(self, ys):
         '''Update points'''
-        # print("plotting", ys)
-        self.line_inp.set_data(self.rn, ys[:, 0])
-        self.line_eng.set_data(self.rn, ys[:, 1])
+        self.line_inp.set_data(range(self.n), ys[:, 0])
+        self.line_eng.set_data(range(self.n), ys[:, 1])
         self.canvas.draw()

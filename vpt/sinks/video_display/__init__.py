@@ -6,7 +6,7 @@ import cv2
 
 from vpt.data_structures import VideoFrame
 from vpt.sinks.base import SinkBase
-from vpt.sources.base import SourceBase
+from vpt.capabilities import OutputCapable
 
 
 class VideoDisplay(SinkBase):
@@ -15,7 +15,7 @@ class VideoDisplay(SinkBase):
     start_time: float
     duration: float
 
-    def __init__(self, video_frame_source: SourceBase[VideoFrame], duration=-1):
+    def __init__(self, video_frame_source: OutputCapable[VideoFrame], duration=-1):
         """
         :param video_frame_source: the source of video frames. May be a processor or source node.
         :param duration: max duration after which the display will automatically close.

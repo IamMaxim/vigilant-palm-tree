@@ -29,8 +29,11 @@ class SQLiteStore(SinkBase):
     connection: sqlite3.Connection
 
     def __init__(self, db_path: str,
-                 mouse_source: OutputCapable[Union[mouse.MoveEvent, mouse.WheelEvent, mouse.ButtonEvent]],
-                 keyboard_source: OutputCapable[keyboard.KeyboardEvent], engagement_source: OutputCapable[Engagement]):
+                 mouse_source: OutputCapable[
+                     Union[mouse.MoveEvent, mouse.WheelEvent, mouse.ButtonEvent]
+                 ],
+                 keyboard_source: OutputCapable[keyboard.KeyboardEvent],
+                 engagement_source: OutputCapable[Engagement]):
         """Create a database or open an existing one."""
         self.stopped = True
         self.sources = [mouse_source, keyboard_source, engagement_source]
