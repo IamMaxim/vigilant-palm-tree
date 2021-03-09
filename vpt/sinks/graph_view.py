@@ -8,6 +8,7 @@ import mouse
 import numpy as np
 import matplotlib.pyplot as plt
 from rx import operators
+from rx.scheduler.mainloop import QtScheduler
 from matplotlib.backends.qt_compat import QtCore, QtWidgets
 if QtCore.qVersion() >= "5.":
     from matplotlib.backends.backend_qt5agg import (FigureCanvas)
@@ -28,34 +29,26 @@ class GraphView(SinkBase):
                  ],
                  keyboard_source: OutputCapable[keyboard.KeyboardEvent],
                  engagement_source: OutputCapable[Engagement]):
-        self.sources = [mouse_source, keyboard_source, engagement_source]
         self.stopped = True
-        self.last_keyboard_time = 0
-        self.last_mouse_time = 0
+        self.sources = [mouse_source, keyboard_source, engagement_source]
 
-        self.max_points = 32
-        self.app, self.qapp, self.record_button = self.init_window(
-            history, interval)
-
-        self.last_keyboard_time = 0
-        self.last_mouse_time = 0
-        self.data = False
-        self.points = np.zeros((self.max_points, 2))
+    def start(self, scheduler: QtScheduler):
+        if not self.stopped:
+            return
+        super().start(scheduler)
+        mouse_source, keyboard_source, engagement_source = self.sources
 
         initial_keyboard_event = keyboard.KeyboardEvent(keyboard.KEY_UP, 0)
-        initial_mouse_event = mouse.ButtonEvent(
-            event_type=mouse.UP, button=0, time=time.time())
-
+        initial_mouse_event = mouse.ButtonEvent(event_type=mouse.UP,
+                                                button=0,
+                                                time=time.time())
         mouse_source.output \
             .pipe(operators.start_with(initial_mouse_event)) \
             .pipe(operators.combine_latest(
                 keyboard_source.get_data_stream().pipe(
                     operators.start_with(initial_keyboard_event)),
                 engagement_source.get_data_stream()
-            )).subscribe(self.update_data)
-
-        self.recording = False
-        self.toggle_recording()
+            )).subscribe(self.update_data, scheduler=scheduler)
 
     def init_window(self, history, interval):
         '''Create QT Window.'''

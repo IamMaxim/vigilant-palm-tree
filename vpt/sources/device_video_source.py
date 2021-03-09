@@ -4,6 +4,7 @@ import threading
 import cv2
 from rx import Observable
 from rx.subject import Subject
+from rx.scheduler.mainloop import QtScheduler
 
 from vpt.data_structures import VideoFrame
 from vpt.sources.base import SourceBase
@@ -16,7 +17,7 @@ class DeviceVideoSource(SourceBase[VideoFrame]):
     device = 0
     _thread: threading.Thread
 
-    def start(self):
+    def start(self, _scheduler: QtScheduler):
         '''Starts the video recording stream in a separate thread.'''
         if not self.stopped:
             return

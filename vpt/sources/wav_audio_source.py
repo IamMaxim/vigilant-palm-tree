@@ -9,6 +9,7 @@ import sounddevice as sd
 import soundfile as sf
 from rx import Observable
 from rx.subject import Subject
+from rx.scheduler.mainloop import QtScheduler
 from scipy.fft import fft
 
 from vpt.sources.base import SourceBase
@@ -41,7 +42,7 @@ class WavAudioSource(SourceBase[np.ndarray]):
         '''The getter for the audio chunks observable.'''
         return self._subj
 
-    def start(self):
+    def start(self, _scheduler: QtScheduler):
         '''Outputs the entire file into the stream in 1-second chunks.'''
         if not self.stopped:
             return

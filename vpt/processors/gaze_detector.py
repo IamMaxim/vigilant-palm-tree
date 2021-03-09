@@ -9,6 +9,7 @@ import numpy as np
 import tensorflow as tf
 from rx import Observable
 from rx.subject import Subject
+from rx.scheduler.mainloop import QtScheduler
 from tensorflow import keras
 
 from vpt.data_structures import VideoFrame
@@ -174,7 +175,14 @@ class GazeDetector(ProcessorBase[np.ndarray]):
         self._subj = Subject()
         self.stopped = True
         self.sources = [video_source]
-        video_source.output.subscribe(self.process_frame)
+
+    def start(self, scheduler: QtScheduler):
+        if not self.stopped:
+            return
+        super().start(scheduler)
+        video_source, = self.sources
+
+        video_source.output.subscribe(self.process_frame, scheduler=scheduler)
 
     def process_frame(self, frame: VideoFrame):
         """Processes each incoming frame to detect gaze"""

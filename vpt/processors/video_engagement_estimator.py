@@ -3,6 +3,7 @@ from typing import Union
 import numpy as np
 from rx import Observable
 from rx.subject import Subject
+from rx.scheduler.mainloop import QtScheduler
 
 from vpt.capabilities import OutputCapable
 from vpt.processors.base import ProcessorBase
@@ -21,8 +22,16 @@ class VideoEngagementEstimator(ProcessorBase[Union[None, bool]]):
         self._subj = Subject()
         self.stopped = True
         self.sources = [head_rotation_source]
-        head_rotation_source.output.subscribe(self.process_rotation)
         self.boundary = 1
+
+
+    def start(self, scheduler: QtScheduler):
+        if not self.stopped:
+            return
+        super().start(scheduler)
+        head_rotation_source, = self.sources
+
+        head_rotation_source.output.subscribe(self.process_rotation, scheduler=scheduler)
 
     def process_rotation(self, rot: Union[np.ndarray, None]):
         '''Compute the gaze code based on the rotation vector.'''

@@ -3,6 +3,7 @@ import time
 from time import sleep
 
 import cv2
+from rx.scheduler.mainloop import QtScheduler
 
 from vpt.data_structures import VideoFrame
 from vpt.sinks.base import SinkBase
@@ -24,16 +25,20 @@ class VideoDisplay(SinkBase):
         self.stopped = True
         self.sources = [video_frame_source]
         self.duration = duration
-        video_frame_source.output.subscribe(self.process_frame)
 
     def process_frame(self, frame: VideoFrame):
         """Updates the currently displayed frame."""
         self.frame = frame
 
-    def start(self):
+    def start(self, scheduler: QtScheduler):
         """Starts the video display.
            Note: this is a blocking method. It returns as soon as user presses the ESC key."""
-        super().start()
+        if not self.stopped:
+            return
+        super().start(scheduler)
+        video_frame_source, = self.sources
+
+        video_frame_source.output.subscribe(self.process_frame)
         self.start_time = time.time()
 
         while not self.stopped:

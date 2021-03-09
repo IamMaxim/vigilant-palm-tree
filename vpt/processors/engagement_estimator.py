@@ -3,6 +3,7 @@
 import numpy as np
 from rx import Observable, operators
 from rx.subject import Subject
+from rx.scheduler.mainloop import QtScheduler
 
 from vpt.data_structures import Engagement
 from vpt.capabilities import OutputCapable
@@ -20,9 +21,16 @@ class EngagementEstimator(ProcessorBase[Engagement]):
         self.stopped = True
         self.sources = [head_rotation_vector, voice_present]
 
+
+    def start(self, scheduler: QtScheduler):
+        if not self.stopped:
+            return
+        super().start(scheduler)
+        head_rotation_vector, voice_present = self.sources
+
         # Observable with all data channels merged into one stream
         obs = head_rotation_vector.output.pipe(operators.combine_latest(voice_present.output))
-        obs.subscribe(self.process_state)
+        obs.subscribe(self.process_state, scheduler=scheduler)
 
     def process_state(self, state):
         '''Convert the state pair into an engagement code.'''

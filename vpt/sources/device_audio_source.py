@@ -6,6 +6,7 @@ import numpy as np
 import sounddevice as sd
 from rx import Observable
 from rx.subject import Subject
+from rx.scheduler.mainloop import QtScheduler
 
 from vpt.sources.base import SourceBase
 
@@ -54,7 +55,7 @@ class DeviceAudioSource(SourceBase[np.ndarray]):
                 break
         return chunk[int(idx * 1.1):, :]
 
-    def start(self):
+    def start(self, _scheduler: QtScheduler):
         '''Start the data generating thread.'''
         if not self.stopped:
             return

@@ -5,6 +5,7 @@ import threading
 import cv2
 from rx import Observable
 from rx.subject import Subject
+from rx.scheduler.mainloop import QtScheduler
 
 from vpt.data_structures import VideoFrame
 from vpt.sources.base import SourceBase
@@ -23,7 +24,7 @@ class MP4VideoSource(SourceBase[VideoFrame]):
         if not self.video_capture.isOpened():
             raise ValueError('could not open video stream for file {}'.format(filename))
 
-    def start(self):
+    def start(self, _scheduler: QtScheduler):
         '''Start the capturing thread.'''
         if not self.stopped:
             return

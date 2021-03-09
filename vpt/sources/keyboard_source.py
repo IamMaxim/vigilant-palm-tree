@@ -2,6 +2,7 @@
 import keyboard
 from rx import Observable
 from rx.subject import Subject
+from rx.scheduler.mainloop import QtScheduler
 
 from vpt.sources.base import SourceBase
 
@@ -14,7 +15,7 @@ class KeyboardSource(SourceBase[keyboard.KeyboardEvent]):
         self._subj = Subject()
         self.stopped = True
 
-    def start(self):
+    def start(self, _scheduler: QtScheduler):
         '''Attach an event listener.'''
         if not self.stopped:
             return

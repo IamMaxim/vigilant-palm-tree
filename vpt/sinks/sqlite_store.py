@@ -7,6 +7,7 @@ from typing import Union
 
 import keyboard
 import mouse
+from rx.scheduler.mainloop import QtScheduler
 
 from vpt.data_structures import Engagement
 from vpt.capabilities import OutputCapable
@@ -72,9 +73,15 @@ class SQLiteStore(SinkBase):
         self.connection.commit()
         cur.close()
 
-        mouse_source.output.subscribe(self.save_mouse)
-        keyboard_source.output.subscribe(self.save_keyboard)
-        engagement_source.output.subscribe(self.save_engagement)
+    def start(self, scheduler: QtScheduler):
+        if not self.stopped:
+            return
+        super().start(scheduler)
+        mouse_source, keyboard_source, engagement_source = self.sources
+
+        mouse_source.output.subscribe(self.save_mouse, scheduler=scheduler)
+        keyboard_source.output.subscribe(self.save_keyboard, scheduler=scheduler)
+        engagement_source.output.subscribe(self.save_engagement, scheduler=scheduler)
 
     def __del__(self):
         """Clean up resources."""

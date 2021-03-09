@@ -4,6 +4,7 @@ from typing import Union
 import mouse
 from rx import Observable
 from rx.subject import Subject
+from rx.scheduler.mainloop import QtScheduler
 
 from vpt.sources.base import SourceBase
 
@@ -25,7 +26,7 @@ class MouseSource(SourceBase[Union[mouse.MoveEvent, mouse.WheelEvent, mouse.Butt
         """Sends the event to the stream."""
         self._subj.on_next(event)
 
-    def start(self):
+    def start(self, _scheduler: QtScheduler):
         '''Attach an event listener.'''
         if not self.stopped:
             return
