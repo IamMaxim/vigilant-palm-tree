@@ -30,7 +30,7 @@ class VideoDisplay(SinkBase):
         """Updates the currently displayed frame."""
         self.frame = frame
 
-    def run(self):
+    def start(self):
         """Starts the video display.
            Note: this is a blocking method. It returns as soon as user presses the ESC key."""
         super().start()
