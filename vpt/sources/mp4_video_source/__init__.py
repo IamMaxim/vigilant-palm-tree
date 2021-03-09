@@ -1,14 +1,16 @@
+'''Gets the video from an MP4 file.'''
+
 import threading
 
 import cv2
 from rx import Observable
 from rx.subject import Subject
 
-from data_structures import VideoFrame
+from vpt.data_structures import VideoFrame
 from vpt.sources.base import SourceBase
 
 
-class VideoFileSource(SourceBase[VideoFrame]):
+class MP4VideoSource(SourceBase[VideoFrame]):
     '''A data source for the video stream from an MP4 file.'''
     _subj: Subject
     _thread: threading.Thread

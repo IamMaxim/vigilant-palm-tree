@@ -1,4 +1,4 @@
-'''Gets the audio from the device.'''
+'''Gets the audio from a WAV file.'''
 
 import math
 import threading

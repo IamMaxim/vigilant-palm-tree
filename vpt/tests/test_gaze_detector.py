@@ -1,4 +1,12 @@
 import sys
+import unittest
+
+import numpy as np
+
+from vpt.sources import MP4VideoSource
+from vpt.processors.gaze_detector import GazeDetector
+from vpt.processors.gaze_engagement_estimator import GazeEngagementEstimator
+
 # If you know better way than using this sys.path thingy, tell me
 #
 # This is needed so that the vpt module would be recognized when
@@ -6,31 +14,23 @@ import sys
 # from the root of the repository
 sys.path.append('.')
 
-import unittest
-import numpy as np
-import time
-from vpt.sources.video_file_source import VideoFileSource
-from vpt.processors.gaze_detector import GazeDetector
-from vpt.processors.gaze_engagement_estimator import GazeEngagementEstimator
-from vpt.sinks.video_display import VideoDisplay
-
 
 class TestGazeDetector(unittest.TestCase):
     filename: str
     want: bool
 
     def test_gaze(self):
-        video_source = VideoFileSource(self.filename)
+        video_source = MP4VideoSource(self.filename)
         gaze_detector = GazeDetector(video_source)
         gaze_estimator = GazeEngagementEstimator(gaze_detector, 0.6)
 
         stat = []
-        gaze_estimator.output.subscribe(lambda verdict: stat.append(verdict))
-        #gaze_detector.output.subscribe(lambda verdict: print(np.linalg.norm(verdict)))
-        #video_display = VideoDisplay(video_source, duration=5)
+        gaze_estimator.output.subscribe(stat.append)
+        # gaze_detector.output.subscribe(lambda verdict: print(np.linalg.norm(verdict)))
+        # video_display = VideoDisplay(video_source, duration=5)
 
         video_source.start()
-        #video_display.run()
+        # video_display.run()
         # video_source.wait()
 
         percentage = 100.0 * np.count_nonzero(stat) / len(stat)
