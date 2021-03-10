@@ -1,7 +1,6 @@
 """Human facial landmark detector based on Convolutional Neural Network."""
 import math
 import os
-from typing import Union
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # To disable TF's warnings
 
@@ -13,14 +12,14 @@ from rx.subject import Subject
 from rx.scheduler.mainloop import QtScheduler
 from tensorflow import keras
 
-from vpt.data_structures import VideoFrame
+from vpt.data_structures import VideoFrame, Gaze
 from vpt.processors.base import ProcessorBase
 from vpt.sources.base import SourceBase
 
 tf.get_logger().setLevel('ERROR')
 
 
-class GazeDetector(ProcessorBase[Union[bool, None]]):
+class GazeDetector(ProcessorBase[Gaze]):
     """Detects if the user is looking at the screen or not."""
     _subj: Subject
 
@@ -55,7 +54,7 @@ class GazeDetector(ProcessorBase[Union[bool, None]]):
         faceboxes = mark_detector.extract_cnn_facebox(frame.frame)
 
         if len(faceboxes) == 0:
-            self._subj.on_next(None)
+            self._subj.on_next(Gaze.ABSENT)
 
         # For each facebox found in the picture, extract 128x128 region
         #   and pass it to PnP solve method
@@ -93,14 +92,7 @@ class GazeDetector(ProcessorBase[Union[bool, None]]):
             rotation_vector[0] -= math.pi
 
             rot_arr = np.array(rotation_vector).reshape(1, 3)
-
-            # Append the current rotation vector to the data
-            # data = np.empty(shape=(0, 3))
-
-            # data = np.concatenate((data, rot_arr), axis=0)
-            # debug.draw_rotation_values()
-
-            self._subj.on_next(rot_arr)
+            self._subj.on_next(Gaze.WORKSPACE if np.linalg.norm(rot_arr) < 1 else Gaze.ELSEWHERE)
 
     @property
     def output(self) -> Observable:

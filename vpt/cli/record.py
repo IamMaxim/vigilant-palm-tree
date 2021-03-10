@@ -9,7 +9,6 @@ from rx.scheduler.mainloop import QtScheduler
 from matplotlib.backends.backend_qt5 import QtCore, QtWidgets
 
 from vpt.processors import EngagementEstimator, GazeDetector, SpeechDetector, MouseCompressor
-from vpt.processors.video_engagement_estimator import VideoEngagementEstimator
 from vpt.sinks import GraphView, CSVStore
 from vpt.sources import DeviceVideoSource, KeyboardSource, MouseSource, DeviceAudioSource
 
@@ -28,10 +27,9 @@ def record(audio_source: Union[str, int], video_source_id: int):
     mouse_source = MouseSource()
 
     gaze_detector = GazeDetector(video_source)
-    video_estimator = VideoEngagementEstimator(gaze_detector)
     speech_detector = SpeechDetector(audio_source)
     mouse_compressor = MouseCompressor(mouse_source)
-    engagement_estimator = EngagementEstimator(video_estimator,
+    engagement_estimator = EngagementEstimator(gaze_detector,
                                                speech_detector)
 
     store = CSVStore(f'data/session-{datetime.now().strftime("%m-%d-%H-%M")}',

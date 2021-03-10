@@ -1,11 +1,12 @@
 """The module responsible for estimating the engagement of the user."""
+from typing import Tuple
 
 import numpy as np
 from rx import Observable, operators
 from rx.subject import Subject
 from rx.scheduler.mainloop import QtScheduler
 
-from vpt.data_structures import Engagement
+from vpt.data_structures import Engagement, Gaze
 from vpt.capabilities import OutputCapable
 from vpt.processors.base import ProcessorBase
 
@@ -34,22 +35,20 @@ class EngagementEstimator(ProcessorBase[Engagement]):
             obs.subscribe(self.process_state, scheduler=scheduler),
         ]
 
-    def process_state(self, state):
+    def process_state(self, state: Tuple[Gaze, bool]):
         '''Convert the state pair into an engagement code.'''
         video_eng, voice = state
 
-        if video_eng == True and voice == False:
+        if video_eng == Gaze.WORKSPACE and not voice:
             self._subj.on_next(Engagement.ENGAGEMENT)
-        elif video_eng == True and voice == True:
+        elif video_eng == Gaze.WORKSPACE and voice:
             self._subj.on_next(Engagement.CONFERENCING)
-        elif video_eng == False and voice == False:
+        elif video_eng == Gaze.ELSEWHERE and not voice:
             self._subj.on_next(Engagement.IDLING)
-        elif video_eng == False and voice == True:
+        elif video_eng == Gaze.ELSEWHERE and voice:
             self._subj.on_next(Engagement.DISTRACTION)
-        elif video_eng == None:
+        elif video_eng == Gaze.ABSENT:
             self._subj.on_next(Engagement.ABSENCE)
-        else:
-            raise Exception('Invalid engagement state machine state detected')
 
     @property
     def output(self) -> Observable:
