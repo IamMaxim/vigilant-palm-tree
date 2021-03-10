@@ -2,8 +2,7 @@
 from typing import Union
 
 import mouse
-from rx import Observable
-from rx import operators
+from rx import Observable, operators
 from rx.subject import Subject
 from rx.scheduler.mainloop import QtScheduler
 
@@ -16,7 +15,7 @@ class MouseCompressor(ProcessorBase[Union[mouse.MoveEvent, mouse.WheelEvent, mou
     _subj: Subject
     window_duration: float
 
-    def __init__(self, mouse_source: SourceBase, window_duration=0.016):
+    def __init__(self, mouse_source: SourceBase, window_duration=0.1):
         self._subj = Subject()
         self.stopped = True
         self.sources = [mouse_source]
@@ -30,9 +29,8 @@ class MouseCompressor(ProcessorBase[Union[mouse.MoveEvent, mouse.WheelEvent, mou
         mouse_source, = self.sources
 
         self.subscriptions = [
-            mouse_source
-                .output
-                .pipe(operators.throttle_first(self.window_duration))
+            mouse_source.output
+                .pipe(operators.debounce(self.window_duration))
                 .subscribe(self._subj.on_next, scheduler=scheduler),
         ]
 

@@ -7,7 +7,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # To disable TF's warnings
 import cv2
 import numpy as np
 import tensorflow as tf
-from rx import Observable
+from rx import Observable, operators
 from rx.subject import Subject
 from rx.scheduler.mainloop import QtScheduler
 from tensorflow import keras
@@ -36,7 +36,9 @@ class GazeDetector(ProcessorBase[Gaze]):
         video_source, = self.sources
 
         self.subscriptions = [
-            video_source.output.subscribe(self.process_frame, scheduler=scheduler),
+            video_source.output
+                .pipe(operators.debounce(0.1))  # in seconds
+                .subscribe(self.process_frame, scheduler=scheduler),
         ]
 
     def process_frame(self, frame: VideoFrame):
