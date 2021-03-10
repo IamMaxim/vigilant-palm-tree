@@ -1,6 +1,5 @@
 """Display graphs & app controls."""
 import time
-import sys
 from typing import Union
 from collections import deque
 
@@ -8,6 +7,7 @@ import keyboard
 import mouse
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.axes import Axes
 from rx import operators
 from rx.scheduler.mainloop import QtScheduler
 from matplotlib.backends.qt_compat import QtCore, QtWidgets
@@ -53,8 +53,7 @@ class GraphView(SinkBase):
         mouse_source.output \
             .pipe(operators.start_with(initial_mouse_event)) \
             .pipe(operators.combine_latest(
-                keyboard_source.output.pipe(
-                    operators.start_with(initial_keyboard_event)),
+                keyboard_source.output.pipe(operators.start_with(initial_keyboard_event)),
                 engagement_source.output
             )).subscribe(self.update, scheduler=scheduler)
 
@@ -132,12 +131,14 @@ class Window(QtWidgets.QMainWindow):
         self.line_eng, *_ = self.axs_eng.plot(range(self.points), np.zeros(self.points))
 
     @staticmethod
-    def set_axis_ticks(axis):
+    def set_axis_ticks(axis: Axes):
+        axis.set_ylim(-0.2, 1.2)
         axis.set_yticks([0, 1])
         axis.set_yticklabels(["absent", "present"])
+        axis.set_xticks([])
 
     def plot(self, ys):
         '''Update points'''
         self.line_inp.set_data(range(self.points), [i[0] for i in ys])
         self.line_eng.set_data(range(self.points), [i[1] for i in ys])
-        self.canvas.draw()
+        self.canvas.draw_idle()
