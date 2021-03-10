@@ -33,16 +33,16 @@ class FileStore(SinkBase):
         self.audio_file = sf.SoundFile(self.dir / 'audio.wav',
                                        mode='w', samplerate=44100, channels=2)
 
-    def start(self, scheduler: QtScheduler):
+    def start(self):
         if not self.stopped:
             return
-        super().start(scheduler)
+        super().start()
         mouse_source, keyboard_source, audio_source = self.sources
 
         self.subscriptions = [
-            audio_source.output.subscribe(self.store_audio_frame, scheduler=scheduler),
-            mouse_source.output.subscribe(self.store_mouse_event, scheduler=scheduler),
-            keyboard_source.output.subscribe(self.store_key_event, scheduler=scheduler),
+            audio_source.output.subscribe(self.store_audio_frame),
+            mouse_source.output.subscribe(self.store_mouse_event),
+            keyboard_source.output.subscribe(self.store_key_event),
         ]
 
     def store_audio_frame(self, frame: np.ndarray):

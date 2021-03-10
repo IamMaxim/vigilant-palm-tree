@@ -15,7 +15,7 @@ class KeyboardSource(SourceBase[keyboard.KeyboardEvent]):
         self._subj = Subject()
         self.stopped = True
 
-    def start(self, _scheduler: QtScheduler):
+    def start(self):
         '''Attach an event listener.'''
         if not self.stopped:
             return

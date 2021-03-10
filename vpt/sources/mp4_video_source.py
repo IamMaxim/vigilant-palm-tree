@@ -24,7 +24,7 @@ class MP4VideoSource(SourceBase[VideoFrame]):
         if not self.video_capture.isOpened():
             raise ValueError('could not open video stream for file {}'.format(filename))
 
-    def start(self, _scheduler: QtScheduler):
+    def start(self):
         '''Start the capturing thread.'''
         if not self.stopped:
             return

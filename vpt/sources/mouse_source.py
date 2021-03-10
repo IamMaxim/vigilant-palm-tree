@@ -26,7 +26,7 @@ class MouseSource(SourceBase[Union[mouse.MoveEvent, mouse.WheelEvent, mouse.Butt
         """Sends the event to the stream."""
         self._subj.on_next(event)
 
-    def start(self, _scheduler: QtScheduler):
+    def start(self):
         '''Attach an event listener.'''
         if not self.stopped:
             return

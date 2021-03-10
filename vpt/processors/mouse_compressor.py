@@ -22,16 +22,16 @@ class MouseCompressor(ProcessorBase[Union[mouse.MoveEvent, mouse.WheelEvent, mou
         self.window_duration = window_duration
         self.subscriptions = None
 
-    def start(self, scheduler: QtScheduler):
+    def start(self):
         if not self.stopped:
             return
-        super().start(scheduler)
+        super().start()
         mouse_source, = self.sources
 
         self.subscriptions = [
             mouse_source.output
                 .pipe(operators.debounce(self.window_duration))
-                .subscribe(self._subj.on_next, scheduler=scheduler),
+                .subscribe(self._subj.on_next),
         ]
 
     @property

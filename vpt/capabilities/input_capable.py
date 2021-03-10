@@ -14,12 +14,12 @@ class InputCapable(Initiatable, ABC):
     sources: List[OutputCapable]
     subscriptions: List[Disposable]
 
-    def start(self, scheduler: QtScheduler):
+    def start(self):
         if not self.stopped:
             return
         self.stopped = False
         for source in self.sources:
-            source.start(scheduler)
+            source.start()
 
     def stop(self):
         if self.stopped:

@@ -55,7 +55,7 @@ class DeviceAudioSource(SourceBase[np.ndarray]):
                 break
         return chunk[int(idx * 1.1):, :]
 
-    def start(self, _scheduler: QtScheduler):
+    def start(self):
         '''Start the data generating thread.'''
         if not self.stopped:
             return

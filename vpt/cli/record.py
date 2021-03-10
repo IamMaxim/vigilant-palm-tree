@@ -15,7 +15,6 @@ from vpt.sources import DeviceVideoSource, KeyboardSource, MouseSource, DeviceAu
 
 def record(audio_source: Union[str, int], video_source_id: int):
     """Runs all of the recorders to check that everything works correctly."""
-    scheduler = QtScheduler(QtCore)
     audio_device = sd.query_devices(kind='input', device=audio_source)
 
     # Create capture nodes
@@ -44,8 +43,8 @@ def record(audio_source: Union[str, int], video_source_id: int):
     if not qapp:
         qapp = QtWidgets.QApplication(sys.argv)
 
-    store.start(scheduler)
-    graph_view.start(scheduler)
+    store.start()
+    graph_view.start()
 
     exit_code = qapp.exec_()
 
