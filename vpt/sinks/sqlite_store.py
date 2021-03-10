@@ -1,9 +1,9 @@
 '''The SQLite store is responsible for writing streams to an SQLite database.'''
+import os
 import csv
 import time
-import threading
+from pathlib import Path
 from typing import Union
-from queue import Queue
 
 import keyboard
 import mouse
@@ -17,11 +17,11 @@ from vpt.sinks.base import SinkBase
 class SQLiteStore(SinkBase):
     """Persistently store the engagement level and keyboard/mouse events
        in an SQLite database."""
-    connection: csv.DictWriter
+    engagement_writer: csv.DictWriter
+    mouse_writer: csv.DictWriter
+    keyboard_writer: csv.DictWriter
 
-    lock = threading.Lock()
-
-    def __init__(self, db_path: str,
+    def __init__(self, data_dir: str,
                  mouse_source: OutputCapable[
                      Union[mouse.MoveEvent, mouse.WheelEvent, mouse.ButtonEvent]
                  ],
@@ -30,42 +30,22 @@ class SQLiteStore(SinkBase):
         """Create a database or open an existing one."""
         self.stopped = True
         self.sources = [mouse_source, keyboard_source, engagement_source]
-        self.csv_file = open('data/engagement.csv', 'w', newline='')
-        self.connection = csv.DictWriter(self.csv_file, ['code', 'timestamp'])
-        self.connection.writeheader()
 
-        self.engagement_queue = Queue()
-        # self.keyboard_queue = Queue()
-        # self.mouse_queue = Queue()
+        os.makedirs(data_dir, exist_ok=True)
+        data_path = Path(data_dir)
 
-        # Create tables
-        # cur = self.connection.cursor()
-        # cur.execute('''
-        #     CREATE TABLE IF NOT EXISTS engagement (
-        #         code integer NOT NULL,
-        #         timestamp integer NOT NULL
-        #     )
-        # ''')
-        # cur.execute('''
-        #     CREATE TABLE IF NOT EXISTS keystrokes (
-        #         type text NOT NULL,
-        #         scancode integer NOT NULL,
-        #         modifiers text NOT NULL,
-        #         timestamp integer NOT NULL
-        #     )
-        # ''')
-        # cur.execute('''
-        #     CREATE TABLE IF NOT EXISTS mouse_events (
-        #         type text NOT NULL,
-        #         x integer,
-        #         y integer,
-        #         wheel_delta integer,
-        #         button text,
-        #         timestamp integer NOT NULL
-        #     )
-        # ''')
-        # self.connection.commit()
-        # cur.close()
+        self.engagement_file = open(data_path / 'engagement.csv', 'w', newline='')
+        self.mouse_file      = open(data_path / 'mouse.csv', 'w', newline='')
+        self.keyboard_file   = open(data_path / 'keyboard.csv', 'w', newline='')
+
+        self.engagement_writer = csv.DictWriter(self.engagement_file, ['code', 'timestamp'])
+        self.engagement_writer.writeheader()
+        self.mouse_writer = csv.DictWriter(self.mouse_file, ['type', 'x', 'y', 'wheel_delta',
+                                                             'button', 'timestamp'])
+        self.mouse_writer.writeheader()
+        self.keyboard_writer = csv.DictWriter(self.keyboard_file, ['type', 'scancode', 'modifiers',
+                                                                   'timestamp'])
+        self.keyboard_writer.writeheader()
 
     def start(self, scheduler: QtScheduler):
         if not self.stopped:
@@ -73,70 +53,48 @@ class SQLiteStore(SinkBase):
         super().start(scheduler)
         mouse_source, keyboard_source, engagement_source = self.sources
 
-        # mouse_source.output.subscribe(self.save_mouse, scheduler=scheduler)
-        # keyboard_source.output.subscribe(self.save_keyboard, scheduler=scheduler)
+        mouse_source.output.subscribe(self.store_mouse_event, scheduler=scheduler)
+        keyboard_source.output.subscribe(self.store_key_event, scheduler=scheduler)
         engagement_source.output.subscribe(self.store_engagement, scheduler=scheduler)
-
-    def save_engagement(self, engagement: Engagement):
-        with self.lock:
-            self.engagement_queue.put(engagement.value)
-
-    def save_keyboard(self, event: keyboard.KeyboardEvent):
-        with self.lock:
-            self.keyboard_queue.put(event)
-
-    def save_mouse(self, event: Union[mouse.MoveEvent, mouse.WheelEvent, mouse.ButtonEvent]):
-        with self.lock:
-            self.mouse_queue.put(event)
-
-    def update(self):
-        while len(self.engagement_queue.queue) > 0:
-            self.store_engagement(self.engagement_queue.get())
-        while len(self.keyboard_queue.queue) > 0:
-            self.store_key_event(self.keyboard_queue.get())
-        while len(self.mouse_queue.queue) > 0:
-            self.store_mouse_event(self.mouse_queue.get())
 
     def __del__(self):
         """Clean up resources."""
-        self.connection.commit()
-        self.connection.close()
+        self.engagement_file.close()
+        self.mouse_file.close()
+        self.keyboard_file.close()
 
-    def store_engagement(self, code: int):
+    def store_engagement(self, code: Engagement):
         """Store an instance of engagement."""
-        with self.lock:
-            self.connection.writerow({'code': code, 'timestamp': int(time.time())})
+        self.engagement_writer.writerow({'code': code.value, 'timestamp': int(time.time())})
 
     def store_key_event(self, event: keyboard.KeyboardEvent):
         """Store a keypress with all of its modifiers."""
-        with self.lock:
-            cur = self.connection.cursor()
-            cur.execute('''
-                INSERT INTO keystrokes VALUES (?, ?, ?, ?)
-            ''', (
-                event.event_type,
-                event.scan_code,
-                ','.join(event.modifiers) if event.modifiers is not None else '', int(
-                    event.time)
-            ))
-            self.connection.commit()
-            cur.close()
+        self.keyboard_writer.writerow({
+            'type': event.event_type,
+            'scancode': event.scan_code,
+            'modifiers': ','.join(event.modifiers) if event.modifiers is not None else '',
+            'timestamp': int(event.time),
+        })
 
     def store_mouse_event(self, event: Union[mouse.MoveEvent, mouse.WheelEvent, mouse.ButtonEvent]):
         """Store mouse movements, button presses and scrolls."""
-        with self.lock:
-            cur = self.connection.cursor()
-            if isinstance(event, mouse.MoveEvent):
-                cur.execute('''
-                    INSERT INTO mouse_events VALUES (?, ?, ?, NULL, NULL, ?)
-                ''', ('move', event.x, event.y, int(event.time)))
-            elif isinstance(event, mouse.WheelEvent):
-                cur.execute('''
-                    INSERT INTO mouse_events VALUES (?, NULL, NULL, ?, NULL, ?)
-                ''', ('wheel', event.delta, int(event.time)))
-            else:
-                cur.execute('''
-                    INSERT INTO mouse_events VALUES (?, NULL, NULL, NULL, ?, ?)
-                ''', ('button', f'{event.button}:{event.event_type}', int(event.time)))
-            self.connection.commit()
-            cur.close()
+        if isinstance(event, mouse.MoveEvent):
+            data = {
+                'type': 'move',
+                'x': event.x,
+                'y': event.y,
+                'timestamp': int(event.time),
+            }
+        elif isinstance(event, mouse.WheelEvent):
+            data = {
+                'type': 'wheel',
+                'wheel_delta': event.delta,
+                'timestamp': int(event.time),
+            }
+        else:
+            data = {
+                'type': 'button',
+                'button': f'{event.button}:{event.event_type}',
+                'timestamp': int(event.time),
+            }
+        self.mouse_writer.writerow(data)
