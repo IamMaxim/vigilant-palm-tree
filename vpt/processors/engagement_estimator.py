@@ -36,15 +36,15 @@ class EngagementEstimator(ProcessorBase[Engagement]):
         '''Convert the state pair into an engagement code.'''
         video_eng, voice = state
 
-        if video_eng is True and voice is False:
+        if video_eng == True and voice == False:
             self._subj.on_next(Engagement.ENGAGEMENT)
-        elif video_eng is True and voice is True:
+        elif video_eng == True and voice == True:
             self._subj.on_next(Engagement.CONFERENCING)
-        elif video_eng is False and voice is False:
+        elif video_eng == False and voice == False:
             self._subj.on_next(Engagement.IDLING)
-        elif video_eng is False and voice is True:
+        elif video_eng == False and voice == True:
             self._subj.on_next(Engagement.DISTRACTION)
-        elif video_eng is None:
+        elif video_eng == None:
             self._subj.on_next(Engagement.ABSENCE)
         else:
             raise Exception('Invalid engagement state machine state detected')
