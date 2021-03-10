@@ -22,7 +22,7 @@ class MouseSource(SourceBase[Union[mouse.MoveEvent, mouse.WheelEvent, mouse.Butt
         '''The getter for the mouse events observable.'''
         return self._subj
 
-    def callback(self, event):
+    def emit_event(self, event):
         """Sends the event to the stream."""
         self._subj.on_next(event)
 
@@ -31,11 +31,11 @@ class MouseSource(SourceBase[Union[mouse.MoveEvent, mouse.WheelEvent, mouse.Butt
         if not self.stopped:
             return
         self.stopped = False
-        mouse.hook(self.callback)
+        mouse.hook(self.emit_event)
 
     def stop(self):
         '''Detach the event listener.'''
         if self.stopped:
             return
         self.stopped = True
-        mouse.unhook_all()
+        mouse.unhook(self.emit_event)
