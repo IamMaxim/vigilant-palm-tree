@@ -48,16 +48,16 @@ class CSVStore(SinkBase):
                                                                    'timestamp'])
         self.keyboard_writer.writeheader()
 
-    def start(self, scheduler: QtScheduler):
+    def start(self):
         if not self.stopped:
             return
-        super().start(scheduler)
+        super().start()
         mouse_source, keyboard_source, engagement_source = self.sources
 
         self.subscriptions = [
-            mouse_source.output.subscribe(self.store_mouse_event, scheduler=scheduler),
-            keyboard_source.output.subscribe(self.store_key_event, scheduler=scheduler),
-            engagement_source.output.subscribe(self.store_engagement, scheduler=scheduler),
+            mouse_source.output.subscribe(self.store_mouse_event),
+            keyboard_source.output.subscribe(self.store_key_event),
+            engagement_source.output.subscribe(self.store_engagement),
         ]
 
     def __del__(self):

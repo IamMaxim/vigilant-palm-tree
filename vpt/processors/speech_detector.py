@@ -39,14 +39,14 @@ class SpeechDetector(ProcessorBase[bool]):
         self.silence_threshold = silence_threshold
         self.subscriptions = None
 
-    def start(self, scheduler: QtScheduler):
+    def start(self):
         if not self.stopped:
             return
-        super().start(scheduler)
+        super().start()
         audio_source, = self.sources
 
         self.subscriptions = [
-            audio_source.output.subscribe(self.detect_speech, scheduler=scheduler),
+            audio_source.output.subscribe(self.detect_speech),
         ]
 
     @property

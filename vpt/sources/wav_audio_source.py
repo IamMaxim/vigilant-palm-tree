@@ -42,7 +42,7 @@ class WavAudioSource(SourceBase[np.ndarray]):
         '''The getter for the audio chunks observable.'''
         return self._subj
 
-    def start(self, _scheduler: QtScheduler):
+    def start(self):
         '''Outputs the entire file into the stream in 1-second chunks.'''
         if not self.stopped:
             return

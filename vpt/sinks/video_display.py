@@ -31,12 +31,12 @@ class VideoDisplay(SinkBase):
         """Updates the currently displayed frame."""
         self.frame = frame
 
-    def start(self, scheduler: QtScheduler):
+    def start(self):
         """Starts the video display.
            Note: this is a blocking method. It returns as soon as user presses the ESC key."""
         if not self.stopped:
             return
-        super().start(scheduler)
+        super().start()
         video_frame_source, = self.sources
 
         self.subscriptions = [

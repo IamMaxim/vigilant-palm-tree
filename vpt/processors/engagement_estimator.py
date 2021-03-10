@@ -23,16 +23,16 @@ class EngagementEstimator(ProcessorBase[Engagement]):
         self.sources = [head_rotation_vector, voice_present]
         self.subscriptions = None
 
-    def start(self, scheduler: QtScheduler):
+    def start(self):
         if not self.stopped:
             return
-        super().start(scheduler)
+        super().start()
         head_rotation_vector, voice_present = self.sources
 
         # Observable with all data channels merged into one stream
         obs = head_rotation_vector.output.pipe(operators.combine_latest(voice_present.output))
         self.subscriptions = [
-            obs.subscribe(self.process_state, scheduler=scheduler),
+            obs.subscribe(self.process_state),
         ]
 
     def process_state(self, state: Tuple[Gaze, bool]):

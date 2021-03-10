@@ -33,13 +33,11 @@ class GraphView(SinkBase):
         self.last_mouse_time = 0
         self.points_in_buffer = 20
         self.buffer = deque([(0, 0)] * self.points_in_buffer, maxlen=self.points_in_buffer)
-        self.scheduler = None
 
-    def start(self, scheduler: QtScheduler):
+    def start(self):
         if not self.stopped:
             return
-        self.scheduler = scheduler
-        super().start(scheduler)
+        super().start()
         mouse_source, keyboard_source, engagement_source = self.sources
 
         initial_keyboard_event = keyboard.KeyboardEvent(keyboard.KEY_UP, 0)
@@ -53,7 +51,7 @@ class GraphView(SinkBase):
                     engagement_source.output
                 ))
                 .pipe(operators.debounce(0.1))  # in seconds
-                .subscribe(self.update, scheduler=scheduler)
+                .subscribe(self.update)
         ]
 
         if self.window is None:
@@ -69,7 +67,7 @@ class GraphView(SinkBase):
         if not self.stopped:
             self.stop()
         else:
-            self.start(self.scheduler)
+            self.start()
 
     def narrow_data(self, data):
         '''Get 2 points 0/1 from data.'''

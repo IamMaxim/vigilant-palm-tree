@@ -29,16 +29,16 @@ class GazeDetector(ProcessorBase[Gaze]):
         self.sources = [video_source]
         self.subscriptions = None
 
-    def start(self, scheduler: QtScheduler):
+    def start(self):
         if not self.stopped:
             return
-        super().start(scheduler)
+        super().start()
         video_source, = self.sources
 
         self.subscriptions = [
             video_source.output
                 .pipe(operators.debounce(0.1))  # in seconds
-                .subscribe(self.process_frame, scheduler=scheduler),
+                .subscribe(self.process_frame),
         ]
 
     def process_frame(self, frame: VideoFrame):

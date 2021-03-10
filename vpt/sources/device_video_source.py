@@ -17,7 +17,7 @@ class DeviceVideoSource(SourceBase[VideoFrame]):
     device = 0
     _thread: threading.Thread
 
-    def start(self, _scheduler: QtScheduler):
+    def start(self):
         '''Starts the video recording stream in a separate thread.'''
         if not self.stopped:
             return
