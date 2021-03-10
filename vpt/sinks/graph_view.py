@@ -51,7 +51,9 @@ class GraphView(SinkBase):
                 .pipe(operators.combine_latest(
                     keyboard_source.output.pipe(operators.start_with(initial_keyboard_event)),
                     engagement_source.output
-                )).subscribe(self.update, scheduler=scheduler)
+                ))
+                .pipe(operators.debounce(0.1))  # in seconds
+                .subscribe(self.update, scheduler=scheduler)
         ]
 
         if self.window is None:
