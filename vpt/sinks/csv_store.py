@@ -30,13 +30,14 @@ class CSVStore(SinkBase):
         """Create a database or open an existing one."""
         self.stopped = True
         self.sources = [mouse_source, keyboard_source, engagement_source]
+        self.subscriptions = None
 
         os.makedirs(data_dir, exist_ok=True)
         data_path = Path(data_dir)
 
         self.engagement_file = open(data_path / 'engagement.csv', 'w', newline='')
-        self.mouse_file      = open(data_path / 'mouse.csv', 'w', newline='')
-        self.keyboard_file   = open(data_path / 'keyboard.csv', 'w', newline='')
+        self.mouse_file = open(data_path / 'mouse.csv', 'w', newline='')
+        self.keyboard_file = open(data_path / 'keyboard.csv', 'w', newline='')
 
         self.engagement_writer = csv.DictWriter(self.engagement_file, ['code', 'timestamp'])
         self.engagement_writer.writeheader()
@@ -53,9 +54,11 @@ class CSVStore(SinkBase):
         super().start(scheduler)
         mouse_source, keyboard_source, engagement_source = self.sources
 
-        mouse_source.output.subscribe(self.store_mouse_event, scheduler=scheduler)
-        keyboard_source.output.subscribe(self.store_key_event, scheduler=scheduler)
-        engagement_source.output.subscribe(self.store_engagement, scheduler=scheduler)
+        self.subscriptions = [
+            mouse_source.output.subscribe(self.store_mouse_event, scheduler=scheduler),
+            keyboard_source.output.subscribe(self.store_key_event, scheduler=scheduler),
+            engagement_source.output.subscribe(self.store_engagement, scheduler=scheduler),
+        ]
 
     def __del__(self):
         """Clean up resources."""

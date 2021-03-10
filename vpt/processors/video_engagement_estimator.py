@@ -23,7 +23,7 @@ class VideoEngagementEstimator(ProcessorBase[Union[None, bool]]):
         self.stopped = True
         self.sources = [head_rotation_source]
         self.boundary = 1
-
+        self.subscriptions = None
 
     def start(self, scheduler: QtScheduler):
         if not self.stopped:
@@ -31,7 +31,9 @@ class VideoEngagementEstimator(ProcessorBase[Union[None, bool]]):
         super().start(scheduler)
         head_rotation_source, = self.sources
 
-        head_rotation_source.output.subscribe(self.process_rotation, scheduler=scheduler)
+        self.subscriptions = [
+            head_rotation_source.output.subscribe(self.process_rotation, scheduler=scheduler),
+        ]
 
     def process_rotation(self, rot: Union[np.ndarray, None]):
         '''Compute the gaze code based on the rotation vector.'''

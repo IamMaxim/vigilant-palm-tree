@@ -10,11 +10,7 @@ import matplotlib.pyplot as plt
 from matplotlib.axes import Axes
 from rx import operators
 from rx.scheduler.mainloop import QtScheduler
-from matplotlib.backends.qt_compat import QtCore, QtWidgets
-if QtCore.qVersion() >= "5.":
-    from matplotlib.backends.backend_qt5agg import (FigureCanvas)
-else:
-    from matplotlib.backends.backend_qt4agg import (FigureCanvas)
+from matplotlib.backends.backend_qt5agg import QtWidgets, FigureCanvas
 
 from vpt.capabilities import OutputCapable
 from vpt.sinks.base import SinkBase
@@ -50,12 +46,13 @@ class GraphView(SinkBase):
         initial_mouse_event = mouse.ButtonEvent(event_type=mouse.UP,
                                                 button=0,
                                                 time=time.time())
-        mouse_source.output \
-            .pipe(operators.start_with(initial_mouse_event)) \
-            .pipe(operators.combine_latest(
-                keyboard_source.output.pipe(operators.start_with(initial_keyboard_event)),
-                engagement_source.output
-            )).subscribe(self.update, scheduler=scheduler)
+        self.subscriptions = [
+            mouse_source.output.pipe(operators.start_with(initial_mouse_event))
+                .pipe(operators.combine_latest(
+                    keyboard_source.output.pipe(operators.start_with(initial_keyboard_event)),
+                    engagement_source.output
+                )).subscribe(self.update, scheduler=scheduler)
+        ]
 
         if self.window is None:
             self.window = Window(points=self.points_in_buffer,
@@ -93,14 +90,9 @@ class GraphView(SinkBase):
 
     def update(self, data):
         '''Apply events and redraw'''
-        try:
-            point = self.narrow_data(data)
-            self.buffer.append(point)
-            self.window.plot(self.buffer)
-        except AttributeError:
-            # No data yet
-            print("error in update")
-
+        point = self.narrow_data(data)
+        self.buffer.append(point)
+        self.window.plot(self.buffer)
 
 class Window(QtWidgets.QMainWindow):
     '''Graph frontend window'''

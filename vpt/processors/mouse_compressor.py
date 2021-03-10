@@ -21,6 +21,7 @@ class MouseCompressor(ProcessorBase[Union[mouse.MoveEvent, mouse.WheelEvent, mou
         self.stopped = True
         self.sources = [mouse_source]
         self.window_duration = window_duration
+        self.subscriptions = None
 
     def start(self, scheduler: QtScheduler):
         if not self.stopped:
@@ -28,10 +29,12 @@ class MouseCompressor(ProcessorBase[Union[mouse.MoveEvent, mouse.WheelEvent, mou
         super().start(scheduler)
         mouse_source, = self.sources
 
-        mouse_source \
-            .output \
-            .pipe(operators.throttle_first(self.window_duration)) \
-            .subscribe(self._subj.on_next, scheduler=scheduler)
+        self.subscriptions = [
+            mouse_source
+                .output
+                .pipe(operators.throttle_first(self.window_duration))
+                .subscribe(self._subj.on_next, scheduler=scheduler),
+        ]
 
     @property
     def output(self) -> Observable:

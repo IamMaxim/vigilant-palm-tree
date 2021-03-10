@@ -1,6 +1,7 @@
 """Human facial landmark detector based on Convolutional Neural Network."""
 import math
 import os
+from typing import Union
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # To disable TF's warnings
 
@@ -17,6 +18,94 @@ from vpt.processors.base import ProcessorBase
 from vpt.sources.base import SourceBase
 
 tf.get_logger().setLevel('ERROR')
+
+
+class GazeDetector(ProcessorBase[Union[bool, None]]):
+    """Detects if the user is looking at the screen or not."""
+    _subj: Subject
+
+    def __init__(self, video_source: SourceBase[VideoFrame]):
+        self._subj = Subject()
+        self.stopped = True
+        self.sources = [video_source]
+        self.subscriptions = None
+
+    def start(self, scheduler: QtScheduler):
+        if not self.stopped:
+            return
+        super().start(scheduler)
+        video_source, = self.sources
+
+        self.subscriptions = [
+            video_source.output.subscribe(self.process_frame, scheduler=scheduler),
+        ]
+
+    def process_frame(self, frame: VideoFrame):
+        """Processes each incoming frame to detect gaze"""
+        size = frame.frame.shape
+        # Camera internals
+        focal_length = size[1]
+        center = (size[1] / 2, size[0] / 2)
+        camera_matrix = np.array(
+            [[focal_length, 0, center[0]],
+             [0, focal_length, center[1]],
+             [0, 0, 1]], dtype="double"
+        )
+
+        faceboxes = mark_detector.extract_cnn_facebox(frame.frame)
+
+        if len(faceboxes) == 0:
+            self._subj.on_next(None)
+
+        # For each facebox found in the picture, extract 128x128 region
+        #   and pass it to PnP solve method
+        for facebox in faceboxes:
+            face_img = frame.frame[facebox[1]: facebox[3],
+                                   facebox[0]: facebox[2]]
+            face_img = cv2.resize(face_img, (128, 128))
+            face_img = cv2.cvtColor(face_img, cv2.COLOR_BGR2RGB)
+
+            # Find facial marks on the picture
+            marks = mark_detector.detect_marks([face_img])
+            marks *= (facebox[2] - facebox[0])
+            marks[:, 0] += facebox[0]
+            marks[:, 1] += facebox[1]
+            shape = marks.astype(np.uint)
+
+            image_points = np.array([
+                shape[30],  # Nose tip
+                shape[8],  # Chin
+                shape[36],  # Left eye left corner
+                shape[45],  # Right eye right corne
+                shape[48],  # Left Mouth corner
+                shape[54]  # Right mouth corner
+            ], dtype="double")
+
+            # Solve PnP
+            dist_coeffs = np.zeros((4, 1))  # Assuming no lens distortion
+            (_success, rotation_vector, _translation_vector) = cv2.solvePnP(
+                model_points, image_points, camera_matrix,
+                dist_coeffs, flags=cv2.SOLVEPNP_UPNP)
+
+            # Normalize x axis values
+            if rotation_vector[0] < 0:
+                rotation_vector[0] += math.pi + math.pi
+            rotation_vector[0] -= math.pi
+
+            rot_arr = np.array(rotation_vector).reshape(1, 3)
+
+            # Append the current rotation vector to the data
+            # data = np.empty(shape=(0, 3))
+
+            # data = np.concatenate((data, rot_arr), axis=0)
+            # debug.draw_rotation_values()
+
+            self._subj.on_next(rot_arr)
+
+    @property
+    def output(self) -> Observable:
+        '''The getter for the gaze codes observable.'''
+        return self._subj
 
 
 class FaceDetector:
@@ -165,88 +254,3 @@ model_points = np.array([
     (-150.0, -150.0, -125.0),  # Left Mouth corner
     (150.0, -150.0, -125.0)  # Right mouth corner
 ])
-
-
-class GazeDetector(ProcessorBase[np.ndarray]):
-    """Detects if the user is looking at the screen or not"""
-    _subj: Subject
-
-    def __init__(self, video_source: SourceBase[VideoFrame]):
-        self._subj = Subject()
-        self.stopped = True
-        self.sources = [video_source]
-
-    def start(self, scheduler: QtScheduler):
-        if not self.stopped:
-            return
-        super().start(scheduler)
-        video_source, = self.sources
-
-        video_source.output.subscribe(self.process_frame, scheduler=scheduler)
-
-    def process_frame(self, frame: VideoFrame):
-        """Processes each incoming frame to detect gaze"""
-        size = frame.frame.shape
-        # Camera internals
-        focal_length = size[1]
-        center = (size[1] / 2, size[0] / 2)
-        camera_matrix = np.array(
-            [[focal_length, 0, center[0]],
-             [0, focal_length, center[1]],
-             [0, 0, 1]], dtype="double"
-        )
-
-        faceboxes = mark_detector.extract_cnn_facebox(frame.frame)
-
-        if len(faceboxes) == 0:
-            self._subj.on_next(None)
-
-        # For each facebox found in the picture, extract 128x128 region
-        #   and pass it to PnP solve method
-        for facebox in faceboxes:
-            face_img = frame.frame[facebox[1]: facebox[3],
-                                   facebox[0]: facebox[2]]
-            face_img = cv2.resize(face_img, (128, 128))
-            face_img = cv2.cvtColor(face_img, cv2.COLOR_BGR2RGB)
-
-            # Find facial marks on the picture
-            marks = mark_detector.detect_marks([face_img])
-            marks *= (facebox[2] - facebox[0])
-            marks[:, 0] += facebox[0]
-            marks[:, 1] += facebox[1]
-            shape = marks.astype(np.uint)
-
-            image_points = np.array([
-                shape[30],  # Nose tip
-                shape[8],  # Chin
-                shape[36],  # Left eye left corner
-                shape[45],  # Right eye right corne
-                shape[48],  # Left Mouth corner
-                shape[54]  # Right mouth corner
-            ], dtype="double")
-
-            # Solve PnP
-            dist_coeffs = np.zeros((4, 1))  # Assuming no lens distortion
-            (_success, rotation_vector, _translation_vector) = cv2.solvePnP(
-                model_points, image_points, camera_matrix,
-                dist_coeffs, flags=cv2.SOLVEPNP_UPNP)
-
-            # Normalize x axis values
-            if rotation_vector[0] < 0:
-                rotation_vector[0] += math.pi + math.pi
-            rotation_vector[0] -= math.pi
-
-            rot_arr = np.array(rotation_vector).reshape(1, 3)
-
-            # Append the current rotation vector to the data
-            # data = np.empty(shape=(0, 3))
-
-            # data = np.concatenate((data, rot_arr), axis=0)
-            # debug.draw_rotation_values()
-
-            self._subj.on_next(rot_arr)
-
-    @property
-    def output(self) -> Observable:
-        '''The getter for the gaze codes observable.'''
-        return self._subj

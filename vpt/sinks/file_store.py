@@ -22,6 +22,7 @@ class FileStore(SinkBase):
         self.dir = Path(dir_name)
         self.stopped = True
         self.sources = [mouse_source, keyboard_source, audio_source]
+        self.subscriptions = None
 
         self.mouse_file = open(self.dir / 'mouse_output.txt', 'w+', buffering=1)
 
@@ -38,9 +39,11 @@ class FileStore(SinkBase):
         super().start(scheduler)
         mouse_source, keyboard_source, audio_source = self.sources
 
-        audio_source.output.subscribe(self.store_audio_frame, scheduler=scheduler)
-        mouse_source.output.subscribe(self.store_mouse_event, scheduler=scheduler)
-        keyboard_source.output.subscribe(self.store_key_event, scheduler=scheduler)
+        self.subscriptions = [
+            audio_source.output.subscribe(self.store_audio_frame, scheduler=scheduler),
+            mouse_source.output.subscribe(self.store_mouse_event, scheduler=scheduler),
+            keyboard_source.output.subscribe(self.store_key_event, scheduler=scheduler),
+        ]
 
     def store_audio_frame(self, frame: np.ndarray):
         '''Write the audio frame to its file.'''

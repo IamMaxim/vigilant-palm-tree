@@ -20,7 +20,7 @@ class EngagementEstimator(ProcessorBase[Engagement]):
         self._subj = Subject()
         self.stopped = True
         self.sources = [head_rotation_vector, voice_present]
-
+        self.subscriptions = None
 
     def start(self, scheduler: QtScheduler):
         if not self.stopped:
@@ -30,7 +30,9 @@ class EngagementEstimator(ProcessorBase[Engagement]):
 
         # Observable with all data channels merged into one stream
         obs = head_rotation_vector.output.pipe(operators.combine_latest(voice_present.output))
-        obs.subscribe(self.process_state, scheduler=scheduler)
+        self.subscriptions = [
+            obs.subscribe(self.process_state, scheduler=scheduler),
+        ]
 
     def process_state(self, state):
         '''Convert the state pair into an engagement code.'''

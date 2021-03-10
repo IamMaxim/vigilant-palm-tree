@@ -25,6 +25,7 @@ class VideoDisplay(SinkBase):
         self.stopped = True
         self.sources = [video_frame_source]
         self.duration = duration
+        self.subscriptions = None
 
     def process_frame(self, frame: VideoFrame):
         """Updates the currently displayed frame."""
@@ -38,7 +39,9 @@ class VideoDisplay(SinkBase):
         super().start(scheduler)
         video_frame_source, = self.sources
 
-        video_frame_source.output.subscribe(self.process_frame)
+        self.subscriptions = [
+            video_frame_source.output.subscribe(self.process_frame),
+        ]
         self.start_time = time.time()
 
         while not self.stopped:
