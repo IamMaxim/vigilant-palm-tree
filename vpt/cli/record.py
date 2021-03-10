@@ -10,7 +10,7 @@ from matplotlib.backends.backend_qt5 import QtCore, QtWidgets
 
 from vpt.processors import EngagementEstimator, GazeDetector, SpeechDetector, MouseCompressor
 from vpt.processors.video_engagement_estimator import VideoEngagementEstimator
-from vpt.sinks import GraphView, SQLiteStore
+from vpt.sinks import GraphView, CSVStore
 from vpt.sources import DeviceVideoSource, KeyboardSource, MouseSource, DeviceAudioSource
 
 
@@ -34,10 +34,10 @@ def record(audio_source: Union[str, int], video_source_id: int):
     engagement_estimator = EngagementEstimator(video_estimator,
                                                speech_detector)
 
-    store = SQLiteStore(f'data/session-{datetime.now().strftime("%m-%d-%H-%M")}',
-                        mouse_compressor,
-                        keyboard_source,
-                        engagement_estimator)
+    store = CSVStore(f'data/session-{datetime.now().strftime("%m-%d-%H-%M")}',
+                     mouse_compressor,
+                     keyboard_source,
+                     engagement_estimator)
     graph_view = GraphView(mouse_compressor,
                            keyboard_source,
                            engagement_estimator)

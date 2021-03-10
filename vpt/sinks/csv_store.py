@@ -1,4 +1,4 @@
-'''The SQLite store is responsible for writing streams to an SQLite database.'''
+'''The CSV store is responsible for writing streams to an CSV file.'''
 import os
 import csv
 import time
@@ -14,9 +14,9 @@ from vpt.capabilities import OutputCapable
 from vpt.sinks.base import SinkBase
 
 
-class SQLiteStore(SinkBase):
+class CSVStore(SinkBase):
     """Persistently store the engagement level and keyboard/mouse events
-       in an SQLite database."""
+       in a CSV file."""
     engagement_writer: csv.DictWriter
     mouse_writer: csv.DictWriter
     keyboard_writer: csv.DictWriter
