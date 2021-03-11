@@ -30,7 +30,7 @@ class MouseCompressor(ProcessorBase[Union[mouse.MoveEvent, mouse.WheelEvent, mou
 
         self.subscriptions = [
             mouse_source.output
-                .pipe(operators.debounce(self.window_duration))
+                .pipe(operators.throttle_first(self.window_duration))
                 .subscribe(self._subj.on_next),
         ]
 

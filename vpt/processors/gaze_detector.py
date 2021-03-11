@@ -37,7 +37,7 @@ class GazeDetector(ProcessorBase[Gaze]):
 
         self.subscriptions = [
             video_source.output
-                .pipe(operators.debounce(0.1))  # in seconds
+                .pipe(operators.throttle_first(0.1))  # in seconds
                 .subscribe(self.process_frame),
         ]
 

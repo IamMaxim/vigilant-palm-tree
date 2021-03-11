@@ -15,7 +15,8 @@ from vpt.sources import DeviceVideoSource, KeyboardSource, MouseSource, DeviceAu
 
 def record(audio_source: Union[str, int], video_source_id: int):
     """Runs all of the recorders to check that everything works correctly."""
-    audio_device = sd.query_devices(kind='input', device=audio_source)
+    audio_device = sd.query_devices(kind='input',
+                                    device=[d['name'] for d in sd.query_devices()].index(audio_source))
 
     # Create capture nodes
     video_source = DeviceVideoSource(video_source_id)

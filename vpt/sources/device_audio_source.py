@@ -38,7 +38,7 @@ class DeviceAudioSource(SourceBase[np.ndarray]):
             rec = sd.rec(int(sample_duration * self.sample_rate),
                          samplerate=self.sample_rate,
                          channels=self.channels,
-                         device=self.device,
+                         device=[d['name'] for d in sd.query_devices()].index(self.device),
                          blocking=True)
 
             rec = self.trim_corruption(rec)
