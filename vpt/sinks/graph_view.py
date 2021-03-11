@@ -50,7 +50,7 @@ class GraphView(SinkBase):
                     keyboard_source.output.pipe(operators.start_with(initial_keyboard_event)),
                     engagement_source.output
                 ))
-                .pipe(operators.debounce(0.1))  # in seconds
+                .pipe(operators.throttle_first(0.1))  # in seconds
                 .subscribe(self.update)
         ]
 
