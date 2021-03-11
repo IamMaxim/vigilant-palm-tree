@@ -11,6 +11,5 @@
     "editor.detectIndentation": false,
     "editor.insertSpaces": true,
     "editor.trimAutoWhitespace": true,
-    "editor.tabSize": 4,
-    "python.pythonPath": "C:\\Users\\alkaitagi\\.virtualenvs\\vigilant-palm-tree--jZm-N3A\\Scripts\\python.exe"
+    "editor.tabSize": 4
 }
