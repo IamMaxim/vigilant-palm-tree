@@ -3,10 +3,11 @@ import time
 from time import sleep
 
 import cv2
+from rx.scheduler.mainloop import QtScheduler
 
-from data_structures import VideoFrame
+from vpt.data_structures import VideoFrame
 from vpt.sinks.base import SinkBase
-from vpt.sources.base import SourceBase
+from vpt.capabilities import OutputCapable
 
 
 class VideoDisplay(SinkBase):
@@ -15,7 +16,7 @@ class VideoDisplay(SinkBase):
     start_time: float
     duration: float
 
-    def __init__(self, video_frame_source: SourceBase[VideoFrame], duration=-1):
+    def __init__(self, video_frame_source: OutputCapable[VideoFrame], duration=-1):
         """
         :param video_frame_source: the source of video frames. May be a processor or source node.
         :param duration: max duration after which the display will automatically close.
@@ -24,16 +25,23 @@ class VideoDisplay(SinkBase):
         self.stopped = True
         self.sources = [video_frame_source]
         self.duration = duration
-        video_frame_source.output.subscribe(self.process_frame)
+        self.subscriptions = None
 
     def process_frame(self, frame: VideoFrame):
         """Updates the currently displayed frame."""
         self.frame = frame
 
-    def run(self):
+    def start(self):
         """Starts the video display.
            Note: this is a blocking method. It returns as soon as user presses the ESC key."""
+        if not self.stopped:
+            return
         super().start()
+        video_frame_source, = self.sources
+
+        self.subscriptions = [
+            video_frame_source.output.subscribe(self.process_frame),
+        ]
         self.start_time = time.time()
 
         while not self.stopped:

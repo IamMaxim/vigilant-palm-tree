@@ -3,6 +3,7 @@
 import numpy as np
 from rx import Observable
 from rx.subject import Subject
+from rx.scheduler.mainloop import QtScheduler
 from scipy import fft
 
 from vpt.sources.base import SourceBase
@@ -32,11 +33,21 @@ class SpeechDetector(ProcessorBase[bool]):
         self._subj = Subject()
         self.stopped = True
         self.sources = [audio_source]
-        audio_source.output.subscribe(self.detect_speech)
         self.mean_loudness = None
         self._samples = 0
         self.noise_threshold = noise_threshold
         self.silence_threshold = silence_threshold
+        self.subscriptions = None
+
+    def start(self):
+        if not self.stopped:
+            return
+        super().start()
+        audio_source, = self.sources
+
+        self.subscriptions = [
+            audio_source.output.subscribe(self.detect_speech),
+        ]
 
     @property
     def output(self) -> Observable:

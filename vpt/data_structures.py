@@ -14,3 +14,9 @@ class Engagement(Enum):
     IDLING = 3
     DISTRACTION = 4
     ABSENCE = 5
+
+
+class Gaze(Enum):
+    WORKSPACE = 1
+    ELSEWHERE = 2
+    ABSENT = 3

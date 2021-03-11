@@ -6,6 +6,7 @@ import numpy as np
 import sounddevice as sd
 from rx import Observable
 from rx.subject import Subject
+from rx.scheduler.mainloop import QtScheduler
 
 from vpt.sources.base import SourceBase
 
@@ -16,6 +17,7 @@ class DeviceAudioSource(SourceBase[np.ndarray]):
     device: Union[str, int]
     channels: int
     sample_rate: float
+    _thread: threading.Thread
 
     def __init__(self, channels: int, sample_rate: float, device: Union[str, int] = None):
         self.stopped = True
@@ -29,7 +31,7 @@ class DeviceAudioSource(SourceBase[np.ndarray]):
         '''The getter for the audio chunks observable.'''
         return self._subj
 
-    def run(self):
+    def run_threaded(self):
         '''Records the audio into a stream.'''
         sample_duration = 1
         while not self.stopped:
@@ -54,9 +56,16 @@ class DeviceAudioSource(SourceBase[np.ndarray]):
         return chunk[int(idx * 1.1):, :]
 
     def start(self):
+        '''Start the data generating thread.'''
+        if not self.stopped:
+            return
         self.stopped = False
-        threading.Thread(target=self.run).start()
+        self._thread = threading.Thread(target=self.run_threaded)
+        self._thread.start()
 
     def stop(self):
         '''Stop the data generating thread.'''
+        if self.stopped:
+            return
         self.stopped = True
+        self._thread.join()

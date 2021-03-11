@@ -21,3 +21,6 @@ audio.wav
 *.spec
 build
 dist
+
+# Data
+data

@@ -6,7 +6,7 @@ This document describes storage format for events from 3 sources: _engagement es
 
 Interaction states are described in details in [_interaction-states_ document](interaction-states.md). Here we will just assign integer codes to each of them. A record will be made only when the engagement level has changed.
 
-| 0          | 1            | 2      | 3           | 4       |
+| 1          | 2            | 3      | 4           | 5       |
 | ---------- | ------------ | ------ | ----------- | ------- |
 | engagement | conferencing | idling | distraction | absense |
 

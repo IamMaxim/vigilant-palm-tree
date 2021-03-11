@@ -1,8 +1,8 @@
 '''A group of functions to make sure the hardware is correctly functioning
     and recognized by the program.'''
 import sounddevice as sd
+from rx.scheduler import ImmediateScheduler
 
-from vpt.processors.gaze_detector import GazeDetector
 from vpt.sinks import VideoDisplay, FileStore
 from vpt.sources import DeviceVideoSource, KeyboardSource, MouseSource, DeviceAudioSource
 from vpt.cli.cli import parse_args
@@ -28,12 +28,10 @@ def check():
     # Create file output nodes
     file_store = FileStore('.', mouse_source, keyboard_source, audio_source)
 
-    gaze_detector = GazeDetector(video_source)
-    gaze_detector.output.subscribe(print)
-
     # Run UI on the MainThread (this is a blocking call)
-    file_store.start()
-    video_display.start()
+    scheduler = ImmediateScheduler()
+    file_store.start(scheduler)
+    video_display.start(scheduler)
 
     # Stop capture on all types of sources
     file_store.stop()

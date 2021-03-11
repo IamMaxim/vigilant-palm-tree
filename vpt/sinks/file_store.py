@@ -8,6 +8,7 @@ import keyboard
 import mouse
 import numpy as np
 import soundfile as sf
+from rx.scheduler.mainloop import QtScheduler
 
 from vpt.sinks.base import SinkBase
 from vpt.sources.base import SourceBase
@@ -21,18 +22,28 @@ class FileStore(SinkBase):
         self.dir = Path(dir_name)
         self.stopped = True
         self.sources = [mouse_source, keyboard_source, audio_source]
+        self.subscriptions = None
 
         self.mouse_file = open(self.dir / 'mouse_output.txt', 'w+', buffering=1)
-        mouse_source.output.subscribe(self.store_mouse_event)
 
         self.keyboard_file = open(self.dir / 'keyboard_output.txt', 'w+', buffering=1)
-        keyboard_source.output.subscribe(self.store_key_event)
 
         with contextlib.suppress(FileNotFoundError):
             os.remove(self.dir / 'audio.wav')
         self.audio_file = sf.SoundFile(self.dir / 'audio.wav',
                                        mode='w', samplerate=44100, channels=2)
-        audio_source.output.subscribe(self.store_audio_frame)
+
+    def start(self):
+        if not self.stopped:
+            return
+        super().start()
+        mouse_source, keyboard_source, audio_source = self.sources
+
+        self.subscriptions = [
+            audio_source.output.subscribe(self.store_audio_frame),
+            mouse_source.output.subscribe(self.store_mouse_event),
+            keyboard_source.output.subscribe(self.store_key_event),
+        ]
 
     def store_audio_frame(self, frame: np.ndarray):
         '''Write the audio frame to its file.'''
