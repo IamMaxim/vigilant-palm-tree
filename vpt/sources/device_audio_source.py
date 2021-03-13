@@ -14,12 +14,12 @@ from vpt.sources.base import SourceBase
 class DeviceAudioSource(SourceBase[np.ndarray]):
     '''A data source for the audio stream from the device.'''
     _subj: Subject
-    device: Union[str, int]
+    device: int
     channels: int
     sample_rate: float
     _thread: threading.Thread
 
-    def __init__(self, channels: int, sample_rate: float, device: Union[str, int] = None):
+    def __init__(self, channels: int, sample_rate: float, device: int = None):
         self.stopped = True
         self._subj = Subject()
         self.device = device
@@ -38,7 +38,7 @@ class DeviceAudioSource(SourceBase[np.ndarray]):
             rec = sd.rec(int(sample_duration * self.sample_rate),
                          samplerate=self.sample_rate,
                          channels=self.channels,
-                         device=[d['name'] for d in sd.query_devices()].index(self.device),
+                         device=self.device,
                          blocking=True)
 
             rec = self.trim_corruption(rec)
