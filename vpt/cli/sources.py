@@ -27,16 +27,16 @@ def list_audio_inputs() -> List[dict]:
 def print_audio_inputs():
     '''Prints the available input devices in a nice table.'''
     devices = list_audio_inputs()
-    print(f'┌{"-" * 52}┬{"-" * 12}┬{"-" * 14}┐')
-    print(f'| {"Name":^50} | {"Channels":^10} | {"Sample rate":^12} |')
-    print(f'├{"-" * 52}┼{"-" * 12}┼{"-" * 14}┤')
-    for device in devices:
-        if device['default']:
-            device['name'] = '* ' + device['name']
+    print(f'┌{"-" * 5}┬{"-" * 52}┬{"-" * 12}┬{"-" * 14}┐')
+    print(f'| {"#":^3} | {"Name":^50} | {"Channels":^10} | {"Sample rate":^12} |')
+    print(f'├{"-" * 5}┼{"-" * 52}┼{"-" * 12}┼{"-" * 14}┤')
+    for i, device in enumerate(devices):
+        index = str(i) + (" *" if device['default'] else "")
         device['name'] = shorten(device['name'], width=50, placeholder='..')
-        print(f'| {device["name"]:<50} | {device["max_input_channels"]:^10} '
+        print(f'| {index:<3} |{device["name"]:<51} '
+              f'| {device["max_input_channels"]:^10} '
               f'| {device["default_samplerate"]:^12} |')
-    print(f'└{"-" * 52}┴{"-" * 12}┴{"-" * 14}┘')
+    print(f'└{"-" * 5}┴{"-" * 52}┴{"-" * 12}┴{"-" * 14}┘')
     print('* = default')
 
 
