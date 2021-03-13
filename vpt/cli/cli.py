@@ -3,14 +3,14 @@ from argparse import ArgumentParser
 from typing import Sequence
 
 
-def create_parser(audio_default=None):
+def create_parser(audio_default=int):
     '''Creates and returns a parser for command line arguments.'''
     # pylint: disable=unused-variable; They are created for consistency and clarity
 
     device_parser = ArgumentParser(add_help=False)
     device_parser.add_argument('--audio',
                                default=audio_default,
-                               help='The name of the audio source, as reported by the '
+                               help='The ID of the audio source, as reported by the '
                                     '"sources audio" subcommand')
     device_parser.add_argument('--video',
                                default=0,
@@ -34,7 +34,8 @@ def create_parser(audio_default=None):
                               type=float,
                               help='Duration of the recording (in seconds)')
 
-    sources_parser = subparsers.add_parser('sources', description='List all available sources')
+    sources_parser = subparsers.add_parser(
+        'sources', description='List all available sources')
     sources_parser.add_argument('source', choices=['audio', 'video'])
 
     dump_parser = subparsers.add_parser('dump',
