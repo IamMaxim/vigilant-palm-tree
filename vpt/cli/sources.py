@@ -33,17 +33,17 @@ def print_audio_inputs():
     '''Prints the available input devices in a nice table.'''
     devices = list_audio_inputs()
     print(f'┌{"-" * 6}┬{"-" * 52}┬{"-" * 12}┬{"-" * 14}┐')
-    print(f'| {"#":^4} | {"Name":^50} | {"Channels":^10} | {"Sample rate":^12} |')
+    print(f'| {"ID":^4} | {"Name":^50} | {"Channels":^10} | {"Sample rate":^12} |')
     print(f'├{"-" * 6}┼{"-" * 52}┼{"-" * 12}┼{"-" * 14}┤')
     for device in devices:
         if device['default']:
-            device['index'] = str(device['index']) + ' *'
+            device['index'] = str(device['index']) + ' ✔'
         device['name'] = shorten(device['name'], width=50, placeholder='..')
         print(f'| {device["index"]:<4} |{device["name"]:<51} '
               f'| {device["max_input_channels"]:^10} '
               f'| {device["default_samplerate"]:^12} |')
     print(f'└{"-" * 6}┴{"-" * 52}┴{"-" * 12}┴{"-" * 14}┘')
-    print('* = default')
+    print('✔ = default')
 
 
 def list_video_inputs():
