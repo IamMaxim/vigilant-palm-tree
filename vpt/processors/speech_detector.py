@@ -56,6 +56,10 @@ class SpeechDetector(ProcessorBase[bool]):
 
     def detect_speech(self, frame: np.ndarray):
         '''Detect sound in speech frequencies in a given audio frame.'''
+        if frame.shape[-1] == 0:
+            # Empty audio frames should not be processed
+            return
+
         if frame.ndim == 1:
             frame = frame.reshape(len(frame), 1)
 
