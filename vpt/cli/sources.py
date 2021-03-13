@@ -16,27 +16,29 @@ def list_audio_inputs() -> List[dict]:
     devices = sd.query_devices()
     default = sd.query_devices(kind='input')
     devices = [device for device in devices if device['max_input_channels'] > 0]
-    for device in devices:
+    for i, device in enumerate(devices):
         if device == default:
             device['default'] = True
         else:
             device['default'] = False
+        device['index'] = i
     return devices
 
 
 def print_audio_inputs():
     '''Prints the available input devices in a nice table.'''
     devices = list_audio_inputs()
-    print(f'┌{"-" * 5}┬{"-" * 52}┬{"-" * 12}┬{"-" * 14}┐')
-    print(f'| {"#":^3} | {"Name":^50} | {"Channels":^10} | {"Sample rate":^12} |')
-    print(f'├{"-" * 5}┼{"-" * 52}┼{"-" * 12}┼{"-" * 14}┤')
-    for i, device in enumerate(devices):
-        index = str(i) + (" *" if device['default'] else "")
+    print(f'┌{"-" * 6}┬{"-" * 52}┬{"-" * 12}┬{"-" * 14}┐')
+    print(f'| {"#":^4} | {"Name":^50} | {"Channels":^10} | {"Sample rate":^12} |')
+    print(f'├{"-" * 6}┼{"-" * 52}┼{"-" * 12}┼{"-" * 14}┤')
+    for device in devices:
+        if device['default']:
+            device['index'] = str(device['index']) + ' *'
         device['name'] = shorten(device['name'], width=50, placeholder='..')
-        print(f'| {index:<3} |{device["name"]:<51} '
+        print(f'| {device["index"]:<4} |{device["name"]:<51} '
               f'| {device["max_input_channels"]:^10} '
               f'| {device["default_samplerate"]:^12} |')
-    print(f'└{"-" * 5}┴{"-" * 52}┴{"-" * 12}┴{"-" * 14}┘')
+    print(f'└{"-" * 6}┴{"-" * 52}┴{"-" * 12}┴{"-" * 14}┘')
     print('* = default')
 
 
