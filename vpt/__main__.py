@@ -15,4 +15,4 @@ elif args['cmd'] == 'check':
     check()
 elif args['cmd'] is None:
     # If no argument, fall back to recording
-    record(args['audio'], args['video'])
+    record(int(args['audio']), args['video'])
