@@ -14,7 +14,7 @@ def create_parser(audio_default=None):
                                     '"sources audio" subcommand')
     device_parser.add_argument('--video',
                                default=0,
-                               help='The name of the audio source, as reported by the '
+                               help='The name of the video source, as reported by the '
                                     '"sources video" subcommand')
 
     parser = ArgumentParser(prog='vpt',
