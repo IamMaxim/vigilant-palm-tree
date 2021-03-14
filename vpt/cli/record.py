@@ -2,16 +2,13 @@
 
 import sys
 from datetime import datetime
-from typing import Union
 
 import sounddevice as sd
-from rx.scheduler.mainloop import QtScheduler
-from matplotlib.backends.backend_qt5 import QtCore, QtWidgets
+from matplotlib.backends.backend_qt5 import QtWidgets
 
 from vpt.processors import EngagementEstimator, GazeDetector, SpeechDetector, MouseCompressor
 from vpt.sinks import GraphView, CSVStore
 from vpt.sources import DeviceVideoSource, KeyboardSource, MouseSource, DeviceAudioSource
-from vpt.cli.sources import get_default_audio_input_index
 
 
 def record(audio_source: int, video_source_id: int):

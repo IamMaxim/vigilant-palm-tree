@@ -14,11 +14,11 @@ def check():
     print('Checking the devices for 5s...')
 
     # Create capture nodes
-    audio_device = sd.query_devices(kind='input', device=args['audio'])
+    audio_device = sd.query_devices()[int(args['audio'])]
     video_source = DeviceVideoSource(int(args['video']))
     audio_source = DeviceAudioSource(audio_device['max_input_channels'],
                                      audio_device['default_samplerate'],
-                                     args['audio'])
+                                     int(args['audio']))
     keyboard_source = KeyboardSource()
     mouse_source = MouseSource()
 
@@ -29,9 +29,9 @@ def check():
     file_store = FileStore('.', mouse_source, keyboard_source, audio_source)
 
     # Run UI on the MainThread (this is a blocking call)
-    scheduler = ImmediateScheduler()
-    file_store.start(scheduler)
-    video_display.start(scheduler)
+    # scheduler = ImmediateScheduler()
+    file_store.start()
+    video_display.start()
 
     # Stop capture on all types of sources
     file_store.stop()
