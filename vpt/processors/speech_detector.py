@@ -63,14 +63,18 @@ class SpeechDetector(ProcessorBase[bool]):
         if frame.ndim == 1:
             frame = frame.reshape(len(frame), 1)
 
-        freqs = self.fft(frame.mean(axis=1))
+        try:
+            freqs = self.fft(frame.mean(axis=1))
+        except ValueError:
+            return
         this_loudness = freqs.max(axis=0)
 
         if self.is_silence(this_loudness):
             self._subj.on_next(False)
         else:
             freqs_norm = self.normalize_frequencies(freqs)
-            self._subj.on_next(np.any(freqs_norm[VOICE_RANGE] >= self.noise_threshold))
+            self._subj.on_next(
+                np.any(freqs_norm[VOICE_RANGE] >= self.noise_threshold))
         self.update_mean(this_loudness)
 
     def update_mean(self, new_loudness):

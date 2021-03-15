@@ -2,21 +2,18 @@
 
 import sys
 from datetime import datetime
-from typing import Union
 
 import sounddevice as sd
-from rx.scheduler.mainloop import QtScheduler
-from matplotlib.backends.backend_qt5 import QtCore, QtWidgets
+from matplotlib.backends.backend_qt5 import QtWidgets
 
 from vpt.processors import EngagementEstimator, GazeDetector, SpeechDetector, MouseCompressor
 from vpt.sinks import GraphView, CSVStore
 from vpt.sources import DeviceVideoSource, KeyboardSource, MouseSource, DeviceAudioSource
 
 
-def record(audio_source: Union[str, int], video_source_id: int):
+def record(audio_source: int, video_source_id: int):
     """Runs all of the recorders to check that everything works correctly."""
-    audio_device = sd.query_devices(kind='input',
-                                    device=[d['name'] for d in sd.query_devices()].index(audio_source))
+    audio_device = sd.query_devices()[audio_source]
 
     # Create capture nodes
     video_source = DeviceVideoSource(video_source_id)

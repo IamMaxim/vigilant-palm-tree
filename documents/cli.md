@@ -6,8 +6,8 @@ The program is called `vpt`. You may launch it through your system's command lin
 
 To make sure your hardware is correctly functioning and recognized by the program, use the `check` option:
 
-```
-$ vpt check
+```sh
+vpt check
 ```
 
 This will record the data for 5 seconds and then create 3 files in your current working directory:
@@ -29,8 +29,8 @@ duration (in seconds).
 
 To launch the application, simply start the executable without any parameters:
 
-```
-$ vpt
+```sh
+vpt
 ```
 
 This will open a window with live graphs of data and buttons to start/stop recording. You may minimize the window and start working now.
@@ -43,21 +43,22 @@ If you have multiple audio/video sources, you can select between them.
 
 To list all available sources, use the `sources` option with the type (`audio` or `video`):
 
-```
+```sh
 $ vpt sources audio
-AudioSource1
-AudioSource2
-AudioSource3
+ID  Name
+ 1   AudioSource1
+ 2   AudioSource2
+ 3   AudioSource3
 $ vpt sources video
 Video source 1
 Video source 2
 ```
 
-To select an audio source for recording, use `--audio <NAME>` for specifying the audio source and `--video <NAME>` for
+To select an audio source for recording, use `--audio <ID>` for specifying the audio source and `--video <NAME>` for
 specifying the video source:
 
 ```sh
-$ vpt --audio AudioSource2 --video "Video source 2"
+vpt --audio 3 --video "Video source 2"
 ```
 
 ## Obtaining raw data for analysis
@@ -66,7 +67,7 @@ If you wish to get a dataset of keyboard/mouse activity along with the predicted
 audio/video, use the `dump` option:
 
 ```sh
-$ vpt dump
+vpt dump
 ```
 
 This will create a `vpt-data.sql` SQLite database in the current working directory with the collected data.

@@ -32,7 +32,8 @@ class GraphView(SinkBase):
         self.last_keyboard_time = 0
         self.last_mouse_time = 0
         self.points_in_buffer = 20
-        self.buffer = deque([(0, 0)] * self.points_in_buffer, maxlen=self.points_in_buffer)
+        self.buffer = deque([(0, 0)] * self.points_in_buffer,
+                            maxlen=self.points_in_buffer)
 
     def start(self):
         if not self.stopped:
@@ -46,12 +47,13 @@ class GraphView(SinkBase):
                                                 time=time.time())
         self.subscriptions = [
             mouse_source.output.pipe(operators.start_with(initial_mouse_event))
-                .pipe(operators.combine_latest(
-                    keyboard_source.output.pipe(operators.start_with(initial_keyboard_event)),
-                    engagement_source.output
-                ))
-                .pipe(operators.throttle_first(0.1))  # in seconds
-                .subscribe(self.update)
+            .pipe(operators.combine_latest(
+                keyboard_source.output.pipe(
+                    operators.start_with(initial_keyboard_event)),
+                engagement_source.output
+            ))
+            .pipe(operators.throttle_first(0.1))  # in seconds
+            .subscribe(self.update)
         ]
 
         if self.window is None:
@@ -66,8 +68,10 @@ class GraphView(SinkBase):
         '''Change button text'''
         if not self.stopped:
             self.stop()
+            self.window.record_button.setText('Start recording')
         else:
             self.start()
+            self.window.record_button.setText('Stop recording')
 
     def narrow_data(self, data):
         '''Get 2 points 0/1 from data.'''
@@ -94,6 +98,7 @@ class GraphView(SinkBase):
         self.buffer.append(point)
         self.window.plot(self.buffer)
 
+
 class Window(QtWidgets.QMainWindow):
     '''Graph frontend window'''
 
@@ -103,9 +108,9 @@ class Window(QtWidgets.QMainWindow):
         self.setCentralWidget(_main)
         layout = QtWidgets.QVBoxLayout(_main)
 
-        record_button = QtWidgets.QPushButton("Start/stop recording")
-        record_button.clicked.connect(toggle_callback)
-        layout.addWidget(record_button)
+        self.record_button = QtWidgets.QPushButton("Stop recording")
+        self.record_button.clicked.connect(toggle_callback)
+        layout.addWidget(self.record_button)
 
         figure, [self.axs_inp, self.axs_eng] = plt.subplots(
             1, 2, sharex=True, sharey=True, figsize=(5, 2))
@@ -119,8 +124,10 @@ class Window(QtWidgets.QMainWindow):
         self.axs_eng.set_title("Engagement", fontsize=10)
         self.set_axis_ticks(self.axs_eng)
 
-        self.line_inp, *_ = self.axs_inp.plot(range(self.points), np.zeros(self.points))
-        self.line_eng, *_ = self.axs_eng.plot(range(self.points), np.zeros(self.points))
+        self.line_inp, * \
+            _ = self.axs_inp.plot(range(self.points), np.zeros(self.points))
+        self.line_eng, * \
+            _ = self.axs_eng.plot(range(self.points), np.zeros(self.points))
 
     @staticmethod
     def set_axis_ticks(axis: Axes):
